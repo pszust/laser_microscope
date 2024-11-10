@@ -1,0 +1,9 @@
+SET_TEMP 44 1.0
+D_RECVID Alphabet01_autoDrill01_t44.0_b3_it5.00_r1_letterA_nc1
+WAIT_TIME 1
+D_SHOW_TARGETS 1
+D_TARGET_CRYSTAL scripts/points_list/A.txt 0
+WAIT_TIME 2
+D_SHOW_TARGETS 0
+ILLUMINATE_TARGETS simple-circle 0 3 5 1 0.5
+D_RECVID

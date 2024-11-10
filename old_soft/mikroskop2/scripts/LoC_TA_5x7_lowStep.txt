@@ -1,0 +1,279 @@
+#dodatnie zmiany pozycji to ruch w lewo, dół
+
+#wypalenie dziury na start
+d_load_img('patterns/kolko_5mm_on_DMD.png')
+d_laser_duty(60)
+d_laser_switch(1)
+d_wait(120)
+d_laser_switch(0)
+
+#szereg 1
+d_load_img('patterns/kolko_5mm_on_DMD.png')
+d_move_rel(0,2.5)
+d_laser_duty(60)
+d_laser_switch(1)
+d_wait(120)
+d_laser_switch(0)
+
+d_load_img('patterns/flathat/flat_10_5mm_on_DMD.png')  # wyświetlenie na projektorze pattern
+d_move_rel(-3.5,0)
+d_wait_move()
+	#pozycja1
+d_laser_duty(20)
+d_laser_switch(1)
+d_wait(1000)
+d_laser_switch(0)
+	#pozycja2
+d_move_rel(-3,0)
+d_wait_move()
+d_laser_switch(1)
+d_wait(500)
+d_laser_switch(0)
+	#pozycja3
+d_move_rel(-3,0)
+d_wait_move()
+d_laser_switch(1)
+d_wait(100)
+d_laser_switch(0)
+	#pozycja4
+d_move_rel(-3,0)
+d_wait_move()
+d_laser_switch(1)
+d_wait(50)
+d_laser_switch(0)
+	#pozycja5
+d_move_rel(-3,0)
+d_wait_move()
+d_laser_switch(1)
+d_wait(10)
+d_laser_switch(0)
+	#pozycja6
+d_move_rel(-3,0)
+d_wait_move()
+d_laser_switch(1)
+d_wait(5)
+d_laser_switch(0)
+	#pozycja7
+d_move_rel(-3,0)
+d_wait_move()
+d_laser_switch(1)
+d_wait(1)
+d_laser_switch(0)
+
+#szereg 2
+d_move_rel(21.5,3)
+d_wait_move()
+d_load_img('patterns/kolko_5mm_on_DMD.png')
+d_laser_duty(60)
+d_laser_switch(1)
+d_wait(120)
+d_laser_switch(0)
+
+d_load_img('patterns/flathat/flat_10_5mm_on_DMD.png')  # wyświetlenie na projektorze pattern
+d_move_rel(-3.5,0)
+d_wait_move()
+	#pozycja1
+d_laser_duty(40)
+d_laser_switch(1)
+d_wait(1000)
+d_laser_switch(0)
+	#pozycja2
+d_move_rel(-3,0)
+d_wait_move()
+d_laser_switch(1)
+d_wait(500)
+d_laser_switch(0)
+	#pozycja3
+d_move_rel(-3,0)
+d_wait_move()
+d_laser_switch(1)
+d_wait(100)
+d_laser_switch(0)
+	#pozycja4
+d_move_rel(-3,0)
+d_wait_move()
+d_laser_switch(1)
+d_wait(50)
+d_laser_switch(0)
+	#pozycja5
+d_move_rel(-3,0)
+d_wait_move()
+d_laser_switch(1)
+d_wait(10)
+d_laser_switch(0)
+	#pozycja6
+d_move_rel(-3,0)
+d_wait_move()
+d_laser_switch(1)
+d_wait(5)
+d_laser_switch(0)
+	#pozycja7
+d_move_rel(-3,0)
+d_wait_move()
+d_laser_switch(1)
+d_wait(1)
+d_laser_switch(0)
+
+
+#szereg 3
+d_move_rel(21.5,3)
+d_wait_move()
+d_load_img('patterns/kolko_5mm_on_DMD.png')
+d_laser_duty(60)
+d_laser_switch(1)
+d_wait(120)
+d_laser_switch(0)
+
+d_load_img('patterns/flathat/flat_10_5mm_on_DMD.png')  # wyświetlenie na projektorze pattern
+d_move_rel(-3.5,0)
+d_wait_move()
+	#pozycja1
+d_laser_duty(60)
+d_laser_switch(1)
+d_wait(1000)
+d_laser_switch(0)
+	#pozycja2
+d_move_rel(-3,0)
+d_wait_move()
+d_laser_switch(1)
+d_wait(500)
+d_laser_switch(0)
+	#pozycja3
+d_move_rel(-3,0)
+d_wait_move()
+d_laser_switch(1)
+d_wait(100)
+d_laser_switch(0)
+	#pozycja4
+d_move_rel(-3,0)
+d_wait_move()
+d_laser_switch(1)
+d_wait(50)
+d_laser_switch(0)
+	#pozycja5
+d_move_rel(-3,0)
+d_wait_move()
+d_laser_switch(1)
+d_wait(10)
+d_laser_switch(0)
+	#pozycja6
+d_move_rel(-3,0)
+d_wait_move()
+d_laser_switch(1)
+d_wait(5)
+d_laser_switch(0)
+	#pozycja7
+d_move_rel(-3,0)
+d_wait_move()
+d_laser_switch(1)
+d_wait(1)
+d_laser_switch(0)
+
+
+#szereg 4
+d_move_rel(21.5,3)
+d_wait_move()
+d_load_img('patterns/kolko_5mm_on_DMD.png')
+d_laser_duty(60)
+d_laser_switch(1)
+d_wait(120)
+d_laser_switch(0)
+
+d_load_img('patterns/flathat/flat_10_5mm_on_DMD.png')  # wyświetlenie na projektorze pattern
+d_move_rel(-3.5,0)
+d_wait_move()
+	#pozycja1
+d_laser_duty(80)
+d_laser_switch(1)
+d_wait(1000)
+d_laser_switch(0)
+	#pozycja2
+d_move_rel(-3,0)
+d_wait_move()
+d_laser_switch(1)
+d_wait(500)
+d_laser_switch(0)
+	#pozycja3
+d_move_rel(-3,0)
+d_wait_move()
+d_laser_switch(1)
+d_wait(100)
+d_laser_switch(0)
+	#pozycja4
+d_move_rel(-3,0)
+d_wait_move()
+d_laser_switch(1)
+d_wait(50)
+d_laser_switch(0)
+	#pozycja5
+d_move_rel(-3,0)
+d_wait_move()
+d_laser_switch(1)
+d_wait(10)
+d_laser_switch(0)
+	#pozycja6
+d_move_rel(-3,0)
+d_wait_move()
+d_laser_switch(1)
+d_wait(5)
+d_laser_switch(0)
+	#pozycja7
+d_move_rel(-3,0)
+d_wait_move()
+d_laser_switch(1)
+d_wait(1)
+d_laser_switch(0)
+
+#szereg 5
+d_move_rel(21.5,3)
+d_wait_move()
+d_load_img('patterns/kolko_5mm_on_DMD.png')
+d_laser_duty(60)
+d_laser_switch(1)
+d_wait(120)
+d_laser_switch(0)
+
+d_load_img('patterns/flathat/flat_10_5mm_on_DMD.png')  # wyświetlenie na projektorze pattern
+d_move_rel(-3.5,0)
+d_wait_move()
+	#pozycja1
+d_laser_duty(100)
+d_laser_switch(1)
+d_wait(1000)
+d_laser_switch(0)
+	#pozycja2
+d_move_rel(-3,0)
+d_wait_move()
+d_laser_switch(1)
+d_wait(500)
+d_laser_switch(0)
+	#pozycja3
+d_move_rel(-3,0)
+d_wait_move()
+d_laser_switch(1)
+d_wait(100)
+d_laser_switch(0)
+	#pozycja4
+d_move_rel(-3,0)
+d_wait_move()
+d_laser_switch(1)
+d_wait(50)
+d_laser_switch(0)
+	#pozycja5
+d_move_rel(-3,0)
+d_wait_move()
+d_laser_switch(1)
+d_wait(10)
+d_laser_switch(0)
+	#pozycja6
+d_move_rel(-3,0)
+d_wait_move()
+d_laser_switch(1)
+d_wait(5)
+d_laser_switch(0)
+	#pozycja7
+d_move_rel(-3,0)
+d_wait_move()
+d_laser_switch(1)
+d_wait(1)
+d_laser_switch(0)

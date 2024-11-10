@@ -1,0 +1,7 @@
+LOAD_IMG example_patterns/small_circle.png
+SET_TEMP 110 2
+GOTO 0 0
+ILL_IMG 30 15
+GOTO 2 2
+ILL_IMG 30 15
+

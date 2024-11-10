@@ -1,0 +1,57 @@
+use_linkam: 1
+border: 0
+pulseOff: 2
+pulseOn: 2
+loop_delay_target: 20
+calib_factor: 0.7
+map_rng: 0.05  # intensity of map
+map_gauss: 2
+ell_bottom_offset: 114.30
+camera_lo_gain: 45
+camera_hi_gain: 75
+laser_function: 7.55 - (N/8)*(N<5)-5/8*(N>=5)  # laser power - change first number, N is count of remelting steps 
+laser_kolo_function: 6.9 -(N/6)*(N<8)-(8/6)*(N>=8)  # laser power - change first number   
+max_shots: 12
+dead_threshold: 0.30
+kolo_min_threshold:  0.08
+pixel_threshold: 0.65
+kolo_threshold: 0.90
+shot_size: 110  # shot size during patterning for kolo animation
+pixel_check_size: 30  # size of the side check mask when looking for open for pixel
+pixel_area_size: 350  # size of the pixel at which check is performed after burning to see if this pixel is OK
+pixel_start: 0  # at which pixel patterning should start
+kolo_duration: 50  # duration of kolo animation during patterninng time seconds
+pixel_duration: 50  # duration of pixel animation during patterninng time seconds
+check_threshold: 0.003  # threshold below which map is considered dead during check mask evaluations
+side_threshold: 0.90  # min good domain fill of the check area in side select
+gain_at_00: 60
+gain_at_05: 60
+gain_at_10: 60
+gain_at_15: 50
+gain_at_90: 0
+paterning_delay: 6
+anim_time: 0.25
+brush_custom_size: 15
+cusanimStep: 40  # step in pixels
+cusanimSize: 40  # size of the displayed circle
+cusanimBX: 500
+cusanimBY: 300
+cusanimP: 150
+cusanimP: 150
+cusanimDelay: 15  # delay between steps in animation [frames]
+cusanimPeriod: 45  # period beteen consecutive animations [s]
+cusanimCount: 1000000  # count of consecutive animations
+powerDropF: 0.4
+powerDropT: 5
+ill_size: 10
+crystal_border: 20
+min_crys_size: 25
+fancyCrosshair: 1
+targetOffsetX: 0
+targetOffsetY: 0
+showTargets: 0
+min_crys_size: 32
+tragetingBlur: 1
+targetingThr: 100
+targetingMinArea: 32
+targetingMaxArea: 64_000

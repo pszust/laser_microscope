@@ -1,0 +1,2 @@
+d_move_relz(arg00)
+d_wait_move_z()

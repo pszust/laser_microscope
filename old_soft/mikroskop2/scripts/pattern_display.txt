@@ -1,0 +1,1 @@
+d_load_img('patterns/kolko_5mm.png')

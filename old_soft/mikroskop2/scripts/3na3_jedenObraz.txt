@@ -1,0 +1,46 @@
+# this script illuminates 4 different patterns in specified locations
+
+x_space = 4
+y_space = 4
+
+d_load_img('patterns/kolko_5mm.png')  # wyświetlenie na projektorze pattern
+
+d_move_rel(2.5,2.5)
+d_wait_move()
+illuminate_here(5, 5)  # displays pattern with 1% duty cycle for 5 seconds
+
+d_move_rel(3,0)
+d_wait_move()
+illuminate_here(5,60)
+
+d_move_rel(3,0)
+d_wait_move()
+illuminate_here(5,300)
+
+#nowy rząd
+
+d_move_rel(-6,3)
+d_wait_move()
+illuminate_here(10,5)
+
+d_move_rel(3,0)
+d_wait_move()
+illuminate_here(10,60)
+
+d_move_rel(3,0)
+d_wait_move()
+illuminate_here(10,300)
+
+#nowy rząd
+
+d_move_rel(-6,3)
+d_wait_move()
+illuminate_here(20,5)
+
+d_move_rel(3,0)
+d_wait_move()
+illuminate_here(20,60)
+
+d_move_rel(3,0)
+d_wait_move()
+illuminate_here(20,300)

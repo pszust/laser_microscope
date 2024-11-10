@@ -1,0 +1,300 @@
+OBJECT ellipse 5 5 0 255
+0.00 -> 0.25 MOVE -200 -200 -> -200 -200
+0.00 -> 0.25 SCALE 1.0 -> 1.0
+OBJECT ellipse 5 5 0 255
+0.25 -> 0.50 MOVE -200 -160 -> -200 -160
+0.25 -> 0.50 SCALE 1.0 -> 1.0
+OBJECT ellipse 5 5 0 255
+0.50 -> 0.75 MOVE -200 -120 -> -200 -120
+0.50 -> 0.75 SCALE 1.0 -> 1.0
+OBJECT ellipse 5 5 0 255
+0.75 -> 1.00 MOVE -200 -80 -> -200 -80
+0.75 -> 1.00 SCALE 1.0 -> 1.0
+OBJECT ellipse 5 5 0 255
+0.00 -> 0.25 MOVE -200 -40 -> -200 -40
+0.00 -> 0.25 SCALE 1.0 -> 1.0
+OBJECT ellipse 5 5 0 255
+0.25 -> 0.50 MOVE -200 0 -> -200 0
+0.25 -> 0.50 SCALE 1.0 -> 1.0
+OBJECT ellipse 5 5 0 255
+0.50 -> 0.75 MOVE -200 40 -> -200 40
+0.50 -> 0.75 SCALE 1.0 -> 1.0
+OBJECT ellipse 5 5 0 255
+0.75 -> 1.00 MOVE -200 80 -> -200 80
+0.75 -> 1.00 SCALE 1.0 -> 1.0
+OBJECT ellipse 5 5 0 255
+0.00 -> 0.25 MOVE -200 120 -> -200 120
+0.00 -> 0.25 SCALE 1.0 -> 1.0
+OBJECT ellipse 5 5 0 255
+0.25 -> 0.50 MOVE -200 160 -> -200 160
+0.25 -> 0.50 SCALE 1.0 -> 1.0
+OBJECT ellipse 5 5 0 255
+0.50 -> 0.75 MOVE -160 -200 -> -160 -200
+0.50 -> 0.75 SCALE 1.0 -> 1.0
+OBJECT ellipse 5 5 0 255
+0.75 -> 1.00 MOVE -160 -160 -> -160 -160
+0.75 -> 1.00 SCALE 1.0 -> 1.0
+OBJECT ellipse 5 5 0 255
+0.00 -> 0.25 MOVE -160 -120 -> -160 -120
+0.00 -> 0.25 SCALE 1.0 -> 1.0
+OBJECT ellipse 5 5 0 255
+0.25 -> 0.50 MOVE -160 -80 -> -160 -80
+0.25 -> 0.50 SCALE 1.0 -> 1.0
+OBJECT ellipse 5 5 0 255
+0.50 -> 0.75 MOVE -160 -40 -> -160 -40
+0.50 -> 0.75 SCALE 1.0 -> 1.0
+OBJECT ellipse 5 5 0 255
+0.75 -> 1.00 MOVE -160 0 -> -160 0
+0.75 -> 1.00 SCALE 1.0 -> 1.0
+OBJECT ellipse 5 5 0 255
+0.00 -> 0.25 MOVE -160 40 -> -160 40
+0.00 -> 0.25 SCALE 1.0 -> 1.0
+OBJECT ellipse 5 5 0 255
+0.25 -> 0.50 MOVE -160 80 -> -160 80
+0.25 -> 0.50 SCALE 1.0 -> 1.0
+OBJECT ellipse 5 5 0 255
+0.50 -> 0.75 MOVE -160 120 -> -160 120
+0.50 -> 0.75 SCALE 1.0 -> 1.0
+OBJECT ellipse 5 5 0 255
+0.75 -> 1.00 MOVE -160 160 -> -160 160
+0.75 -> 1.00 SCALE 1.0 -> 1.0
+OBJECT ellipse 5 5 0 255
+0.00 -> 0.25 MOVE -120 -200 -> -120 -200
+0.00 -> 0.25 SCALE 1.0 -> 1.0
+OBJECT ellipse 5 5 0 255
+0.25 -> 0.50 MOVE -120 -160 -> -120 -160
+0.25 -> 0.50 SCALE 1.0 -> 1.0
+OBJECT ellipse 5 5 0 255
+0.50 -> 0.75 MOVE -120 -120 -> -120 -120
+0.50 -> 0.75 SCALE 1.0 -> 1.0
+OBJECT ellipse 5 5 0 255
+0.75 -> 1.00 MOVE -120 -80 -> -120 -80
+0.75 -> 1.00 SCALE 1.0 -> 1.0
+OBJECT ellipse 5 5 0 255
+0.00 -> 0.25 MOVE -120 -40 -> -120 -40
+0.00 -> 0.25 SCALE 1.0 -> 1.0
+OBJECT ellipse 5 5 0 255
+0.25 -> 0.50 MOVE -120 0 -> -120 0
+0.25 -> 0.50 SCALE 1.0 -> 1.0
+OBJECT ellipse 5 5 0 255
+0.50 -> 0.75 MOVE -120 40 -> -120 40
+0.50 -> 0.75 SCALE 1.0 -> 1.0
+OBJECT ellipse 5 5 0 255
+0.75 -> 1.00 MOVE -120 80 -> -120 80
+0.75 -> 1.00 SCALE 1.0 -> 1.0
+OBJECT ellipse 5 5 0 255
+0.00 -> 0.25 MOVE -120 120 -> -120 120
+0.00 -> 0.25 SCALE 1.0 -> 1.0
+OBJECT ellipse 5 5 0 255
+0.25 -> 0.50 MOVE -120 160 -> -120 160
+0.25 -> 0.50 SCALE 1.0 -> 1.0
+OBJECT ellipse 5 5 0 255
+0.50 -> 0.75 MOVE -80 -200 -> -80 -200
+0.50 -> 0.75 SCALE 1.0 -> 1.0
+OBJECT ellipse 5 5 0 255
+0.75 -> 1.00 MOVE -80 -160 -> -80 -160
+0.75 -> 1.00 SCALE 1.0 -> 1.0
+OBJECT ellipse 5 5 0 255
+0.00 -> 0.25 MOVE -80 -120 -> -80 -120
+0.00 -> 0.25 SCALE 1.0 -> 1.0
+OBJECT ellipse 5 5 0 255
+0.25 -> 0.50 MOVE -80 -80 -> -80 -80
+0.25 -> 0.50 SCALE 1.0 -> 1.0
+OBJECT ellipse 5 5 0 255
+0.50 -> 0.75 MOVE -80 -40 -> -80 -40
+0.50 -> 0.75 SCALE 1.0 -> 1.0
+OBJECT ellipse 5 5 0 255
+0.75 -> 1.00 MOVE -80 0 -> -80 0
+0.75 -> 1.00 SCALE 1.0 -> 1.0
+OBJECT ellipse 5 5 0 255
+0.00 -> 0.25 MOVE -80 40 -> -80 40
+0.00 -> 0.25 SCALE 1.0 -> 1.0
+OBJECT ellipse 5 5 0 255
+0.25 -> 0.50 MOVE -80 80 -> -80 80
+0.25 -> 0.50 SCALE 1.0 -> 1.0
+OBJECT ellipse 5 5 0 255
+0.50 -> 0.75 MOVE -80 120 -> -80 120
+0.50 -> 0.75 SCALE 1.0 -> 1.0
+OBJECT ellipse 5 5 0 255
+0.75 -> 1.00 MOVE -80 160 -> -80 160
+0.75 -> 1.00 SCALE 1.0 -> 1.0
+OBJECT ellipse 5 5 0 255
+0.00 -> 0.25 MOVE -40 -200 -> -40 -200
+0.00 -> 0.25 SCALE 1.0 -> 1.0
+OBJECT ellipse 5 5 0 255
+0.25 -> 0.50 MOVE -40 -160 -> -40 -160
+0.25 -> 0.50 SCALE 1.0 -> 1.0
+OBJECT ellipse 5 5 0 255
+0.50 -> 0.75 MOVE -40 -120 -> -40 -120
+0.50 -> 0.75 SCALE 1.0 -> 1.0
+OBJECT ellipse 5 5 0 255
+0.75 -> 1.00 MOVE -40 -80 -> -40 -80
+0.75 -> 1.00 SCALE 1.0 -> 1.0
+OBJECT ellipse 5 5 0 255
+0.00 -> 0.25 MOVE -40 -40 -> -40 -40
+0.00 -> 0.25 SCALE 1.0 -> 1.0
+OBJECT ellipse 5 5 0 255
+0.25 -> 0.50 MOVE -40 0 -> -40 0
+0.25 -> 0.50 SCALE 1.0 -> 1.0
+OBJECT ellipse 5 5 0 255
+0.50 -> 0.75 MOVE -40 40 -> -40 40
+0.50 -> 0.75 SCALE 1.0 -> 1.0
+OBJECT ellipse 5 5 0 255
+0.75 -> 1.00 MOVE -40 80 -> -40 80
+0.75 -> 1.00 SCALE 1.0 -> 1.0
+OBJECT ellipse 5 5 0 255
+0.00 -> 0.25 MOVE -40 120 -> -40 120
+0.00 -> 0.25 SCALE 1.0 -> 1.0
+OBJECT ellipse 5 5 0 255
+0.25 -> 0.50 MOVE -40 160 -> -40 160
+0.25 -> 0.50 SCALE 1.0 -> 1.0
+OBJECT ellipse 5 5 0 255
+0.50 -> 0.75 MOVE 0 -200 -> 0 -200
+0.50 -> 0.75 SCALE 1.0 -> 1.0
+OBJECT ellipse 5 5 0 255
+0.75 -> 1.00 MOVE 0 -160 -> 0 -160
+0.75 -> 1.00 SCALE 1.0 -> 1.0
+OBJECT ellipse 5 5 0 255
+0.00 -> 0.25 MOVE 0 -120 -> 0 -120
+0.00 -> 0.25 SCALE 1.0 -> 1.0
+OBJECT ellipse 5 5 0 255
+0.25 -> 0.50 MOVE 0 -80 -> 0 -80
+0.25 -> 0.50 SCALE 1.0 -> 1.0
+OBJECT ellipse 5 5 0 255
+0.50 -> 0.75 MOVE 0 -40 -> 0 -40
+0.50 -> 0.75 SCALE 1.0 -> 1.0
+OBJECT ellipse 5 5 0 255
+0.75 -> 1.00 MOVE 0 0 -> 0 0
+0.75 -> 1.00 SCALE 1.0 -> 1.0
+OBJECT ellipse 5 5 0 255
+0.00 -> 0.25 MOVE 0 40 -> 0 40
+0.00 -> 0.25 SCALE 1.0 -> 1.0
+OBJECT ellipse 5 5 0 255
+0.25 -> 0.50 MOVE 0 80 -> 0 80
+0.25 -> 0.50 SCALE 1.0 -> 1.0
+OBJECT ellipse 5 5 0 255
+0.50 -> 0.75 MOVE 0 120 -> 0 120
+0.50 -> 0.75 SCALE 1.0 -> 1.0
+OBJECT ellipse 5 5 0 255
+0.75 -> 1.00 MOVE 0 160 -> 0 160
+0.75 -> 1.00 SCALE 1.0 -> 1.0
+OBJECT ellipse 5 5 0 255
+0.00 -> 0.25 MOVE 40 -200 -> 40 -200
+0.00 -> 0.25 SCALE 1.0 -> 1.0
+OBJECT ellipse 5 5 0 255
+0.25 -> 0.50 MOVE 40 -160 -> 40 -160
+0.25 -> 0.50 SCALE 1.0 -> 1.0
+OBJECT ellipse 5 5 0 255
+0.50 -> 0.75 MOVE 40 -120 -> 40 -120
+0.50 -> 0.75 SCALE 1.0 -> 1.0
+OBJECT ellipse 5 5 0 255
+0.75 -> 1.00 MOVE 40 -80 -> 40 -80
+0.75 -> 1.00 SCALE 1.0 -> 1.0
+OBJECT ellipse 5 5 0 255
+0.00 -> 0.25 MOVE 40 -40 -> 40 -40
+0.00 -> 0.25 SCALE 1.0 -> 1.0
+OBJECT ellipse 5 5 0 255
+0.25 -> 0.50 MOVE 40 0 -> 40 0
+0.25 -> 0.50 SCALE 1.0 -> 1.0
+OBJECT ellipse 5 5 0 255
+0.50 -> 0.75 MOVE 40 40 -> 40 40
+0.50 -> 0.75 SCALE 1.0 -> 1.0
+OBJECT ellipse 5 5 0 255
+0.75 -> 1.00 MOVE 40 80 -> 40 80
+0.75 -> 1.00 SCALE 1.0 -> 1.0
+OBJECT ellipse 5 5 0 255
+0.00 -> 0.25 MOVE 40 120 -> 40 120
+0.00 -> 0.25 SCALE 1.0 -> 1.0
+OBJECT ellipse 5 5 0 255
+0.25 -> 0.50 MOVE 40 160 -> 40 160
+0.25 -> 0.50 SCALE 1.0 -> 1.0
+OBJECT ellipse 5 5 0 255
+0.50 -> 0.75 MOVE 80 -200 -> 80 -200
+0.50 -> 0.75 SCALE 1.0 -> 1.0
+OBJECT ellipse 5 5 0 255
+0.75 -> 1.00 MOVE 80 -160 -> 80 -160
+0.75 -> 1.00 SCALE 1.0 -> 1.0
+OBJECT ellipse 5 5 0 255
+0.00 -> 0.25 MOVE 80 -120 -> 80 -120
+0.00 -> 0.25 SCALE 1.0 -> 1.0
+OBJECT ellipse 5 5 0 255
+0.25 -> 0.50 MOVE 80 -80 -> 80 -80
+0.25 -> 0.50 SCALE 1.0 -> 1.0
+OBJECT ellipse 5 5 0 255
+0.50 -> 0.75 MOVE 80 -40 -> 80 -40
+0.50 -> 0.75 SCALE 1.0 -> 1.0
+OBJECT ellipse 5 5 0 255
+0.75 -> 1.00 MOVE 80 0 -> 80 0
+0.75 -> 1.00 SCALE 1.0 -> 1.0
+OBJECT ellipse 5 5 0 255
+0.00 -> 0.25 MOVE 80 40 -> 80 40
+0.00 -> 0.25 SCALE 1.0 -> 1.0
+OBJECT ellipse 5 5 0 255
+0.25 -> 0.50 MOVE 80 80 -> 80 80
+0.25 -> 0.50 SCALE 1.0 -> 1.0
+OBJECT ellipse 5 5 0 255
+0.50 -> 0.75 MOVE 80 120 -> 80 120
+0.50 -> 0.75 SCALE 1.0 -> 1.0
+OBJECT ellipse 5 5 0 255
+0.75 -> 1.00 MOVE 80 160 -> 80 160
+0.75 -> 1.00 SCALE 1.0 -> 1.0
+OBJECT ellipse 5 5 0 255
+0.00 -> 0.25 MOVE 120 -200 -> 120 -200
+0.00 -> 0.25 SCALE 1.0 -> 1.0
+OBJECT ellipse 5 5 0 255
+0.25 -> 0.50 MOVE 120 -160 -> 120 -160
+0.25 -> 0.50 SCALE 1.0 -> 1.0
+OBJECT ellipse 5 5 0 255
+0.50 -> 0.75 MOVE 120 -120 -> 120 -120
+0.50 -> 0.75 SCALE 1.0 -> 1.0
+OBJECT ellipse 5 5 0 255
+0.75 -> 1.00 MOVE 120 -80 -> 120 -80
+0.75 -> 1.00 SCALE 1.0 -> 1.0
+OBJECT ellipse 5 5 0 255
+0.00 -> 0.25 MOVE 120 -40 -> 120 -40
+0.00 -> 0.25 SCALE 1.0 -> 1.0
+OBJECT ellipse 5 5 0 255
+0.25 -> 0.50 MOVE 120 0 -> 120 0
+0.25 -> 0.50 SCALE 1.0 -> 1.0
+OBJECT ellipse 5 5 0 255
+0.50 -> 0.75 MOVE 120 40 -> 120 40
+0.50 -> 0.75 SCALE 1.0 -> 1.0
+OBJECT ellipse 5 5 0 255
+0.75 -> 1.00 MOVE 120 80 -> 120 80
+0.75 -> 1.00 SCALE 1.0 -> 1.0
+OBJECT ellipse 5 5 0 255
+0.00 -> 0.25 MOVE 120 120 -> 120 120
+0.00 -> 0.25 SCALE 1.0 -> 1.0
+OBJECT ellipse 5 5 0 255
+0.25 -> 0.50 MOVE 120 160 -> 120 160
+0.25 -> 0.50 SCALE 1.0 -> 1.0
+OBJECT ellipse 5 5 0 255
+0.50 -> 0.75 MOVE 160 -200 -> 160 -200
+0.50 -> 0.75 SCALE 1.0 -> 1.0
+OBJECT ellipse 5 5 0 255
+0.75 -> 1.00 MOVE 160 -160 -> 160 -160
+0.75 -> 1.00 SCALE 1.0 -> 1.0
+OBJECT ellipse 5 5 0 255
+0.00 -> 0.25 MOVE 160 -120 -> 160 -120
+0.00 -> 0.25 SCALE 1.0 -> 1.0
+OBJECT ellipse 5 5 0 255
+0.25 -> 0.50 MOVE 160 -80 -> 160 -80
+0.25 -> 0.50 SCALE 1.0 -> 1.0
+OBJECT ellipse 5 5 0 255
+0.50 -> 0.75 MOVE 160 -40 -> 160 -40
+0.50 -> 0.75 SCALE 1.0 -> 1.0
+OBJECT ellipse 5 5 0 255
+0.75 -> 1.00 MOVE 160 0 -> 160 0
+0.75 -> 1.00 SCALE 1.0 -> 1.0
+OBJECT ellipse 5 5 0 255
+0.00 -> 0.25 MOVE 160 40 -> 160 40
+0.00 -> 0.25 SCALE 1.0 -> 1.0
+OBJECT ellipse 5 5 0 255
+0.25 -> 0.50 MOVE 160 80 -> 160 80
+0.25 -> 0.50 SCALE 1.0 -> 1.0
+OBJECT ellipse 5 5 0 255
+0.50 -> 0.75 MOVE 160 120 -> 160 120
+0.50 -> 0.75 SCALE 1.0 -> 1.0
+OBJECT ellipse 5 5 0 255
+0.75 -> 1.00 MOVE 160 160 -> 160 160
+0.75 -> 1.00 SCALE 1.0 -> 1.0

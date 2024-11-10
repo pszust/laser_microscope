@@ -1,0 +1,3 @@
+d_set_temp(arg00)
+d_wait_temp(arg01)
+d_wait(3)

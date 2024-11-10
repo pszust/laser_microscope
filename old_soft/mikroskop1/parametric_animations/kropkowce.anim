@@ -1,0 +1,6 @@
+OBJECT ellipse 3 3 0 255
+0.00 -> 1.00 MOVE 0 8 -> 0 8
+0.00 -> 1.00 SCALE 1.0 -> 1.0
+OBJECT ellipse 3 3 0 255
+0.00 -> 1.00 MOVE 0 -8 -> 0 -8
+0.00 -> 1.00 SCALE 1.0 -> 1.0

@@ -1,0 +1,119 @@
+Złota burn2:
+v0=0.0, v1=1.55, v2=0.1, v3=0.8, v4=1.45
+
+
+Srebrna burn2:
+v0=0.0, v1=1.55, v2=0.1, v3=0.75, v4=1.45
+
+v0=0.0, v1=0.05, v2=0.8, v3=0.3, v4=0.9, v5=1
+
+Best:
+v0=0.2, v1=1.55, v2=0.3, v3=0.75, v4=1.45
+
+
+Other parameters change:
+2022.03.15 13:33 sqr_size = 490 in make_coords_list changed to 460
+
+
+-------------Extvars for NOBOW2.15----------------------
+border: 110
+elli_angle: 248
+pulseOff: 2
+pulseOn: 2
+loop_delay_target: 20
+calib_factor: 0.7
+map_rng: 0.05
+map_gauss: 2
+ell_bottom_offset: 247.75
+camera_lo_gain: 0
+camera_hi_gain: 15
+laser_function: 6.25-(N/8)*(N<5)-5/8*(N>=5)
+laser_kolo_function: 6.0-(N/6)*(N<8)-(8/6)*(N>=8)
+max_shots: 36
+dead_threshold: 0.18
+kolo_min_threshold: 0.08
+pixel_threshold: 0.60
+kolo_threshold: 0.86
+shot_size: 110  # shot size during patterning for kolo animation
+pixel_check_size: 125  # size of the side check mask when looking for open for pixel
+pixel_area_size: 350  # size of the pixel at which check is performed after burning to see if this pixel is OK
+pixel_start: 0  # at which pixel patterning should start
+kolo_duration: 40
+pixel_duration: 50
+check_threshold: 0.01  # threshold below which map is considered dead during check mask evaluations
+
+Params in program:
+Gain 15, Expo -9, Rotation 10
+
+
+-------------Extvars for NOBOW235+5CB----------------------
+border: 110
+elli_angle: 247.90
+pulseOff: 2
+pulseOn: 2
+loop_delay_target: 20
+calib_factor: 0.7
+map_rng: 0.05
+map_gauss: 2
+ell_bottom_offset: 247.75
+camera_lo_gain: 0
+camera_hi_gain: 25
+laser_function: 7.00-(N/8)*(N<5)-5/8*(N>=5)
+laser_kolo_function: 6.50-(N/6)*(N<8)-(8/6)*(N>=8)
+max_shots: 36
+dead_threshold: 0.30
+kolo_min_threshold: 0.08
+pixel_threshold: 0.75
+kolo_threshold: 0.86
+shot_size: 110  # shot size during patterning for kolo animation
+pixel_check_size: 130  # size of the side check mask when looking for open for pixel
+pixel_area_size: 350  # size of the pixel at which check is performed after burning to see if this pixel is OK
+pixel_start: 0  # at which pixel patterning should start
+kolo_duration: 30
+pixel_duration: 40
+check_threshold: 0.003  # threshold below which map is considered dead during check mask evaluations
+side_threshold: 0.85  # min good domain fill of the check area in side select
+gain_at_00: 45
+gain_at_05: 45
+gain_at_10: 30
+gain_at_15: 20
+gain_at_90: 0
+
+
+T = 97
+
+-------------Extvars for NOBOW235+5CB+NANOPRETY----------------------
+Inprogram params:
+t=80
+v0=0.2, v1=1.55, v2=0.3, v3=0.75, v4=1.45
+Gain X, Expo X, Rotation 5
+
+border: 110
+pulseOff: 2
+pulseOn: 2
+loop_delay_target: 20
+calib_factor: 0.7
+map_rng: 0.05
+map_gauss: 2
+ell_bottom_offset: 248.1
+camera_lo_gain: 0
+camera_hi_gain: 25
+laser_function: 6.00-(N/8)*(N<5)-5/8*(N>=5)
+laser_kolo_function: 5.50-(N/6)*(N<8)-(8/6)*(N>=8)
+max_shots: 24
+dead_threshold: 0.40
+kolo_min_threshold: 0.15
+pixel_threshold: 0.55
+kolo_threshold: 0.86
+shot_size: 110  # shot size during patterning for kolo animation
+pixel_check_size: 130  # size of the side check mask when looking for open for pixel
+pixel_area_size: 350  # size of the pixel at which check is performed after burning to see if this pixel is OK
+pixel_start: 0  # at which pixel patterning should start
+kolo_duration: 30
+pixel_duration: 40
+check_threshold: 0.0015  # threshold below which map is considered dead during check mask evaluations
+side_threshold: 0.85  # min good domain fill of the check area in side select
+
+
+dobra kompensacja rodow: 0,30,60,90,120,150
+super kompensacja rodow: 0,10,20,30,40,50,60,70,80,90,100,110,120,130,140,150,160,170

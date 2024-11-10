@@ -1,0 +1,50 @@
+D_RECVID testing_dotseq
+LOAD_IMG dot_sequence/dots_seq_000.png
+ILL_IMG 3 40
+LOAD_IMG dot_sequence/dots_seq_001.png
+ILL_IMG 3 40
+LOAD_IMG dot_sequence/dots_seq_002.png
+ILL_IMG 3 40
+LOAD_IMG dot_sequence/dots_seq_003.png
+ILL_IMG 3 40
+LOAD_IMG dot_sequence/dots_seq_004.png
+ILL_IMG 3 40
+LOAD_IMG dot_sequence/dots_seq_005.png
+ILL_IMG 3 40
+LOAD_IMG dot_sequence/dots_seq_006.png
+ILL_IMG 3 40
+LOAD_IMG dot_sequence/dots_seq_007.png
+ILL_IMG 3 40
+LOAD_IMG dot_sequence/dots_seq_008.png
+ILL_IMG 3 40
+LOAD_IMG dot_sequence/dots_seq_009.png
+ILL_IMG 3 40
+LOAD_IMG dot_sequence/dots_seq_010.png
+ILL_IMG 3 40
+LOAD_IMG dot_sequence/dots_seq_011.png
+ILL_IMG 3 40
+LOAD_IMG dot_sequence/dots_seq_012.png
+ILL_IMG 3 40
+LOAD_IMG dot_sequence/dots_seq_013.png
+ILL_IMG 3 40
+LOAD_IMG dot_sequence/dots_seq_014.png
+ILL_IMG 3 40
+LOAD_IMG dot_sequence/dots_seq_015.png
+ILL_IMG 3 40
+LOAD_IMG dot_sequence/dots_seq_016.png
+ILL_IMG 3 40
+LOAD_IMG dot_sequence/dots_seq_017.png
+ILL_IMG 3 40
+LOAD_IMG dot_sequence/dots_seq_018.png
+ILL_IMG 3 40
+LOAD_IMG dot_sequence/dots_seq_019.png
+ILL_IMG 3 40
+LOAD_IMG dot_sequence/dots_seq_020.png
+ILL_IMG 3 40
+LOAD_IMG dot_sequence/dots_seq_021.png
+ILL_IMG 3 40
+LOAD_IMG dot_sequence/dots_seq_022.png
+ILL_IMG 3 40
+LOAD_IMG dot_sequence/dots_seq_023.png
+ILL_IMG 3 40
+D_RECVID testing_dotseq

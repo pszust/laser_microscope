@@ -1,0 +1,2 @@
+D_CHECK_CRYSTAL rectangle.png
+ILLUMINATE_TARGETS simple-circle 0 10 1

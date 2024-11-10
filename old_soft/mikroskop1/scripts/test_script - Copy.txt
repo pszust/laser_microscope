@@ -1,0 +1,11 @@
+# comment
+GOTO, [1,1]
+D_IN_MIRROR
+D_SET_WAIT, 1
+D_WAIT
+D_LOAD_IMG, 'pattern_images/test_patt.png'
+D_LASER_STATE, 1
+D_SET_WAIT, 15
+D_WAIT
+D_LASER_STATE, 0
+D_OUT_MIRROR

@@ -1,0 +1,4 @@
+d_laser_duty(arg00)
+d_laser_switch(1)
+d_wait(arg01)
+d_laser_switch(0)

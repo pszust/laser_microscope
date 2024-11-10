@@ -1,0 +1,120 @@
+#dodatnie zmiany pozycji to ruch w lewo, dół
+
+#wypalenie dziury na start
+d_load_img('patterns/kolko_male.png')
+d_laser_duty(70)
+d_laser_switch(1)
+d_wait(120)
+d_laser_switch(0)
+
+#szereg 1
+d_load_img('patterns/kolko_male.png')
+d_move_rel(-1,5)
+d_laser_duty(90)
+d_laser_switch(1)
+d_wait(300)
+d_laser_switch(0)
+
+d_load_img('patterns/kolko_5mm_on_DMD.png')  # wyświetlenie na projektorze pattern
+d_move_rel(-1.5,0)
+d_wait_move()
+	#pozycja1
+d_laser_duty(50)
+d_laser_switch(1)
+d_wait(10)
+d_laser_switch(0)
+	#pozycja2
+d_move_rel(-4,0)
+d_wait_move()
+d_laser_switch(1)
+d_wait(20)
+d_laser_switch(0)
+	#pozycja3
+d_move_rel(-4,0)
+d_wait_move()
+d_laser_switch(1)
+d_wait(60)
+d_laser_switch(0)
+	#pozycja4
+d_move_rel(-4,0)
+d_wait_move()
+d_laser_switch(1)
+d_wait(120)
+d_laser_switch(0)
+	#pozycja5
+d_move_rel(-4,0)
+d_wait_move()
+d_laser_switch(1)
+d_wait(200)
+d_laser_switch(0)
+	#pozycja5
+d_move_rel(-4,0)
+d_wait_move()
+d_laser_switch(1)
+d_wait(300)
+d_laser_switch(0)
+	#
+d_move_rel(-1.5,0)
+d_wait_move()
+d_load_img('patterns/kolko_male.png')
+d_laser_duty(90)
+d_laser_switch(1)
+d_wait(300)
+d_laser_switch(0)
+
+#szereg 2
+
+d_load_img('patterns/kolko_male.png')
+d_move_rel(23,5)
+d_laser_duty(90)
+d_laser_switch(1)
+d_wait(300)
+d_laser_switch(0)
+
+d_load_img('patterns/kolko_5mm_on_DMD.png')  # wyświetlenie na projektorze pattern
+d_move_rel(-1.5,0)
+d_wait_move()
+	#pozycja1
+d_laser_duty(70)
+d_laser_switch(1)
+d_wait(10)
+d_laser_switch(0)
+	#pozycja2
+d_move_rel(-4,0)
+d_wait_move()
+d_laser_switch(1)
+d_wait(20)
+d_laser_switch(0)
+	#pozycja3
+d_move_rel(-4,0)
+d_wait_move()
+d_laser_switch(1)
+d_wait(60)
+d_laser_switch(0)
+	#pozycja4
+d_move_rel(-4,0)
+d_wait_move()
+d_laser_switch(1)
+d_wait(120)
+d_laser_switch(0)
+	#pozycja5
+d_move_rel(-4,0)
+d_wait_move()
+d_laser_switch(1)
+d_wait(200)
+d_laser_switch(0)
+	#pozycja5
+d_move_rel(-4,0)
+d_wait_move()
+d_laser_switch(1)
+d_wait(300)
+d_laser_switch(0)
+	#
+d_move_rel(-1.5,0)
+d_wait_move()
+d_load_img('patterns/kolko_male.png')
+d_laser_duty(90)
+d_laser_switch(1)
+d_wait(300)
+d_laser_switch(0)
+#

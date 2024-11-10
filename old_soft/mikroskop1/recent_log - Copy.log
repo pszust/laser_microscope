@@ -1,0 +1,123 @@
+cam reader initialized
+Device on COM1 is not available
+Connected to elliptec on COM3
+Connected to elliptec on COM7
+Connected to grbl on COM4
+Connected to elliptec2 on COM5
+Connected to thortemp on COM6
+Projector window activated!
+Loading projector calibration...
+Calibration done!
+Some stupid error occured, but dont worry!
+b' tset=40.0tact?\r>'
+autopilot: read command no. 0: ['GOTO', 'pixel']
+autopilot new task list:['D_GOTO', (0.0, 0.0)]
+autopilot new task list:['D_SET_WAIT', 1.0]
+autopilot new task list:['D_WAIT']
+autopilot new task list:['GETNEW']
+------- autopilot task report: initiating grbl repositioning, target X0.00 Y0.00 F30.0
+------- autopilot task report: setting timer to 1.000000
+------- autopilot task report: wait is done
+autopilot: read command no. 1: ['D_CURDATE']
+autopilot new task list:['D_CURDATE']
+autopilot new task list:['GETNEW']
+------- autopilot task report: setting savedata_date to 14-02-2024 18.11.29
+autopilot: read command no. 2: ['MM_MAP448', 15]
+autopilot new task list:['D_SETPOL_TOP', 0]
+autopilot new task list:['D_SET_WAIT', 0.1]
+autopilot new task list:['D_WAIT']
+autopilot new task list:['D_SETPOL', 105]
+autopilot new task list:['D_SET_WAIT', 1.25]
+autopilot new task list:['D_WAIT']
+autopilot new task list:['D_MMAP_ADD_FRAME_P448', [0, 0]]
+autopilot new task list:['D_MMAP_ADD_FRAME_P448', [0, 0]]
+autopilot new task list:['D_MMAP_ADD_FRAME_P448', [0, 0]]
+autopilot new task list:['D_SETPOL', 75]
+autopilot new task list:['D_SET_WAIT', 1.25]
+autopilot new task list:['D_WAIT']
+autopilot new task list:['D_MMAP_ADD_FRAME_M448', [0, 0]]
+autopilot new task list:['D_MMAP_ADD_FRAME_M448', [0, 0]]
+autopilot new task list:['D_MMAP_ADD_FRAME_M448', [0, 0]]
+autopilot new task list:['D_MMAP_MAKE448']
+autopilot new task list:['GETNEW']
+------- autopilot task report: setting top polarizator to 0.000000
+------- autopilot task report: setting timer to 0.100000
+------- autopilot task report: wait is done
+------- autopilot task report: setting polarizator to 105.000000
+------- autopilot task report: setting timer to 1.250000
+------- autopilot task report: wait is done
+------- autopilot task report: +added frame to mm_plus!
+------- autopilot task report: +added frame to mm_plus!
+------- autopilot task report: +added frame to mm_plus!
+------- autopilot task report: setting polarizator to 75.000000
+------- autopilot task report: setting timer to 1.250000
+------- autopilot task report: wait is done
+------- autopilot task report: +added frame to mm_minus!
+------- autopilot task report: +added frame to mm_minus!
+------- autopilot task report: +added frame to mm_minus!
+------- autopilot task report: calculating mmap!
+autopilot: read command no. 3: ['D_SAVEDATA448', 'numa']
+autopilot new task list:['D_SAVEDATA448', 'numa']
+autopilot new task list:['GETNEW']
+------- autopilot task report: saving current mapdata in c:/Users/Laser/Documents/raw_mikro_data/
+autopilot: read command no. 4: ['D_SAVEMAP448', 'numa']
+autopilot new task list:['D_SAVEMAP448', 'numa']
+autopilot new task list:['GETNEW']
+------- autopilot task report: saving current mapka as c:/Users/Laser/Documents/raw_mikro_data/
+autopilot: read command no. 5: ['D_CHECK_PIXEL']
+autopilot new task list:['D_CHECK_PIXEL']
+autopilot new task list:['GETNEW']
+------- autopilot task report: checking pixel...
+Beginning timelapse recording (548, 800 size)
+------- autopilot task report: calculating validity array...
+------- autopilot task report: pixel 0: kolo burn will commence for the 0 time (total = 0), 0.4934 pos coverage
+Laser duty cycle set to 8.000000E+00.
+autopilot: read command no. 6: ['MAKE_PARANIM']
+autopilot new task list:['D_SET_TEMP', 40.0]
+autopilot new task list:['D_WAIT_TEMP', 1.5]
+autopilot new task list:['D_SET_WAIT', 3]
+autopilot new task list:['D_WAIT']
+autopilot new task list:['D_IN_MIRROR']
+autopilot new task list:['D_SET_WAIT', 1]
+autopilot new task list:['D_WAIT']
+autopilot new task list:['D_CHANGE_GAIN', 45]
+autopilot new task list:['D_START_PARANIM']
+autopilot new task list:['D_ILLUMINATE', 8.0]
+autopilot new task list:['D_SET_WAIT', 5.0]
+autopilot new task list:['D_WAIT']
+autopilot new task list:['D_ILLUMINATE', 3.2]
+autopilot new task list:['D_START_PARANIM']
+autopilot new task list:['D_WAIT_PARANIM']
+autopilot new task list:['D_ILLUMINATE', 0]
+autopilot new task list:['D_OUT_MIRROR']
+autopilot new task list:['D_CHANGE_GAIN', 75]
+autopilot new task list:['GETNEW']
+------- autopilot task report: setting temperature to 40.0
+Some stupid error occured, but dont worry!
+b' tset=40.0tact?\r>'
+------- autopilot task report: designated temperature reached
+------- autopilot task report: setting timer to 3.000000
+------- autopilot task report: wait is done
+------- autopilot task report: mirror in!
+------- autopilot task report: setting timer to 1.000000
+------- autopilot task report: wait is done
+------- autopilot task report: changing camera gain to 0
+------- autopilot task report: initiate parametric animation!
+Laser duty cycle set to 8.000000E+00.
+------- autopilot task report: laser illumination set to 8.0000, raw = 0
+------- autopilot task report: setting timer to 5.000000
+------- autopilot task report: wait is done
+Laser duty cycle set to 3.200000E+00.
+------- autopilot task report: laser illumination set to 3.2000, raw = 0
+------- autopilot task report: initiate parametric animation!
+------- autopilot task report: paranim finished!
+------- autopilot task report: laser illumination set to 0.0000, raw = 0
+------- autopilot task report: mirror out!
+------- autopilot task report: changing camera gain to 0
+autopilot: read command no. 7: ['D_SET_WAIT', 6]
+autopilot new task list:['D_SET_WAIT', 6]
+autopilot new task list:['GETNEW']
+------- autopilot task report: setting timer to 6.000000
+autopilot: read command no. 8: ['D_WAIT']
+autopilot new task list:['D_WAIT']
+autopilot new task list:['GETNEW']

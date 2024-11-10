@@ -1,0 +1,35 @@
+#dodatnie zmiany pozycji to ruch w lewo, dół
+
+#punkt 1
+d_move_rel(3,0)
+d_wait_move()
+d_load_img('patterns/flathat/flat_10_5mm_on_DMD.png')
+d_laser_duty(100)
+d_laser_switch(1)
+d_wait(1000)
+d_laser_switch(0)
+
+#punkt 2
+d_move_rel(-3,-3)
+d_wait_move()
+d_laser_switch(1)
+d_wait(500)
+d_laser_switch(0)
+
+#punkt 3
+d_move_rel(-3,3)
+d_wait_move()
+d_laser_duty(80)
+d_laser_switch(1)
+d_wait(1000)
+d_laser_switch(0)
+
+#punkt 4
+d_move_rel(3,3)
+d_wait_move()
+d_laser_switch(1)
+d_wait(500)
+d_laser_switch(0)
+
+d_move_rel(0,-3)
+#

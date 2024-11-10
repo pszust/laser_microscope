@@ -1,0 +1,6 @@
+OBJECT rectangle 100 100 255
+0.00 -> 1.00 MOVE 0 0 -> 0 0
+0.00 -> 1.00 SCALE 0.5 -> 1.0
+OBJECT rectangle 100 100 0
+0.00 -> 1.00 MOVE 0 0 -> 0 0
+0.00 -> 1.00 SCALE 0.25 -> 1.0
