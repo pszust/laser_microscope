@@ -4,7 +4,9 @@ from tkinter import (
     Frame, Label, Button, Entry, Text, StringVar,
     Canvas, Menu, filedialog, Scrollbar, END, LEFT, RIGHT, BOTH, Y, X, W, E, N, S, NW
 )
+from devices.polar_control_mock import PolarController
 from devices.rigol_control_mock import RigolController
+from gui.polar_panel import PolarPanel
 from gui.rigol_panel import RigolPanel
 from PIL import Image, ImageTk
 from tkinter import filedialog, messagebox
@@ -12,61 +14,10 @@ import time
 import serial
 import sys
 import threading
+import utils.consts as consts
 
 
 padd = 2
-group_name_font = ("Segoe UI", 16)
-subsystem_name_font = ("Segoe UI", 14, "bold")
-laser_on_color = "#772eff"
-laser_off_color = "#5d615c"
-
-def angle_to_ellocommand(value):
-    value = int(value*398)
-    if value < 0: 
-        value_hex = str(hex(((abs(value) ^ 0xffffffff) + 1) & 0xffffffff))
-    else:
-        value_hex = str(hex(value))
-
-
-    value_hex = value_hex[value_hex.find("x")+1:].zfill(8)
-    value_hex = value_hex.replace("a", "A")
-    value_hex = value_hex.replace("b", "B")
-    value_hex = value_hex.replace("c", "C")
-    value_hex = value_hex.replace("d", "D")
-    value_hex = value_hex.replace("e", "E")
-    value_hex = value_hex.replace("f", "F")
-
-    return bytes("0ma%s"%value_hex.zfill(8), "ascii")
-
-def serial_ports():
-    """ Lists serial port names
-
-        :raises EnvironmentError:
-            On unsupported or unknown platforms
-        :returns:
-            A list of the serial ports available on the system
-    """
-    
-    if sys.platform.startswith("win"):
-        ports = ["COM%s" % (i + 1) for i in range(256)]
-    elif sys.platform.startswith("linux") or sys.platform.startswith("cygwin"):
-        # this excludes your current terminal "/dev/tty"
-        ports = glob.glob("/dev/tty[A-Za-z]*")
-    elif sys.platform.startswith("darwin"):
-        ports = glob.glob("/dev/tty.*")
-    else:
-        raise EnvironmentError("Unsupported platform")
-
-    result = []
-    for port in ports:
-        try:
-            s = serial.Serial(port)
-            s.close()
-            result.append(port)
-        except (OSError, serial.SerialException):
-            pass
-    return result
-
 
 class MainWindow(Frame):
     def __init__(self, master=None):
@@ -74,12 +25,11 @@ class MainWindow(Frame):
         self.master = master
 
         self.rigol_controller = RigolController()
+        self.polar1_controller = PolarController()
 
         self.elliptec_angle_var = StringVar()
-
         self.projector_window = None
 
-        # self.pack(fill=BOTH, expand=True)
         self.create_widgets()
         self.main_loop()
 
@@ -115,7 +65,7 @@ class MainWindow(Frame):
 
         frame = Frame(column_frame)
         frame.pack(fill = Y, padx = padd)
-        self.create_elliptec_frame(frame)
+        self.polar1_panel = PolarPanel(frame, self.polar1_controller, name="TOP POLARIZER CONTROL")
 
     def create_menu(self):
         self.menu = Menu(self.master)
@@ -158,7 +108,7 @@ class MainWindow(Frame):
         cur_frame.pack(fill = Y)
         
         self.labLaser = Label(cur_frame, text = "PROJECTOR CONTROL")
-        self.labLaser.config(font = subsystem_name_font)
+        self.labLaser.config(font = consts.subsystem_name_font)
         self.labLaser.pack(side =  LEFT)
         
         cur_frame = Frame(frame)
@@ -181,70 +131,6 @@ class MainWindow(Frame):
         self.proj_mirror_canvas = Canvas(cur_frame, width=256, height=192, bg="black")
         self.proj_mirror_canvas.pack(side = LEFT)
 
-    def create_elliptec_frame(self, eli_frame):       
-        # elliptec frame name
-        cur_frame = Frame(eli_frame)
-        cur_frame.pack(fill = Y)        
-        lab = Label(cur_frame, text = "ELL14 TOP CONTROL")
-        lab.config(font=("Segoe UI", 14, "bold"))
-        lab.pack(side =  LEFT)
-        
-        # elliptec position frames
-        cur_frame = Frame(eli_frame)
-        cur_frame.pack(fill = Y)        
-        lab = Label(cur_frame, text = "Rel=%2.2f, Abs=%2.2f, Off=%2.2f"%(0, 0, 0))
-        lab.config(font=("Segoe UI", 13))
-        lab.pack(side =  LEFT)
-                
-        # elliptec connection frame
-        cur_frame = Frame(eli_frame)
-        cur_frame.pack(fill = Y)
-        
-        ell_com_var = StringVar(self.master)
-        ell_com_var.set("COM3") # default value
-        ell_com_menu = tk.OptionMenu(cur_frame, ell_com_var, *serial_ports(), command = self.elli_refresh)
-        ell_com_menu.pack(side = LEFT)
-        
-        Label(cur_frame, text = "Elliptec status: ").pack(side =  LEFT)        
-        self.label_ell_status = Label(cur_frame, text = "unknown", bg="gray")
-        self.label_ell_status.pack(side =  LEFT)       
-        
-        cur_frame = Frame(eli_frame)
-        cur_frame.pack(fill = Y)        
-        Label(cur_frame, text = "Rotate relative: ").pack(side =  LEFT)
-
-        # self.ell_var2_top.set(str(angle_abs_to_rel(0, self.ell_offset_top)))
-        self.elliptec_angle_var.set("0")
-        self.nameEntered2 = Entry(cur_frame, width = 15, textvariable = self.elliptec_angle_var)
-        self.nameEntered2.pack(side = LEFT, fill = X)        
-        self.buttonRotate2 = Button(cur_frame, text = "Rotate", command = self.rotate_elli_rel)
-        self.buttonRotate2.pack(side = LEFT)        
-        self.button = Button(cur_frame, text = "Set 90 here")
-        self.button.pack(side = LEFT)
-        
-        cur_frame = Frame(eli_frame)
-        cur_frame.pack(fill = Y) 
-        self.buttonRotateStepM1 = Button(cur_frame, text = "-10", command = lambda: self.rotate_elli_step_top(-10))
-        self.buttonRotateStepM1.pack(side = LEFT)
-        self.buttonRotateStepM1 = Button(cur_frame, text = "-5", command = lambda: self.rotate_elli_step_top(-5))
-        self.buttonRotateStepM1.pack(side = LEFT)
-        self.buttonRotateStepM1 = Button(cur_frame, text = "-1", command = lambda: self.rotate_elli_step_top(-1))
-        self.buttonRotateStepM1.pack(side = LEFT)
-        self.buttonRotateStepM1 = Button(cur_frame, text = "-0.25", command = lambda: self.rotate_elli_step_top(-0.25))
-        self.buttonRotateStepM1.pack(side = LEFT)
-        self.buttonRotateStepM1 = Button(cur_frame, text = "-0.05", command = lambda: self.rotate_elli_step_top(-0.05))
-        self.buttonRotateStepM1.pack(side = LEFT)
-        self.buttonRotateStepM1 = Button(cur_frame, text = "+0.05", command = lambda: self.rotate_elli_step_top(0.05))
-        self.buttonRotateStepM1.pack(side = LEFT)
-        self.buttonRotateStepP1 = Button(cur_frame, text = "+0.25", command = lambda: self.rotate_elli_step_top(0.25))
-        self.buttonRotateStepP1.pack(side = LEFT)
-        self.buttonRotateStepP1 = Button(cur_frame, text = "+1", command = lambda: self.rotate_elli_step_top(1))
-        self.buttonRotateStepP1.pack(side = LEFT)
-        self.buttonRotateStepP1 = Button(cur_frame, text = "+5", command = lambda: self.rotate_elli_step_top(5))
-        self.buttonRotateStepP1.pack(side = LEFT)
-        self.buttonRotateStepP1 = Button(cur_frame, text = "+10", command = lambda: self.rotate_elli_step_top(10))
-        self.buttonRotateStepP1.pack(side = LEFT)
-
     def main_loop(self):
         self.update_labels()
 
@@ -252,6 +138,7 @@ class MainWindow(Frame):
 
     def update_labels(self):
         self.rigol_panel.update()
+        self.polar1_panel.update()
 
     def load_image(self):
         # Placeholder function to load image
@@ -262,16 +149,6 @@ class MainWindow(Frame):
         if filename:
             self.display_image(filename)
             self.log(f"Loaded image: {filename}")
-    
-    
-    def elli_refresh(self, value):
-        # value = ell_com_var2.get()
-        self.elliptec = connect_to_elliptec(int(value[3]))
-    
-        if self.elliptec == None:        
-            self.label_ell_status.config(text = "not connected", bg="gray")
-        else:
-            self.label_ell_status.config(text = "connected", bg="lime")
 
     def set_gain(self):
         # Placeholder function to set camera gain
@@ -307,99 +184,6 @@ class MainWindow(Frame):
         # Log messages to the console output
         self.console.insert(END, f"{message}\n")
         self.console.see(END)
-
-    def rotate_elli(self, ang_rel):
-        """
-        rotate elliptec to selected angle (relative angle)
-        and set all necessary display options
-        """        
-        # set elliptec
-        ang_abs = angle_rel_to_abs(ang_rel, self.ell_offset_bottom)
-        # ang_abs = ang_rel + self.ell_offset_bottom
-        command = angle_to_ellocommand(ang_abs)
-        self.elli_bottom_abs = ang_abs
-        self.elliptec.write(command)
-        
-        # write to textbox variables
-        # self.ell_var.set(ang_abs)
-        self.ell_var2.set(ang_rel)
-        
-        # write to text
-        self.label_ell_bottom.configure(text = "Rel=%2.2f, Abs=%2.2f, Off=%2.2f"%(ang_rel, ang_abs, self.ell_offset_bottom))
-        
-        time.sleep(0.2)
-
-    def rotate_elli_rel(self):
-        # get angles
-        ang_rel = float(self.ell_var2.get())
-        
-        # call rotate function and defocuf from text field
-        self.rotate_elli(ang_rel)
-        self.buttonRotate2.focus_set()
-        
-        
-    def rotate_elli_step(self, value):
-        if self.camera_image_type == "MAP":
-            self.ell_offset_bottom += value
-        else:
-            # get angle
-            ang_rel = float(self.ell_var2.get())
-            
-            # change angle and write
-            ang_rel = np.round(ang_rel+value, 5)
-            ang_abs = angle_rel_to_abs(ang_rel, self.ell_offset_bottom)
-            # ang_abs = ang_rel + self.ell_offset_bottom
-            command = angle_to_ellocommand(ang_abs)
-            self.elli_bottom_abs = ang_abs
-            self.elliptec.write(command)
-            
-            # recaluclate relative angle after change
-            # ang_rel = angle_abs_to_rel(ang_abs, self.ell_offset_bottom)
-            
-            # write to textbox variables
-            # self.ell_var.set(ang_abs)
-            self.ell_var2.set(ang_rel)
-            
-            # write to text
-            self.label_ell_bottom.configure(text = "Rel=%2.2f, Abs=%2.2f, Off=%2.2f"%(ang_rel, ang_abs, self.ell_offset_bottom))
-
-
-    def rotate_elli_step_top(self, value):
-        # get angle
-        ang_rel = float(self.ell_var2_top.get())
-        
-        # change angle and write
-        ang_rel = np.round(ang_rel+value, 5)
-        ang_abs = angle_rel_to_abs(ang_rel, self.ell_offset_top)
-        # ang_abs = ang_rel + self.ell_offset_bottom
-        command = angle_to_ellocommand(ang_abs)
-        self.elli_top_abs = ang_abs
-        self.elliptec_top.write(command)
-        
-        # recaluclate relative angle after change
-        # ang_rel = angle_abs_to_rel(ang_abs, self.ell_offset_bottom)
-        
-        # write to textbox variables
-        # self.ell_var.set(ang_abs)
-        self.ell_var2_top.set(ang_rel)
-        
-        # write to text
-        self.label_ell_top.configure(text = "Rel=%2.2f, Abs=%2.2f, Off=%2.2f"%(ang_rel, ang_abs, self.ell_offset_top))
-
-
-    def elli_set_zero(self):  # obsolete?
-        ang_rel = float(self.ell_var2.get())
-        ang_abs = angle_rel_to_abs(ang_rel, self.ell_offset_bottom)
-        self.ell_offset_bottom = ang_abs
-        self.log("Setting self.ell_offset_bottom to %f"%self.ell_offset_bottom)
-        self.log("ang_rel = %f"%ang_rel)
-        
-    def elli_top_set_offset(self):
-        self.ell_offset_top = self.elli_top_abs
-        self.log("Setting self.ell_offset_top to %f"%self.ell_offset_top)
-        
-        # write to text
-        self.label_ell_top.configure(text = "Rel=%2.2f, Abs=%2.2f, Off=%2.2f"%(self.ang_rel, self.ang_abs, self.ell_offset_top))
 
     def initiate_projector_window(self):
         if self.projector_window == None:                
