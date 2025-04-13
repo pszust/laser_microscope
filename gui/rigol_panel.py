@@ -3,6 +3,7 @@ from tkinter import Frame, Label, Button, Entry, StringVar, LEFT, X, Y
 import threading
 import utils.consts as consts
 
+
 class RigolPanel:
     def __init__(self, parent, controller):
         self.controller = controller
@@ -17,7 +18,9 @@ class RigolPanel:
         # Laser status label
         cur_frame = Frame(self.frame)
         cur_frame.pack(fill=Y)
-        self.lbl_laser = Label(cur_frame, text="DUTY = 0.0%, CH1:LASER IS OFF", fg=consts.laser_off_color)
+        self.lbl_laser = Label(
+            cur_frame, text="DUTY = 0.0%, CH1:LASER IS OFF", fg=consts.laser_off_color
+        )
         self.lbl_laser.pack(side=LEFT)
 
         # Duty cycle controls
@@ -55,11 +58,9 @@ class RigolPanel:
 
         # Update connection label
         con_state = status.get("connection", "UNKNOWN")
-        con_color = {
-            "CONNECTED": "lime",
-            "CONNECTING": "yellow",
-            "NOT CONNECTED": "gray"
-        }.get(con_state, "gray")
+        con_color = {"CONNECTED": "lime", "CONNECTING": "yellow", "NOT CONNECTED": "gray"}.get(
+            con_state, "gray"
+        )
         self.lbl_status.config(text=f"RIGOL status: {con_state}", bg=con_color)
 
         # Update laser label

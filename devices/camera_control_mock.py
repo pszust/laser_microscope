@@ -1,16 +1,23 @@
-# rigol_control.py
 import time
 from tkinter import messagebox
+from PIL import Image, ImageTk
+import cv2
+import numpy as np
 
 
-class PolarController:
+class CameraController:
     def __init__(self):
         self.con_stat = "UNKNOWN"
         self.port = None
         self.rotation = 0.0
 
-    def connect(self, port):
-        self.port = port
+        self.num = 0
+        self.image_list = []
+        colors = ["red", "green", "blue", "yellow", "cyan", "magenta"]
+        for color in colors:
+            self.image_list.append(Image.new("RGB", (800, 600), color=color))
+
+    def connect(self):
         self.con_stat = "CONNECTING"
         time.sleep(2)  # Simulate delay
         self.con_stat = "CONNECTED"
@@ -20,14 +27,13 @@ class PolarController:
         time.sleep(0.5)
         self.con_stat = "NOT CONNECTED"
 
-    def rotate(self, angle: float) -> None:
-        if self.con_stat == "CONNECTED":
-            self.rotation = angle
-            if self.rotation >= 360:
-                self.rotation -= 360
-            if self.rotation < 0:
-                self.rotation += 360
-            time.sleep(0.1)
+    def get_image(self) -> Image:
+        image = self.image_list[self.num]
+        self.num += 1
+        if self.num == len(self.image_list):
+            self.num = 0
+        time.sleep(0.75)
+        return image
 
     def get_status(self) -> dict:
         """Possible values are
@@ -36,10 +42,7 @@ class PolarController:
             'CONNECTING',
             'UNKNOWN',
             'NOT CONNECTED'
-        'port':
-            'ON',
-            'OFF'
-        'rotation':
-            float value between 0.0 and 360.0
         """
-        return {"connection": self.con_stat, "port": self.port, "rotation": self.rotation}
+        return {
+            "connection": self.con_stat,
+        }

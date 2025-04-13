@@ -2,10 +2,11 @@
 import time
 from tkinter import messagebox
 
+
 class RigolController:
     def __init__(self):
         self.con_stat = "UNKNOWN"
-        self.laserstate = 'OFF'
+        self.laserstate = "OFF"
         self.laserduty = 0.0
         self.rigol = None  # Simulate a Rigol device connection
 
@@ -27,28 +28,30 @@ class RigolController:
     def toggle_laser(self):
         """Toggles the laser ON/OFF state."""
         if not self.rigol:
-            messagebox.showwarning(title='Laser', message='Connect to Rigol first to control the laser.')
+            messagebox.showwarning(
+                title="Laser", message="Connect to Rigol first to control the laser."
+            )
             return "Rigol not connected."
 
         # Toggle laser state
-        if self.laserstate == 'OFF':
+        if self.laserstate == "OFF":
             time.sleep(0.5)
-            self.laserstate = 'ON'
+            self.laserstate = "ON"
         else:
             time.sleep(0.5)
-            self.laserstate = 'OFF'
+            self.laserstate = "OFF"
 
     def laser_on(self):
         if self.con_stat != "CONNECTED":
             return "Not connected."
         time.sleep(0.5)
-        self.laserstate = 'ON'
+        self.laserstate = "ON"
 
     def laser_off(self):
         if self.con_stat != "CONNECTED":
             return "Not connected."
         time.sleep(0.5)
-        self.laserstate = 'OFF'
+        self.laserstate = "OFF"
 
     def get_status(self):
         """Possible values are
@@ -64,7 +67,7 @@ class RigolController:
             float value between 0.0 and 1.0
         """
         return {
-            'connection': self.con_stat,
-            'laserstate': self.laserstate,
-            'laserduty': self.laserduty
+            "connection": self.con_stat,
+            "laserstate": self.laserstate,
+            "laserduty": self.laserduty,
         }

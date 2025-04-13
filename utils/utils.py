@@ -4,22 +4,24 @@ import serial
 import threading
 import functools
 
+
 def thread_execute(func):
     @functools.wraps(func)
     def wrapper(*args, **kwargs):
         threading.Thread(target=func, args=args, kwargs=kwargs, daemon=True).start()
+
     return wrapper
 
 
 def serial_ports():
-    """ Lists serial port names
+    """Lists serial port names
 
-        :raises EnvironmentError:
-            On unsupported or unknown platforms
-        :returns:
-            A list of the serial ports available on the system
+    :raises EnvironmentError:
+        On unsupported or unknown platforms
+    :returns:
+        A list of the serial ports available on the system
     """
-    
+
     if sys.platform.startswith("win"):
         ports = ["COM%s" % (i + 1) for i in range(256)]
     elif sys.platform.startswith("linux") or sys.platform.startswith("cygwin"):
