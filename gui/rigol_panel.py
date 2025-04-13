@@ -18,9 +18,7 @@ class RigolPanel:
         # Laser status label
         cur_frame = Frame(self.frame)
         cur_frame.pack(fill=Y)
-        self.lbl_laser = Label(
-            cur_frame, text="DUTY = 0.0%, CH1:LASER IS OFF", fg=consts.laser_off_color
-        )
+        self.lbl_laser = Label(cur_frame, text="DUTY = 0.0%, CH1:LASER IS OFF", fg=consts.laser_off_color)
         self.lbl_laser.pack(side=LEFT)
 
         # Duty cycle controls

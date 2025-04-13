@@ -1,0 +1,6 @@
+@echo off
+echo Running isort (check only)...
+isort . --check-only
+
+echo Running black (check only)...
+black . --check

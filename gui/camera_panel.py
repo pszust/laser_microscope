@@ -46,6 +46,5 @@ class CameraPanel:
 
     @thread_execute
     def update_image(self):
-        print("Image.")
         self.camera_image = self.controller.get_image()
         self.display_image()

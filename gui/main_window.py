@@ -141,9 +141,7 @@ class MainWindow(Frame):
         )
         self.act_proj_win_btn.pack(side=LEFT)
 
-        self.act_proj_win_btn = Button(
-            cur_frame, text="Close window", command=self.close_projector_window
-        )
+        self.act_proj_win_btn = Button(cur_frame, text="Close window", command=self.close_projector_window)
         self.act_proj_win_btn.pack(side=LEFT)
 
         cur_frame = Frame(frame)

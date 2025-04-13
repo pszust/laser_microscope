@@ -28,9 +28,7 @@ class RigolController:
     def toggle_laser(self):
         """Toggles the laser ON/OFF state."""
         if not self.rigol:
-            messagebox.showwarning(
-                title="Laser", message="Connect to Rigol first to control the laser."
-            )
+            messagebox.showwarning(title="Laser", message="Connect to Rigol first to control the laser.")
             return "Rigol not connected."
 
         # Toggle laser state
