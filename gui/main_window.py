@@ -23,12 +23,14 @@ from tkinter import (
     S,
     NW,
 )
+from core.automation import Automation
 from devices.camera_control_mock import CameraController
 from devices.polar_control_mock import PolarController
 from devices.rigol_control_mock import RigolController
 from gui.camera_panel import CameraPanel
 from gui.polar_panel import PolarPanel
 from gui.rigol_panel import RigolPanel
+from gui.console_panel import ConsolePanel
 from PIL import Image, ImageTk
 from tkinter import filedialog, messagebox
 import time
@@ -46,6 +48,7 @@ class MainWindow(Frame):
         super().__init__(master)
         self.master = master
 
+        self.automation = Automation(self)
         self.camera_controller = CameraController()
         self.rigol_controller = RigolController()
         self.polar1_controller = PolarController()
@@ -72,7 +75,8 @@ class MainWindow(Frame):
         frame = Frame(column_frame)
         frame.grid(row=1, column=0, padx=padd, sticky=N + S + E + W)
         frame.grid_columnconfigure(0, weight=1)  # Make the frame expand horizontally
-        self.create_console_frame(frame)
+        # self.create_console_frame(frame)
+        self.console_panel = ConsolePanel(frame, None)
 
         # COLUMN 1
         column_frame = Frame(self.master)
@@ -181,17 +185,6 @@ class MainWindow(Frame):
     def save_image(self):
         # Placeholder function to save image
         self.log("Save image clicked.")
-
-    def process_console_input(self, event):
-        # Process input from the console input field
-        command = self.console_input.get()
-        self.log(f"Command entered: {command}")
-        self.console_input.delete(0, END)
-
-    def log(self, message):
-        # Log messages to the console output
-        self.console.insert(END, f"{message}\n")
-        self.console.see(END)
 
     def initiate_projector_window(self):
         if self.projector_window == None:
