@@ -52,6 +52,7 @@ class MainWindow(Frame):
 
         self.create_widgets()
         self.main_loop()
+        self.automation_controller.start()  # start main loop of the automation thingy
 
     def create_widgets(self):
         # Create the menu bar
@@ -133,7 +134,7 @@ class MainWindow(Frame):
 
         self.camera_panel.update_image()
 
-        self.automation_controller.execute()
+        # self.automation_controller.execute()
 
         self.master.after(consts.main_loop_time, self.main_loop)
 

@@ -3,14 +3,16 @@ set_laser_duty(12)
 var_a = 12
 if(var_a == 12){
     set_laser_duty(5)
+    sleep(3)
 }
 var_x = 0
 loop(4){
     laser_on()
-    wait(2)
+    sleep(2)
     if(var_a > 12){
         set_laser_duty(1)
     }
     laser_off()
+    sleep(1)
     var_x += 1
 }

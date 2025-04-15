@@ -3,10 +3,12 @@ from tkinter import messagebox
 from PIL import Image, ImageTk
 import cv2
 import numpy as np
+import threading
 import os
 from typing import TYPE_CHECKING
 from utils.command_handler import ScriptParser, parse_command, Command
 from utils.consts import ErrorMsg
+from utils.utils import thread_execute
 
 if TYPE_CHECKING:
     from gui.main_window import MainWindow  # only used for type hints
@@ -22,11 +24,15 @@ class Automation:
             "laser_on": self.master.rigol_controller.laser_on,
             "laser_off": self.master.rigol_controller.laser_off,
             "set_laser_duty": self.master.rigol_controller.set_laserduty,
+            "sleep": time.sleep,
         }
 
         self.internal_commands_map = {
             "operator": self.use_operator,
         }
+
+        self.running = False
+        self.thread = None
 
     def pass_command(self, command: str):
         parsed_command = parse_command(command)
@@ -45,7 +51,7 @@ class Automation:
                 if len(self.execution_position) == 1:
                     self.execution_position = [0]
                     self.command_list = []
-                elif len(self.execution_position) > 1:
+                else:
                     self.execution_position = self.execution_position[:-1]
                     self.execution_position[-1] += 1
                 return 0
@@ -56,8 +62,10 @@ class Automation:
             self.execution_position.append(0)
         elif type(current) == Command:
             # execute command
-            self.master.console_panel.log(f"Cur cmd: {current.command}, args: {current.args}, pos: {self.execution_position}")
-            
+            temp_msg = f"Cur cmd: {current.command}, args: {current.args}, pos: {self.execution_position}"
+            # self.master.console_panel.log(temp_msg)
+            self.master.after(0, lambda: self.master.console_panel.log(temp_msg))  # safer
+
             if current.command == "operator":
                 self.use_operator(current)
             elif current.command == "if":
@@ -73,6 +81,11 @@ class Automation:
                     self.execution_position = self.execution_position[:-1]
             elif current.command == "restart_block":
                 self.execution_position[-1] = -1  # this is because at the end there is += 1
+
+            # execute script according to map
+            if current.command in self.command_map:
+                func = self.command_map[current.command]
+                func(*current.args)
 
             # go to next position
             self.execution_position[-1] += 1
@@ -130,3 +143,16 @@ class Automation:
         scr.parse(script_lines)
         self.command_list = scr.commands
 
+    def start(self):
+        if not self.running:
+            self.running = True
+            self.thread = threading.Thread(target=self._run, daemon=True)
+            self.thread.start()
+
+    def stop(self):
+        self.running = False
+
+    def _run(self):
+        while self.running:
+            self.execute()
+            time.sleep(0.1)
