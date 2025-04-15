@@ -5,41 +5,17 @@ import cv2
 import numpy as np
 import os
 from typing import TYPE_CHECKING
-from utils.command_handler import parse_command, Command
+from utils.command_handler import ScriptParser, parse_command, Command
 from utils.consts import ErrorMsg
 
 if TYPE_CHECKING:
     from gui.main_window import MainWindow  # only used for type hints
 
 
-complex_cmd = [
-    Command("laser_on", []),
-    Command("set_laser_duty", ["12"]),
-    Command("operator", ["var_a", "=", "12"]),
-    [
-        Command("if", ["var_a", "==", "12"]),
-        Command("set_laser_duty", ["1"]),
-    ],
-    Command("operator", ["var_x", "=", "0"]),
-    [
-        Command("loop", ["4"]),
-        Command("laser_on", []),
-        Command("wait", ["2"]),
-        [
-            Command("if", ["var_a", ">", "12"]),
-            Command("set_laser_duty", ["1"]),
-        ],
-        Command("laser_off", []),
-        Command("operator", ["var_x", "+=", "1"]),
-        Command("restart_block", []),  # added automatically during parsing
-    ]
-]
-
-
 class Automation:
     def __init__(self, parent: "MainWindow"):
         self.master = parent
-        self.command_list = complex_cmd
+        self.command_list = []
         self.variables = {}
         self.execution_position = [0]
         self.command_map = {
@@ -65,7 +41,11 @@ class Automation:
         for position in self.execution_position:
             if len(current) == position:  # means end of current block
                 # exit the block and go to next position
-                if len(self.execution_position) > 1:
+                # means we are done with the whole script
+                if len(self.execution_position) == 1:
+                    self.execution_position = [0]
+                    self.command_list = []
+                elif len(self.execution_position) > 1:
                     self.execution_position = self.execution_position[:-1]
                     self.execution_position[-1] += 1
                 return 0
@@ -143,3 +123,10 @@ class Automation:
             return check_map[check]
         else:
             raise(ValueError(f"{check} invalid"))
+        
+    def execute_script_file(self, path):
+        scr = ScriptParser()
+        script_lines = scr.load_script(path)
+        scr.parse(script_lines)
+        self.command_list = scr.commands
+

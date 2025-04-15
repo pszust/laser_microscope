@@ -92,6 +92,7 @@ class MainWindow(Frame):
         self.master.config(menu=self.menu)
         self.file_menu = Menu(self.menu, tearoff=False)
         self.menu.add_cascade(label="File", menu=self.file_menu)
+        self.file_menu.add_command(label="Select and execute script", command=self.sel_and_exe_scr)
         self.file_menu.add_command(label="Load Image", command=self.load_image)
         self.file_menu.add_command(label="Exit", command=self.master.quit)
 
@@ -211,3 +212,12 @@ class MainWindow(Frame):
         img = Image.fromarray(self.projector_arr)
         self.proj_imgtk = ImageTk.PhotoImage(image=img)
         self.canvas_proj.create_image(512, 384, image=self.proj_imgtk, anchor=tk.CENTER)
+
+    def sel_and_exe_scr(self):
+        filename = filedialog.askopenfilename(
+            initialdir="custom_scripts/",
+            title="Select Script",
+            filetypes=(("Script files", "*.scrpt"),),
+        )
+        if filename:
+            self.automation_controller.execute_script_file(filename)

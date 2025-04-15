@@ -5,15 +5,75 @@ import numpy as np
 def parse_command(raw_command: str):
     """command looks like this:
         set_laser_power(15)
-        turn_on_laser()"""
+        turn_on_laser()
+        if(var_a > 12){"""
     
     command = raw_command.strip()
     command = command.replace(" ", "")
-    for c in "(),":
+    for c in "(),{}":
         command = command.replace(c, " ")
     command = command.split(" ")
-    command_parsed = Command(command[0], command[1:])
-    return command_parsed
+    command_list = []
+    operators = ["==", ">=", "<=", "+=", "-=", "=", ">", "<"]
+    operators_assign = ["=", "+=", "-="]
+    operators_check = ["==", ">=", "<=", "<", ">"]
+    for cmd in command:
+        # add operator if the line has any of the assign type operators
+        if sum((op in cmd for op in operators_assign)) > 0 and sum((op in cmd for op in operators_check)) == 0:
+            command_list = ["operator"]
+
+        # handle the cases where there are a>1 a+=1 etc.
+        operators_1c = [op for op in operators if len(op) == 1]
+        operators_2c = [op for op in operators if len(op) == 2]
+        if sum((op in cmd for op in operators)) > 0:
+            for op_1c in operators_1c:
+                if op_1c in cmd and sum((op_2c in cmd for op_2c in operators_2c)) == 0:
+                    split = cmd.split(op_1c)
+                    command_list.extend([split[0], op_1c, split[1]])
+            for op_2c in operators_2c:
+                if op_2c in cmd:
+                    split = cmd.split(op_2c)
+                    command_list.extend([split[0], op_2c, split[1]])
+        else:
+            command_list.append(cmd)
+    command_parsed = Command(command_list[0], command_list[1:])
+    return command_parsed if command_parsed.command else None
+
+
+class ScriptParser:
+    def __init__(self):
+        self.commands = []
+        self.example_script_path = "custom_scripts/example_script.scrpt"
+
+    @staticmethod
+    def load_script(path: str) -> list[str]:
+        with open(path, "r") as f:
+            return f.readlines()
+
+    def parse(self, script: list[str]) -> list:
+        level = 0
+        nested = []
+        for line in script:
+            current_command = self.commands
+
+            for _ in range(level):
+                current_command = current_command[-1]
+
+            if "{" in line:
+                level += 1
+                current_command.append([])
+                current_command = current_command[-1]
+                nested.append(parse_command(line).command)
+            elif "}" in line:
+                if nested[-1] == "loop":
+                    current_command.append(Command("restart_block", []))
+                nested = nested[:-1]
+                level -= 1
+                
+
+            parsed_command = parse_command(line)
+            if parsed_command:
+                current_command.append(parsed_command)
 
 
 class Command:
@@ -30,3 +90,11 @@ class Command:
         else:
             parsed_arg = arg
         return parsed_arg
+
+    def __call__(self, *args, **kwds):
+        print(f"Cmd: {self.command}")
+        for arg in self.args:
+            print(f"   {arg}: {type(arg)}")
+
+    def get_format(self):
+        return f"{self.command}({", ".join((str(a) for a in self.args))})"
