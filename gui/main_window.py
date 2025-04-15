@@ -11,12 +11,6 @@ from tkinter import (
     Menu,
     filedialog,
     Scrollbar,
-    END,
-    LEFT,
-    RIGHT,
-    BOTH,
-    Y,
-    X,
     W,
     E,
     N,
@@ -48,10 +42,10 @@ class MainWindow(Frame):
         super().__init__(master)
         self.master = master
 
-        self.automation = Automation(self)
         self.camera_controller = CameraController()
         self.rigol_controller = RigolController()
         self.polar1_controller = PolarController()
+        self.automation_controller = Automation(self)
 
         self.elliptec_angle_var = StringVar()
         self.projector_window = None
@@ -75,23 +69,22 @@ class MainWindow(Frame):
         frame = Frame(column_frame)
         frame.grid(row=1, column=0, padx=padd, sticky=N + S + E + W)
         frame.grid_columnconfigure(0, weight=1)  # Make the frame expand horizontally
-        # self.create_console_frame(frame)
-        self.console_panel = ConsolePanel(frame, None)
+        self.console_panel = ConsolePanel(frame, self.automation_controller)
 
         # COLUMN 1
         column_frame = Frame(self.master)
         column_frame.grid(row=0, column=1, padx=padd, sticky=N + S + E + W)
 
         frame = Frame(column_frame)
-        frame.pack(fill=Y, padx=padd)
+        frame.pack(fill=tk.Y, padx=padd)
         self.create_projector_frame(frame)
 
         frame = Frame(column_frame)
-        frame.pack(fill=Y, padx=padd)
+        frame.pack(fill=tk.Y, padx=padd)
         self.rigol_panel = RigolPanel(frame, self.rigol_controller)
 
         frame = Frame(column_frame)
-        frame.pack(fill=Y, padx=padd)
+        frame.pack(fill=tk.Y, padx=padd)
         self.polar1_panel = PolarPanel(frame, self.polar1_controller, name="TOP POLARIZER CONTROL")
 
     def create_menu(self):
@@ -102,65 +95,46 @@ class MainWindow(Frame):
         self.file_menu.add_command(label="Load Image", command=self.load_image)
         self.file_menu.add_command(label="Exit", command=self.master.quit)
 
-    def create_console_frame(self, parent):
-        # console view
-        frame = Frame(parent)
-        frame.grid(row=0, column=0, sticky=W + E)
-        self.console = Text(frame, wrap="word", height=15)
-        self.console.pack(side=LEFT, fill=X, expand=True)
-
-        scroll_bar = Scrollbar(frame, command=self.console.yview)
-        scroll_bar.pack(side=RIGHT, fill=Y)
-        self.console.configure(yscrollcommand=scroll_bar.set)
-
-        # Input field for console
-        frame = Frame(parent)
-        frame.grid(row=1, column=0, sticky=W + E)
-        self.console_input_label = Label(frame, text="Input Command:")
-        self.console_input_label.pack(side=LEFT, fill=BOTH, expand=True)
-
-        self.console_input = Entry(frame, width=50)
-        self.console_input.pack(side=LEFT, fill=BOTH)
-        self.console_input.bind("<Return>", self.process_console_input)
-
     def create_projector_frame(self, frame):
         cur_frame = Frame(frame)
-        cur_frame.pack(fill=Y)
+        cur_frame.pack(fill=tk.Y)
 
         self.labLaser = Label(cur_frame, text="PROJECTOR CONTROL")
         self.labLaser.config(font=consts.subsystem_name_font)
-        self.labLaser.pack(side=LEFT)
+        self.labLaser.pack(side=tk.LEFT)
 
         cur_frame = Frame(frame)
         # proj_frame1.grid(row=1, column=0, padx = padd)
-        cur_frame.pack(fill=Y)
+        cur_frame.pack(fill=tk.Y)
 
         self.init_proj_win_btn = Button(
             cur_frame, text="Init window", command=self.initiate_projector_window
         )
-        self.init_proj_win_btn.pack(side=LEFT)
+        self.init_proj_win_btn.pack(side=tk.LEFT)
 
         self.act_proj_win_btn = Button(
             cur_frame, text="Activate window", command=self.activate_projector_window
         )
-        self.act_proj_win_btn.pack(side=LEFT)
+        self.act_proj_win_btn.pack(side=tk.LEFT)
 
         self.act_proj_win_btn = Button(cur_frame, text="Close window", command=self.close_projector_window)
-        self.act_proj_win_btn.pack(side=LEFT)
+        self.act_proj_win_btn.pack(side=tk.LEFT)
 
         cur_frame = Frame(frame)
         # canvas_frame.grid(row=2, column=0, padx = padd)
-        cur_frame.pack(fill=Y)
+        cur_frame.pack(fill=tk.Y)
 
         self.proj_mirror_canvas = Canvas(cur_frame, width=256, height=192, bg="black")
-        self.proj_mirror_canvas.pack(side=LEFT)
+        self.proj_mirror_canvas.pack(side=tk.LEFT)
 
     def main_loop(self):
         self.update_labels()
 
         self.camera_panel.update_image()
 
-        self.master.after(100, self.main_loop)
+        self.automation_controller.execute()
+
+        self.master.after(consts.main_loop_time, self.main_loop)
 
     def update_labels(self):
         self.rigol_panel.update()
@@ -217,7 +191,7 @@ class MainWindow(Frame):
             highlightthickness=0,
             relief="ridge",
         )
-        self.canvas_proj.pack(side=LEFT)
+        self.canvas_proj.pack(side=tk.LEFT)
         self.log("Projector window activated")
 
     def load_pattern_image(self, path):
