@@ -1,5 +1,6 @@
 import time
 from tkinter import messagebox
+
 import numpy as np
 
 
@@ -26,7 +27,7 @@ class StageController:
         # here, command will be send
         dx = self.x_pos - x
         dy = self.y_pos - y
-        time_exp = min(8, np.sqrt(dx**2+dy**2))
+        time_exp = min(8, np.sqrt(dx**2 + dy**2))
         time.sleep(time_exp)
         self.x_pos = x
         self.y_pos = y

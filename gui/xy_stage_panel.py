@@ -1,8 +1,9 @@
-import tkinter as tk
-from tkinter import Frame, Label, Button, Entry, StringVar, LEFT, X, Y
 import threading
-from devices.xy_stage_control_mock import StageController
+import tkinter as tk
+from tkinter import LEFT, Button, Entry, Frame, Label, StringVar, X, Y
+
 import utils.consts as consts
+from devices.xy_stage_control_mock import StageController
 from utils.utils import serial_ports, thread_execute
 
 
@@ -80,23 +81,22 @@ class StagePanel:
     def move_x_abs(self):
         status = self.controller.get_status()
         cur_x, cur_y = status["x_pos"], status["y_pos"]
-        x_value = float(self.var_x_move.get())        
+        x_value = float(self.var_x_move.get())
         self.controller.move_absolute_xy(x_value, cur_y)
 
     @thread_execute
     def move_y_abs(self):
         status = self.controller.get_status()
         cur_x, cur_y = status["x_pos"], status["y_pos"]
-        y_value = float(self.var_y_move.get())        
+        y_value = float(self.var_y_move.get())
         self.controller.move_absolute_xy(cur_x, y_value)
 
     @thread_execute
     def move_xy_rel(self, x_multip, y_multip):
         status = self.controller.get_status()
         cur_x, cur_y = status["x_pos"], status["y_pos"]
-        dst = float(self.var_move_rel_dist.get())        
-        self.controller.move_absolute_xy(cur_x+dst*x_multip, cur_y+dst*y_multip)
-
+        dst = float(self.var_move_rel_dist.get())
+        self.controller.move_absolute_xy(cur_x + dst * x_multip, cur_y + dst * y_multip)
 
     # GUI update hook
     def update(self):

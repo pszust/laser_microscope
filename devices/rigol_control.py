@@ -1,6 +1,7 @@
 import time
-import pyvisa
 from tkinter import messagebox
+
+import pyvisa
 
 
 class RigolController:

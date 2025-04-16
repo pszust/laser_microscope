@@ -1,13 +1,21 @@
-import tkinter as tk
-from tkinter import Frame, Label, Button, Entry, StringVar, LEFT, X, Y
 import threading
+import tkinter as tk
+from tkinter import (
+    LEFT,
+    Button,
+    Canvas,
+    Entry,
+    Frame,
+    Label,
+    StringVar,
+    X,
+    Y,
+)
+
+from PIL import Image, ImageTk
+
 import utils.consts as consts
 from devices.camera_control_mock import CameraController
-from tkinter import (
-    Frame,
-    Canvas,
-)
-from PIL import Image, ImageTk
 from utils.utils import thread_execute
 
 

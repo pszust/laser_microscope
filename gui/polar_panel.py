@@ -1,6 +1,7 @@
-import tkinter as tk
-from tkinter import Frame, Label, Button, Entry, StringVar, LEFT, X, Y
 import threading
+import tkinter as tk
+from tkinter import LEFT, Button, Entry, Frame, Label, StringVar, X, Y
+
 import utils.consts as consts
 from utils.utils import serial_ports, thread_execute
 

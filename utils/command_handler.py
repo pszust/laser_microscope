@@ -1,13 +1,14 @@
 import os
+
 import numpy as np
 
 
 def parse_command(raw_command: str):
     """command looks like this:
-        set_laser_power(15)
-        turn_on_laser()
-        if(var_a > 12){"""
-    
+    set_laser_power(15)
+    turn_on_laser()
+    if(var_a > 12){"""
+
     command = raw_command.strip()
     command = command.replace(" ", "")
     for c in "(),{}":
@@ -19,7 +20,10 @@ def parse_command(raw_command: str):
     operators_check = ["==", ">=", "<=", "<", ">"]
     for cmd in command:
         # add operator if the line has any of the assign type operators
-        if sum((op in cmd for op in operators_assign)) > 0 and sum((op in cmd for op in operators_check)) == 0:
+        if (
+            sum((op in cmd for op in operators_assign)) > 0
+            and sum((op in cmd for op in operators_check)) == 0
+        ):
             command_list = ["operator"]
 
         # handle the cases where there are a>1 a+=1 etc.
@@ -69,7 +73,6 @@ class ScriptParser:
                     current_command.append(Command("restart_block", []))
                 nested = nested[:-1]
                 level -= 1
-                
 
             parsed_command = parse_command(line)
             if parsed_command:

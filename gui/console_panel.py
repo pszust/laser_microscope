@@ -1,9 +1,10 @@
-import tkinter as tk
-from tkinter import Frame, Label, Button, Entry, StringVar, Text, Scrollbar
 import threading
-from core.automation import Automation
+import tkinter as tk
+from tkinter import Button, Entry, Frame, Label, Scrollbar, StringVar, Text
+
 import utils.consts as consts
-from utils.command_handler import parse_command, Command
+from core.automation import Automation
+from utils.command_handler import Command, parse_command
 
 
 class ConsolePanel:
@@ -31,7 +32,7 @@ class ConsolePanel:
         self.console_input = Entry(frame, width=50)
         self.console_input.pack(side=tk.LEFT, fill=tk.BOTH)
         self.console_input.bind("<Return>", self.process_console_input)
-    
+
     def process_console_input(self, event):
         # Process input from the console input field
         command = self.console_input.get()

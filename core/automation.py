@@ -1,12 +1,14 @@
+import os
+import threading
 import time
 from tkinter import messagebox
-from PIL import Image, ImageTk
+from typing import TYPE_CHECKING
+
 import cv2
 import numpy as np
-import threading
-import os
-from typing import TYPE_CHECKING
-from utils.command_handler import ScriptParser, parse_command, Command
+from PIL import Image, ImageTk
+
+from utils.command_handler import Command, ScriptParser, parse_command
 from utils.consts import ErrorMsg
 from utils.utils import thread_execute
 
@@ -101,12 +103,12 @@ class Automation:
             if l_value in self.variables:
                 self.variables[l_value] += r_value
             else:
-                raise(ValueError(ErrorMsg.err_var_missing.format(cmd.command, cmd.args, l_value)))
+                raise (ValueError(ErrorMsg.err_var_missing.format(cmd.command, cmd.args, l_value)))
         elif operator == "-=":
             if l_value in self.variables:
                 self.variables[l_value] -= r_value
             else:
-                raise(ValueError(ErrorMsg.err_var_missing.format(cmd.command, cmd.args, l_value)))
+                raise (ValueError(ErrorMsg.err_var_missing.format(cmd.command, cmd.args, l_value)))
 
     def use_check(self, cmd: Command):
         l_value = cmd.args[0]
@@ -117,26 +119,26 @@ class Automation:
             if l_value in self.variables:
                 l_value = self.variables[l_value]
             else:
-                raise(ValueError(ErrorMsg.err_var_missing.format(cmd.command, cmd.args, l_value)))
+                raise (ValueError(ErrorMsg.err_var_missing.format(cmd.command, cmd.args, l_value)))
 
         if type(r_value) == str:
             if r_value in self.variables:
                 r_value = self.variables[r_value]
             else:
-                raise(ValueError(ErrorMsg.err_var_missing.format(cmd.command, cmd.args, r_value)))
-            
+                raise (ValueError(ErrorMsg.err_var_missing.format(cmd.command, cmd.args, r_value)))
+
         check_map = {
             "==": l_value == r_value,
             ">=": l_value >= r_value,
             "<=": l_value <= r_value,
             ">": l_value > r_value,
-            "<": l_value < r_value
+            "<": l_value < r_value,
         }
         if check in check_map:
             return check_map[check]
         else:
-            raise(ValueError(f"{check} invalid"))
-        
+            raise (ValueError(f"{check} invalid"))
+
     def execute_script_file(self, path):
         scr = ScriptParser()
         script_lines = scr.load_script(path)

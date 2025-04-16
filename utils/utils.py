@@ -1,8 +1,9 @@
-import sys
-import glob
-import serial
-import threading
 import functools
+import glob
+import sys
+import threading
+
+import serial
 
 
 def thread_execute(func):
@@ -21,7 +22,7 @@ def serial_ports():
     :returns:
         A list of the serial ports available on the system
     """
-    return ['COM3', 'COM5', 'COM6', 'COM9', 'COM10']  # temporary
+    return ["COM3", "COM5", "COM6", "COM9", "COM10"]  # temporary
 
     if sys.platform.startswith("win"):
         ports = ["COM%s" % (i + 1) for i in range(256)]

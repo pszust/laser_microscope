@@ -6,5 +6,6 @@ laser_off_color = "#5d615c"
 info_label_color = "#5d615c"
 main_loop_time = 175
 
+
 class ErrorMsg:
     err_var_missing = "Command: %s with args: %s - no %s in currently declared variables!"

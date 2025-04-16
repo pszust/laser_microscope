@@ -1,40 +1,41 @@
+import sys
+import threading
+import time
 import tkinter as tk
-import cv2
 from tkinter import (
+    NW,
+    Button,
+    Canvas,
+    E,
+    Entry,
     Frame,
     Label,
-    Button,
-    Entry,
-    Text,
-    StringVar,
-    Canvas,
     Menu,
-    filedialog,
-    Scrollbar,
-    W,
-    E,
     N,
     S,
-    NW,
+    Scrollbar,
+    StringVar,
+    Text,
+    W,
+    filedialog,
+    messagebox,
 )
+
+import cv2
+import serial
+from PIL import Image, ImageTk
+
+import utils.consts as consts
 from core.automation import Automation
 from devices.camera_control_mock import CameraController
 from devices.polar_control_mock import PolarController
 from devices.rigol_control_mock import RigolController
 from devices.xy_stage_control_mock import StageController
 from gui.camera_panel import CameraPanel
+from gui.console_panel import ConsolePanel
 from gui.polar_panel import PolarPanel
 from gui.rigol_panel import RigolPanel
-from gui.console_panel import ConsolePanel
-from PIL import Image, ImageTk
-from tkinter import filedialog, messagebox
-import time
-import serial
-import sys
-import threading
 from gui.xy_stage_panel import StagePanel
-import utils.consts as consts
-
 
 padd = 2
 
