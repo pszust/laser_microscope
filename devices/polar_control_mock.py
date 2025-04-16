@@ -12,9 +12,9 @@ class PolarController:
     def connect(self, port):
         self.port = port
         self.con_stat = "CONNECTING"
-        time.sleep(2)  # Simulate delay
+        time.sleep(2)
         self.con_stat = "CONNECTED"
-        self.rigol = True  # Simulate successful connection
+        self.rigol = True
 
     def disconnect(self):
         time.sleep(0.5)

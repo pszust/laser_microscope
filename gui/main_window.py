@@ -21,6 +21,7 @@ from core.automation import Automation
 from devices.camera_control_mock import CameraController
 from devices.polar_control_mock import PolarController
 from devices.rigol_control_mock import RigolController
+from devices.xy_stage_control_mock import StageController
 from gui.camera_panel import CameraPanel
 from gui.polar_panel import PolarPanel
 from gui.rigol_panel import RigolPanel
@@ -31,6 +32,7 @@ import time
 import serial
 import sys
 import threading
+from gui.xy_stage_panel import StagePanel
 import utils.consts as consts
 
 
@@ -45,7 +47,9 @@ class MainWindow(Frame):
         self.camera_controller = CameraController()
         self.rigol_controller = RigolController()
         self.polar1_controller = PolarController()
+        self.polar2_controller = PolarController()
         self.automation_controller = Automation(self)
+        self.stage_controller = StageController()
 
         self.elliptec_angle_var = StringVar()
         self.projector_window = None
@@ -87,6 +91,14 @@ class MainWindow(Frame):
         frame = Frame(column_frame)
         frame.pack(fill=tk.Y, padx=padd)
         self.polar1_panel = PolarPanel(frame, self.polar1_controller, name="TOP POLARIZER CONTROL")
+
+        frame = Frame(column_frame)
+        frame.pack(fill=tk.Y, padx=padd)
+        self.polar2_panel = PolarPanel(frame, self.polar2_controller, name="BOTTOM POLARIZER CONTROL")
+
+        frame = Frame(column_frame)
+        frame.pack(fill=tk.Y, padx=padd)
+        self.stage_panel = StagePanel(frame, self.stage_controller)
 
     def create_menu(self):
         self.menu = Menu(self.master)
@@ -141,6 +153,8 @@ class MainWindow(Frame):
     def update_labels(self):
         self.rigol_panel.update()
         self.polar1_panel.update()
+        self.polar2_panel.update()
+        self.stage_panel.update()
 
     def load_image(self):
         # Placeholder function to load image
