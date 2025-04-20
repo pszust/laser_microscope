@@ -1,19 +1,21 @@
 # Subsystems
 ##  Fliper
-### control&gui ✔
-### anti-collision mechanism
+- control&gui ✔
+- anti-collision mechanism
 
 ## Labjack
-### control
-### window
-### position limiter
+- control
+- window
+- position limiter
+- actual connector
 
 ## XY-stage
-### control
-### window
+- control
+- window
+- actual connector
 
 ## Polar
-### control
+- control
 - dynamic
 - remove relative rotation (only buttons)
 
@@ -64,6 +66,7 @@ Place selector.
 - size selector
 
 # Mechanics
+## z-correction
 ## Logging
 
 # Bonus

@@ -11,7 +11,6 @@ class CameraController:
     def __init__(self):
         self.con_stat = "UNKNOWN"
         self.port = None
-        self.rotation = 0.0
         self.placeholder_image_words = 150
         self.wordlist = self._get_wordlist()
 
@@ -19,7 +18,6 @@ class CameraController:
         self.con_stat = "CONNECTING"
         time.sleep(2)  # Simulate delay
         self.con_stat = "CONNECTED"
-        self.rigol = True  # Simulate successful connection
 
     def disconnect(self):
         time.sleep(0.5)
