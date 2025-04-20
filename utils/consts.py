@@ -5,6 +5,11 @@ laser_on_color = "#772eff"
 laser_off_color = "#5d615c"
 info_label_color = "#5d615c"
 main_loop_time = 175
+con_colors = {
+    "CONNECTED": "lime",
+    "CONNECTING": "yellow",
+    "NOT CONNECTED": "gray"
+    }
 
 
 class ErrorMsg:

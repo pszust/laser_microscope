@@ -25,6 +25,8 @@ import cv2
 import serial
 
 from controls.projector_control import ProjectorControl
+from devices.flipper_controller import FlipperController
+from gui.flipper_panel import FlipperPanel
 from gui.projector_panel import ProjectorPanel
 import utils.consts as consts
 from core.automation import Automation
@@ -51,6 +53,8 @@ class MainWindow(Frame):
         self.polar1_controller = PolarController()
         self.polar2_controller = PolarController()
         self.stage_controller = StageController()
+        self.flipper1_control = FlipperController(1)
+        self.flipper2_control = FlipperController(2)
 
         self.automation_controller = Automation(self)
         self.projector_control = ProjectorControl(self)
@@ -112,6 +116,11 @@ class MainWindow(Frame):
         frame.pack(fill=tk.Y, padx=padd)
         self.stage_panel = StagePanel(frame, self.stage_controller)
 
+        # flippers panel
+        frame = Frame(column_frame)
+        frame.pack(fill=tk.Y, padx=padd)
+        self.flipper_panel = FlipperPanel(frame, [self.flipper1_control, self.flipper2_control])
+
     def create_menu(self):
         self.menu = Menu(self.master)
         self.master.config(menu=self.menu)
@@ -139,7 +148,8 @@ class MainWindow(Frame):
         self.polar1_panel.update()
         self.polar2_panel.update()
         self.stage_panel.update()
-        self.projector_panel.update()
+        self.projector_panel.update()  # this is more than labels
+        self.flipper_panel.update()
 
     def load_image(self):
         # Placeholder function to load image

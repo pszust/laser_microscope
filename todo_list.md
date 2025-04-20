@@ -1,7 +1,6 @@
 # Subsystems
 ##  Fliper
-### control
-### window
+### control&gui ✔
 ### anti-collision mechanism
 
 ## Labjack
