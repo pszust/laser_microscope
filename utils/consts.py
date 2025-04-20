@@ -9,3 +9,8 @@ main_loop_time = 175
 
 class ErrorMsg:
     err_var_missing = "Command: %s with args: %s - no %s in currently declared variables!"
+
+
+class ProjConsts:
+    PROJ_IMG_SHAPE = (1024, 768, 3)
+    SMALLER_SHAPE = (int(PROJ_IMG_SHAPE[0]/4), int(PROJ_IMG_SHAPE[1]/4), 3)

@@ -40,6 +40,9 @@ class Automation:
         parsed_command = parse_command(command)
         self.command_list.append(parsed_command)
 
+    def greet(name):
+        return 
+
     def execute(self):
         if not self.command_list:
             return 0

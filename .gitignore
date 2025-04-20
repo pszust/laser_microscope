@@ -24,3 +24,6 @@ env/
 
 # Jupyter Notebook checkpoints
 .ipynb_checkpoints/
+
+# Directories with additional stuff
+example_images/

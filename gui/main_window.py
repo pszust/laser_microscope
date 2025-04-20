@@ -23,8 +23,9 @@ from tkinter import (
 
 import cv2
 import serial
-from PIL import Image, ImageTk
 
+from controls.projector_control import ProjectorControl
+from gui.projector_panel import ProjectorPanel
 import utils.consts as consts
 from core.automation import Automation
 from devices.camera_control_mock import CameraController
@@ -49,8 +50,10 @@ class MainWindow(Frame):
         self.rigol_controller = RigolController()
         self.polar1_controller = PolarController()
         self.polar2_controller = PolarController()
-        self.automation_controller = Automation(self)
         self.stage_controller = StageController()
+
+        self.automation_controller = Automation(self)
+        self.projector_control = ProjectorControl(self)
 
         self.elliptec_angle_var = StringVar()
         self.projector_window = None
@@ -67,11 +70,13 @@ class MainWindow(Frame):
         column_frame = Frame(self.master)
         column_frame.grid(row=0, column=0, padx=padd, sticky=N + S + E + W)
 
+        # camera panel
         frame = Frame(column_frame)
         frame.grid(row=0, column=0, padx=padd, sticky=N + S + E + W)
         frame.grid_columnconfigure(0, weight=1)  # Make the frame expand horizontally
         self.camera_panel = CameraPanel(frame, self.camera_controller)
 
+        # console panel
         frame = Frame(column_frame)
         frame.grid(row=1, column=0, padx=padd, sticky=N + S + E + W)
         frame.grid_columnconfigure(0, weight=1)  # Make the frame expand horizontally
@@ -81,22 +86,28 @@ class MainWindow(Frame):
         column_frame = Frame(self.master)
         column_frame.grid(row=0, column=1, padx=padd, sticky=N + S + E + W)
 
+        # projector panel
         frame = Frame(column_frame)
         frame.pack(fill=tk.Y, padx=padd)
-        self.create_projector_frame(frame)
+        # self.create_projector_frame(frame)
+        self.projector_panel = ProjectorPanel(frame, self.projector_control)
 
+        # rigol panel
         frame = Frame(column_frame)
         frame.pack(fill=tk.Y, padx=padd)
         self.rigol_panel = RigolPanel(frame, self.rigol_controller)
 
+        # polar panel
         frame = Frame(column_frame)
         frame.pack(fill=tk.Y, padx=padd)
         self.polar1_panel = PolarPanel(frame, self.polar1_controller, name="TOP POLARIZER CONTROL")
 
+        # polar panel 2
         frame = Frame(column_frame)
         frame.pack(fill=tk.Y, padx=padd)
         self.polar2_panel = PolarPanel(frame, self.polar2_controller, name="BOTTOM POLARIZER CONTROL")
 
+        # xy-stage panel
         frame = Frame(column_frame)
         frame.pack(fill=tk.Y, padx=padd)
         self.stage_panel = StagePanel(frame, self.stage_controller)
@@ -104,43 +115,15 @@ class MainWindow(Frame):
     def create_menu(self):
         self.menu = Menu(self.master)
         self.master.config(menu=self.menu)
+
         self.file_menu = Menu(self.menu, tearoff=False)
         self.menu.add_cascade(label="File", menu=self.file_menu)
         self.file_menu.add_command(label="Select and execute script", command=self.sel_and_exe_scr)
-        self.file_menu.add_command(label="Load Image", command=self.load_image)
         self.file_menu.add_command(label="Exit", command=self.master.quit)
-
-    def create_projector_frame(self, frame):
-        cur_frame = Frame(frame)
-        cur_frame.pack(fill=tk.Y)
-
-        self.labLaser = Label(cur_frame, text="PROJECTOR CONTROL")
-        self.labLaser.config(font=consts.subsystem_name_font)
-        self.labLaser.pack(side=tk.LEFT)
-
-        cur_frame = Frame(frame)
-        # proj_frame1.grid(row=1, column=0, padx = padd)
-        cur_frame.pack(fill=tk.Y)
-
-        self.init_proj_win_btn = Button(
-            cur_frame, text="Init window", command=self.initiate_projector_window
-        )
-        self.init_proj_win_btn.pack(side=tk.LEFT)
-
-        self.act_proj_win_btn = Button(
-            cur_frame, text="Activate window", command=self.activate_projector_window
-        )
-        self.act_proj_win_btn.pack(side=tk.LEFT)
-
-        self.act_proj_win_btn = Button(cur_frame, text="Close window", command=self.close_projector_window)
-        self.act_proj_win_btn.pack(side=tk.LEFT)
-
-        cur_frame = Frame(frame)
-        # canvas_frame.grid(row=2, column=0, padx = padd)
-        cur_frame.pack(fill=tk.Y)
-
-        self.proj_mirror_canvas = Canvas(cur_frame, width=256, height=192, bg="black")
-        self.proj_mirror_canvas.pack(side=tk.LEFT)
+        
+        self.proj_menu = Menu(self.menu, tearoff=False)
+        self.menu.add_cascade(label="Projector", menu=self.proj_menu)
+        self.proj_menu.add_command(label="Load Image", command=self.load_image)
 
     def main_loop(self):
         self.update_labels()
@@ -156,6 +139,7 @@ class MainWindow(Frame):
         self.polar1_panel.update()
         self.polar2_panel.update()
         self.stage_panel.update()
+        self.projector_panel.update()
 
     def load_image(self):
         # Placeholder function to load image
@@ -165,8 +149,7 @@ class MainWindow(Frame):
             filetypes=(("PNG Files", "*.png"), ("JPEG Files", "*.jpg"), ("All Files", "*.*")),
         )
         if filename:
-            self.display_image(filename)
-            self.log(f"Loaded image: {filename}")
+            self.projector_control.load_and_set_image(filename)
 
     def set_gain(self):
         # Placeholder function to set camera gain
@@ -176,58 +159,6 @@ class MainWindow(Frame):
     def save_image(self):
         # Placeholder function to save image
         self.log("Save image clicked.")
-
-    def initiate_projector_window(self):
-        if self.projector_window == None:
-            # self.projector_window = ProjectorWindow(root)
-            # self.app = ProjectorWindow(self.projector_window)
-            self.projector_window = tk.Toplevel(self.master)
-            self.projector_window.title("Projector window - move to projector screen")
-            self.projector_window.geometry("400x400")
-            self.log("Opened projector window")
-
-    def close_projector_window(self):
-        if self.projector_window != None:
-            self.projector_window.destroy()
-            self.projector_window = None
-            self.log("Closed projector window")
-
-    def activate_projector_window(self):
-        print("Projector window activated!")
-
-        # initialize full screen mode
-        self.projector_window.overrideredirect(True)
-        self.projector_window.state("zoomed")
-        # self.projector_window.activate()
-
-        self.canvas_proj = Canvas(
-            self.projector_window,
-            width=1024,
-            height=768,
-            bg="black",
-            highlightthickness=0,
-            relief="ridge",
-        )
-        self.canvas_proj.pack(side=tk.LEFT)
-        self.log("Projector window activated")
-
-    def load_pattern_image(self, path):
-        self.projector_arr = cv2.imread(path)
-        self.refresh_projector_image()
-        self.log("Image %s loaded" % path)
-
-    def refresh_projector_image(self):
-        # refresh image displayed in window (4x smaller res)
-        img = cv2.resize(self.projector_arr, (256, 192), interpolation=cv2.INTER_AREA)
-        img = Image.fromarray(img)
-        self.proj_imgtk_mirror = ImageTk.PhotoImage(image=img)
-        # self.proj_mirror_canvas.create_image(128, 96, image=self.proj_imgtk, anchor=CENTER)
-        self.proj_mirror_canvas.create_image(0, 0, image=self.proj_imgtk_mirror, anchor=NW)
-
-        # refresh the actual screen
-        img = Image.fromarray(self.projector_arr)
-        self.proj_imgtk = ImageTk.PhotoImage(image=img)
-        self.canvas_proj.create_image(512, 384, image=self.proj_imgtk, anchor=tk.CENTER)
 
     def sel_and_exe_scr(self):
         filename = filedialog.askopenfilename(
