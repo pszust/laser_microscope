@@ -27,6 +27,7 @@ import serial
 from controls.projector_control import ProjectorControl
 from devices.flipper_controller import FlipperController
 from devices.labjack_controller import LabjackController
+from gui.heat_stage_panel import HeatPanel
 from gui.labjack_panel import LabjackPanel
 from gui.flipper_panel import FlipperPanel
 from gui.projector_panel import ProjectorPanel
@@ -41,6 +42,7 @@ from gui.console_panel import ConsolePanel
 from gui.polar_panel import PolarPanel
 from gui.rigol_panel import RigolPanel
 from gui.xy_stage_panel import StagePanel
+from devices.heat_stage_control import HeatController
 
 padd = 2
 
@@ -58,6 +60,7 @@ class MainWindow(Frame):
         self.labjack_controller = LabjackController()
         self.flipper1_control = FlipperController(1)
         self.flipper2_control = FlipperController(2)
+        self.heat_stage_control = HeatController()
 
         self.automation_controller = Automation(self)
         self.projector_control = ProjectorControl(self)
@@ -136,6 +139,11 @@ class MainWindow(Frame):
         frame = Frame(column_frame)
         frame.pack(fill=tk.Y, padx=padd)
         self.flipper_panel = FlipperPanel(frame, [self.flipper1_control, self.flipper2_control])
+
+        # heat stage panel
+        frame = Frame(column_frame)
+        frame.pack(fill=tk.Y, padx=padd)
+        self.flipper_panel = HeatPanel(frame, self.heat_stage_control)
 
 
         # -- COLUMN 3 --

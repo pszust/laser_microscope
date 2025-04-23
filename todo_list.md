@@ -42,7 +42,6 @@ Separate program to turn off laser in case error.
 
 ## Heat-stage
 ### control custom ✔
-### control linkam
 ### window
 - selector
 
