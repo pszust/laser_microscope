@@ -129,6 +129,11 @@ class MainWindow(Frame):
         frame.pack(fill=tk.Y, padx=padd)
         self.polar2_panel = PolarPanel(frame, self.polar2_controller, name="BOTTOM POLARIZER CONTROL")
 
+
+        # -- COLUMN 2 --
+        column_frame = Frame(self.master)
+        column_frame.grid(row=0, column=2, padx=padd, sticky=N + S + E + W)
+
         # xy-stage panel
         frame = Frame(column_frame)
         frame.pack(fill=tk.Y, padx=padd)
@@ -138,11 +143,6 @@ class MainWindow(Frame):
         frame = Frame(column_frame)
         frame.pack(fill=tk.Y, padx=padd)
         self.labjack_panel = LabjackPanel(frame, self.labjack_controller)
-
-
-        # -- COLUMN 2 --
-        column_frame = Frame(self.master)
-        column_frame.grid(row=0, column=2, padx=padd, sticky=N + S + E + W)
 
         # flippers panel
         frame = Frame(column_frame)
@@ -197,6 +197,8 @@ class MainWindow(Frame):
         self.master.after(consts.main_loop_time, self.main_loop)
 
     def update_labels(self):
+        # TODO: need to split some logic into  main loop kind of method because some of these are not just for labels but they execute internal
+        # TODO: functionality of the modules/connectors 
         self.rigol_panel.update()
         self.polar1_panel.update()
         self.polar2_panel.update()

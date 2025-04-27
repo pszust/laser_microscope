@@ -38,10 +38,13 @@ class LabjackPanel:
         # Move controls absolute
         cur_frame = Frame(self.frame)
         cur_frame.pack(fill=tk.Y)
-        Label(cur_frame, text="Height: ").pack(side=tk.LEFT)
+        Label(cur_frame, text="Move absolute: ").pack(side=tk.LEFT)
         self.var_height = StringVar(value="0.0")
         Entry(cur_frame, width=7, textvariable=self.var_height).pack(side=tk.LEFT, fill=tk.X)
         btn = Button(cur_frame, text="Move", command=lambda: self.control.set_height(float(self.var_height.get())))
+        btn.pack(side=tk.LEFT)
+        
+        btn = Button(cur_frame, text="Home", command=lambda: self.control.home())
         btn.pack(side=tk.LEFT)
 
         # Move relative
@@ -84,4 +87,4 @@ class LabjackPanel:
 
         # height label
         height = status.get("height")
-        self.lbl_info.config(text=f"Z = {height:.2f}")
+        self.lbl_info.config(text=f"Z = {height:.3f} mm")
