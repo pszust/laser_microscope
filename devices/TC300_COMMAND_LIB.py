@@ -1,8 +1,11 @@
-
+import os
 from ctypes import *
 
+
 #region import dll functions
-TC300Lib = cdll.LoadLibrary("d:/Katalog 1/Projekty/Mikroskop 3.0/laser_microscope/old_soft/mikroskop2/TC300COMMANDLIB_win64.dll")
+cwd = os.getcwd()
+print(cwd)
+TC300Lib = cdll.LoadLibrary(os.path.join(cwd, "devices", "TC300COMMANDLIB_win64.dll"))
 # TC300Lib = cdll.LoadLibrary("c:/Users/LAB218/Documents/mikroskop2/TC300COMMANDLIB_win64.dll")
 
 
