@@ -67,3 +67,6 @@ class ProjectorControl:
         self.proj_imgtk = ImageTk.PhotoImage(image=img)
         # self.canvas_proj.create_image(512, 384, image=self.proj_imgtk, anchor=tk.CENTER)
         self.canvas_proj.create_image(0, 0, image=self.proj_imgtk, anchor=tk.NW)
+
+    def compose_projector_image(self):
+        self.projector_image = np.zeros(ProjConsts.PROJ_IMG_SHAPE, dtype=np.uint8)

@@ -27,3 +27,6 @@ env/
 
 # Directories with additional stuff
 example_images/
+
+# animations
+animations/custom/

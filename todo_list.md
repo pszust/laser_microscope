@@ -1,17 +1,17 @@
 # Subsystems
 ##  Fliper
 - control&gui ✔
-- anti-collision mechanism
+- anti-collision mechanism ✔
 
 ## Labjack
-- control
-- window
+- control ✔
+- window ✔
 - position limiter
 - actual connector
 
 ## XY-stage
-- control
-- window
+- control ✔
+- window ✔
 - actual connector
 
 ## Polar

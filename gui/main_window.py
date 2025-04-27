@@ -19,14 +19,17 @@ from tkinter import (
     W,
     filedialog,
     messagebox,
+    ttk,
 )
 
 import cv2
 import serial
 
 from controls.projector_control import ProjectorControl
+from core.animation import AnimationControl
 from devices.flipper_controller import FlipperController
 from devices.labjack_controller import LabjackController
+from gui.animation_tab import AnimationTab
 from gui.heat_stage_panel import HeatPanel
 from gui.labjack_panel import LabjackPanel
 from gui.flipper_panel import FlipperPanel
@@ -65,6 +68,8 @@ class MainWindow(Frame):
         self.automation_controller = Automation(self)
         self.projector_control = ProjectorControl(self)
 
+        self.animation_control = AnimationControl(self)
+
         self.elliptec_angle_var = StringVar()
         self.projector_window = None
 
@@ -73,6 +78,10 @@ class MainWindow(Frame):
         self.automation_controller.start()  # start main loop of the automation thingy
 
     def create_widgets(self):
+        self.master.grid_columnconfigure(0, weight=2)
+        self.master.grid_columnconfigure(1, weight=1)
+        self.master.grid_columnconfigure(2, weight=1)
+        self.master.grid_columnconfigure(3, weight=2)
 
         # Create the menu bar
         self.create_menu()
@@ -149,6 +158,21 @@ class MainWindow(Frame):
         # -- COLUMN 3 --
         column_frame = Frame(self.master)
         column_frame.grid(row=0, column=3, padx=padd, sticky=N + S + E + W)
+
+        # Notebook widget creates tabs
+        notebook = ttk.Notebook(column_frame)
+        notebook.pack(fill="both", expand=True)
+
+        # Tab 1 (gui_1)
+        tab_anim = Frame(notebook)
+        notebook.add(tab_anim, text="ANMT")
+
+        # Add widgets to tab_gui1
+        self.anim_tab = AnimationTab(tab_anim, self.animation_control)
+
+        # Tab 2 (gui_2)
+        tab_gui2 = Frame(notebook)
+        notebook.add(tab_gui2, text="GUI 2")
 
     def create_menu(self):
         self.menu = Menu(self.master)
