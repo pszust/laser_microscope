@@ -8,11 +8,13 @@
 - window ✔
 - position limiter
 - actual connector
+- position correction
 
 ## XY-stage
 - control ✔
 - window ✔
 - actual connector
+- define speeds
 
 ## Polar
 - control
@@ -33,6 +35,7 @@
 - gain/expo
 - save image + record video
 - dynamic/map
+- separate camera loop
 
 ## Rigol
 ### control ✔
@@ -44,6 +47,7 @@ Separate program to turn off laser in case error.
 ### control custom ✔
 ### window
 - selector
+- rate controller
 
 # Functionalities
 
@@ -70,3 +74,6 @@ Place selector.
 
 # Bonus
 - on-hover desc
+
+# Draw tab
+- circle, square, etc

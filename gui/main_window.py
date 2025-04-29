@@ -163,16 +163,20 @@ class MainWindow(Frame):
         notebook = ttk.Notebook(column_frame)
         notebook.pack(fill="both", expand=True)
 
-        # Tab 1 (gui_1)
+        # Tab 1 (ANMT)
         tab_anim = Frame(notebook)
         notebook.add(tab_anim, text="ANMT")
 
         # Add widgets to tab_gui1
         self.anim_tab = AnimationTab(tab_anim, self.animation_control)
 
-        # Tab 2 (gui_2)
+        # Tab 2 (AERL)
         tab_gui2 = Frame(notebook)
-        notebook.add(tab_gui2, text="GUI 2")
+        notebook.add(tab_gui2, text="AREL")
+
+        # Tab 3 (CHRL)
+        tab_gui3 = Frame(notebook)
+        notebook.add(tab_gui3, text="CHRL")
 
     def create_menu(self):
         self.menu = Menu(self.master)
