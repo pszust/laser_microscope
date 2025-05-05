@@ -23,7 +23,7 @@ class StageController:
         time.sleep(0.5)
         self.con_stat = "NOT CONNECTED"
 
-    def move_absolute_xy(self, x, y):
+    def set_postion(self, x, y):
         # here, command will be send
         dx = self.x_pos - x
         dy = self.y_pos - y

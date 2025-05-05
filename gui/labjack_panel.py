@@ -3,7 +3,7 @@ import tkinter as tk
 from tkinter import Button, Entry, Frame, Label, StringVar
 
 import utils.consts as consts
-from devices.labjack_controller import LabjackController
+from devices.labjack_controller_mock import LabjackController
 from utils.utils import serial_ports, thread_execute
 
 

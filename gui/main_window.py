@@ -28,7 +28,7 @@ import serial
 from controls.projector_control import ProjectorControl
 from core.animation import AnimationControl
 from devices.flipper_controller import FlipperController
-from devices.labjack_controller import LabjackController
+from devices.labjack_controller_mock import LabjackController
 from gui.animation_tab import AnimationTab
 from gui.heat_stage_panel import HeatPanel
 from gui.labjack_panel import LabjackPanel
@@ -44,7 +44,7 @@ from gui.camera_panel import CameraPanel
 from gui.console_panel import ConsolePanel
 from gui.polar_panel import PolarPanel
 from gui.rigol_panel import RigolPanel
-from gui.xy_stage_panel import StagePanel
+from gui.xy_stage_panel import M30Panel
 from devices.heat_stage_control import HeatController
 
 padd = 2
@@ -137,7 +137,7 @@ class MainWindow(Frame):
         # xy-stage panel
         frame = Frame(column_frame)
         frame.pack(fill=tk.Y, padx=padd)
-        self.stage_panel = StagePanel(frame, self.stage_controller)
+        self.stage_panel = M30Panel(frame, self.stage_controller)
 
         # labjack panel
         frame = Frame(column_frame)
