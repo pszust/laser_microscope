@@ -16,6 +16,9 @@ class ErrorMsg:
     err_var_missing = "Command: %s with args: %s - no %s in currently declared variables!"
 
 
+class CamConsts:
+    CAM_IMG_SHAPE = (1280, 960, 3)
+
 
 class ProjConsts:
     PROJ_IMG_SHAPE = (1024, 768, 3)

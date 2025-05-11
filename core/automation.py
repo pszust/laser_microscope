@@ -27,6 +27,7 @@ class Automation:
             "laser_off": self.master.rigol_controller.laser_off,
             "set_laser_duty": self.master.rigol_controller.set_laserduty,
             "sleep": time.sleep,
+            "start_animation": self.start_animation,
         }
 
         self.internal_commands_map = {
@@ -39,9 +40,6 @@ class Automation:
     def pass_command(self, command: str):
         parsed_command = parse_command(command)
         self.command_list.append(parsed_command)
-
-    def greet(name):
-        return 
 
     def execute(self):
         if not self.command_list:
@@ -161,3 +159,14 @@ class Automation:
         while self.running:
             self.execute()
             time.sleep(0.1)
+
+    def start_animation(self, posx, posy, angle, size, duration, anim_name):
+        target = {
+            "posx": posx,
+            "posy": posy,
+            "angle": angle,
+            "size": size,
+            "duration": duration,
+            "anim_path": anim_name
+        }
+        self.master.animation_control.start_animation(target)

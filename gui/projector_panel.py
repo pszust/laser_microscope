@@ -52,10 +52,11 @@ class ProjectorPanel:
     def update(self):
         if self.controller.is_active:
             # refresh the actual image
-            self.controller.refresh_projector_image()
+            final_proj_img = self.controller.refresh_projector_image()
 
             # refresh the mirror image (copy of actual image with 1/4 res)            
-            img = cv2.resize(self.controller.projector_image, ProjConsts.SMALLER_SHAPE[:2], interpolation=cv2.INTER_AREA)
-            img = Image.fromarray(img)
-            self.proj_imgtk_mirror = ImageTk.PhotoImage(image=img)
-            self.proj_mirror_canvas.create_image(0, 0, image=self.proj_imgtk_mirror, anchor=tk.NW)
+            if final_proj_img is not None:
+                img = cv2.resize(final_proj_img, ProjConsts.SMALLER_SHAPE[:2], interpolation=cv2.INTER_AREA)
+                img = Image.fromarray(img)
+                self.proj_imgtk_mirror = ImageTk.PhotoImage(image=img)
+                self.proj_mirror_canvas.create_image(0, 0, image=self.proj_imgtk_mirror, anchor=tk.NW)
