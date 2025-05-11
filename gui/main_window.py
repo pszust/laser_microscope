@@ -46,6 +46,9 @@ from gui.polar_panel import PolarPanel
 from gui.rigol_panel import RigolPanel
 from gui.xy_stage_panel import M30Panel
 from devices.heat_stage_control import HeatController
+import logging
+
+logger = logging.getLogger(__name__)
 
 padd = 2
 
@@ -95,7 +98,7 @@ class MainWindow(Frame):
         frame = Frame(column_frame)
         frame.grid(row=0, column=0, padx=padd, sticky=N + S + E + W)
         frame.grid_columnconfigure(0, weight=1)  # Make the frame expand horizontally
-        self.camera_panel = CameraPanel(frame, self.camera_controller, self)
+        self.camera_panel = CameraPanel(frame, self.camera_controller)
 
         # console panel
         frame = Frame(column_frame)

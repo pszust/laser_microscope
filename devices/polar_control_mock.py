@@ -1,6 +1,10 @@
 # rigol_control.py
 import time
 from tkinter import messagebox
+import logging
+
+logger = logging.getLogger(__name__)
+
 
 
 class PolarController:
@@ -8,6 +12,7 @@ class PolarController:
         self.con_stat = "UNKNOWN"
         self.port = None
         self.rotation = 0.0
+        logger.debug(f"Initialization done.")
 
     def connect(self, port):
         self.port = port

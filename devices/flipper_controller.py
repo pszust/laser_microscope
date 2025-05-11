@@ -2,12 +2,16 @@
 import time
 from tkinter import messagebox
 from utils.utils import thread_execute
+import logging
+
+logger = logging.getLogger(__name__)
 
 class FlipperController:
     def __init__(self, id):
         self.con_stat = "UNKNOWN"
         self.state = "OUT"
         self.id = id
+        logger.debug(f"Initialization done.")
 
     @thread_execute
     def connect(self):

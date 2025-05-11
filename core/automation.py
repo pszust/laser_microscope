@@ -11,9 +11,12 @@ from PIL import Image, ImageTk
 from utils.command_handler import Command, ScriptParser, parse_command
 from utils.consts import ErrorMsg
 from utils.utils import thread_execute
+import logging
 
 if TYPE_CHECKING:
     from gui.main_window import MainWindow  # only used for type hints
+
+logger = logging.getLogger(__name__)
 
 
 class Automation:
@@ -36,6 +39,7 @@ class Automation:
 
         self.running = False
         self.thread = None
+        logger.debug(f"Initialization done.")
 
     def pass_command(self, command: str):
         parsed_command = parse_command(command)

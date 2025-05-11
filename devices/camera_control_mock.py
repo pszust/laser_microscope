@@ -5,6 +5,9 @@ from tkinter import messagebox
 import cv2
 import numpy as np
 from PIL import Image, ImageTk
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 class CameraController:
@@ -13,6 +16,7 @@ class CameraController:
         self.port = None
         self.placeholder_image_words = 150
         self.wordlist = self._get_wordlist()
+        logger.debug(f"Initialization done.")
 
     def connect(self):
         self.con_stat = "CONNECTING"

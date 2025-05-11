@@ -6,9 +6,11 @@ from PIL import Image, ImageChops
 from utils.consts import CamConsts
 from typing import TYPE_CHECKING
 import time
+import logging
 if TYPE_CHECKING:
     from gui.main_window import MainWindow
 
+logger = logging.getLogger(__name__)
 
 class AnimationControl:
     CUSTOM_ANIMS_DIR = "animations/custom/"
@@ -18,6 +20,7 @@ class AnimationControl:
         self.master = master
         self.anim_files = []
         self.interpreter = None
+        logger.debug(f"Initialization done.")
 
     def get_anim_files(self):
         self.retrieve_anim_files()
@@ -51,6 +54,7 @@ class AnimationInterpreter:
         self.size = target["size"]
         self.duration = target["duration"]
         self.start_time = time.time()
+        logger.debug(f"Started.")
         
         # TODO: apply variables in the future
         # self.variables = []

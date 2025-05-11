@@ -4,6 +4,9 @@ from tkinter import messagebox
 import pyvisa
 
 from utils.utils import thread_execute
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 class HeatController:
@@ -13,6 +16,7 @@ class HeatController:
         self.cur_temp = -1.0
         self.set_temp = -1.0
         self.rate = -1.0
+        logger.debug(f"Initialization done.")
 
     @thread_execute
     def connect(self):

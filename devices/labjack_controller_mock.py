@@ -11,6 +11,9 @@ from PIL import Image, ImageTk
 import clr
 from ctypes import *
 from devices.TC300_COMMAND_LIB import *
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 class LabjackController:
@@ -18,6 +21,7 @@ class LabjackController:
         self.con_stat = "UNKNOWN"
         self.height = 0.0
         self.labjack = None
+        logger.debug(f"Initialization done.")
 
     @thread_execute
     def connect(self):

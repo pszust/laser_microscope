@@ -11,6 +11,9 @@ from PIL import Image, ImageTk
 import clr
 from ctypes import *
 from devices.TC300_COMMAND_LIB import *
+import logging
+
+logger = logging.getLogger(__name__)
 
 # Add References to .NET libraries
 clr.AddReference("C:\\Program Files\\Thorlabs\\Kinesis\\Thorlabs.MotionControl.DeviceManagerCLI.dll")
@@ -36,6 +39,7 @@ class M30Control:
         self.x_pos, self.y_pos = 0, 0
         self.curAcc = 5
         self.curVel = 2
+        logger.debug(f"Initialization done.")
 
     @thread_execute
     def connect(self):

@@ -1,6 +1,9 @@
 # rigol_control.py
 import time
 from tkinter import messagebox
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 class RigolController:
@@ -9,6 +12,7 @@ class RigolController:
         self.laserstate = "OFF"
         self.laserduty = 0.0
         self.rigol = None  # Simulate a Rigol device connection
+        logger.debug(f"Initialization done.")
 
     def connect(self):
         self.con_stat = "CONNECTING"

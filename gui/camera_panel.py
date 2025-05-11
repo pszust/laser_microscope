@@ -17,6 +17,9 @@ from PIL import Image, ImageTk
 import utils.consts as consts
 from devices.camera_control_mock import CameraController
 from utils.utils import thread_execute
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 class CameraPanel:
@@ -27,6 +30,8 @@ class CameraPanel:
 
         self.canvas = Canvas(parent, width=800, height=600, bg="black")
         self.canvas.grid(row=0, column=0, sticky=tk.W + tk.E)
+
+        logger.debug(f"Initialization done.")
 
     def display_image(self):
         # Display the selected image in the canvas

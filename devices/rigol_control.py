@@ -2,6 +2,9 @@ import time
 from tkinter import messagebox
 
 import pyvisa
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 class RigolController:
@@ -9,6 +12,7 @@ class RigolController:
         self.rigol = None
         self.laserduty = 0.0
         self.laserstate = "OFF"
+        logger.debug(f"Initialization done.")
 
     def connect(self):
         if self.rigol is not None:
