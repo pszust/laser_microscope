@@ -98,7 +98,7 @@ class MainWindow(Frame):
         frame = Frame(column_frame)
         frame.grid(row=0, column=0, padx=padd, sticky=N + S + E + W)
         frame.grid_columnconfigure(0, weight=1)  # Make the frame expand horizontally
-        self.camera_panel = CameraPanel(frame, self.camera_controller)
+        self.camera_panel = CameraPanel(frame, self.camera_controller, self)
 
         # console panel
         frame = Frame(column_frame)

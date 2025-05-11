@@ -3,6 +3,8 @@ import glob
 import sys
 import threading
 
+import logging
+import tkinter as tk
 import serial
 
 
@@ -43,3 +45,20 @@ def serial_ports():
         except (OSError, serial.SerialException):
             pass
     return result
+
+
+class TextWidgetHandler(logging.Handler):
+    def __init__(self, text_widget: tk.Text, min_level=logging.INFO):
+        super().__init__()
+        self.text_widget = text_widget
+        self.min_level = min_level
+
+    def emit(self, record):
+        if record.levelno < self.min_level:
+            return
+        msg = self.format(record)
+        self.text_widget.after(0, self.text_widget.insert, tk.END, msg + "\n")
+        self.text_widget.after(0, self.text_widget.see, tk.END)
+
+    def set_level(self, level):
+        self.min_level = level

@@ -33,7 +33,6 @@ class HeatPanel:
         self.lbl_info = Label(cur_frame, text="T=%2.2f | R=%2.2f | S=%2.2f" % (0, 0, 0), fg=consts.info_label_color)
         self.lbl_info.config(font=consts.info_label_font)
         self.lbl_info.pack(side=tk.LEFT)
-        self.lbl_info.pack(side=tk.LEFT)
 
         # Set Temp
         cur_frame = Frame(self.frame)
