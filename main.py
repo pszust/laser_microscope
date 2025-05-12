@@ -13,9 +13,9 @@ def setup_logging(log_dir="logs"):
         level=logging.DEBUG,
         format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
         handlers=[
-            logging.FileHandler(log_file, encoding='utf-8'),
-            logging.StreamHandler()  # also show logs in console
-        ]
+            logging.FileHandler(log_file, encoding="utf-8"),
+            logging.StreamHandler(),  # also show logs in console
+        ],
     )
 
 

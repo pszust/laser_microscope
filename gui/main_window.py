@@ -89,7 +89,6 @@ class MainWindow(Frame):
         # Create the menu bar
         self.create_menu()
 
-
         # -- COLUMN 0 --
         column_frame = Frame(self.master)
         column_frame.grid(row=0, column=0, padx=padd, sticky=N + S + E + W)
@@ -105,7 +104,6 @@ class MainWindow(Frame):
         frame.grid(row=1, column=0, padx=padd, sticky=N + S + E + W)
         frame.grid_columnconfigure(0, weight=1)  # Make the frame expand horizontally
         self.console_panel = ConsolePanel(frame, self.automation_controller)
-
 
         # -- COLUMN 1 --
         column_frame = Frame(self.master)
@@ -132,7 +130,6 @@ class MainWindow(Frame):
         frame.pack(fill=tk.Y, padx=padd)
         self.polar2_panel = PolarPanel(frame, self.polar2_controller, name="BOTTOM POLARIZER CONTROL")
 
-
         # -- COLUMN 2 --
         column_frame = Frame(self.master)
         column_frame.grid(row=0, column=2, padx=padd, sticky=N + S + E + W)
@@ -156,7 +153,6 @@ class MainWindow(Frame):
         frame = Frame(column_frame)
         frame.pack(fill=tk.Y, padx=padd)
         self.flipper_panel = HeatPanel(frame, self.heat_stage_control)
-
 
         # -- COLUMN 3 --
         column_frame = Frame(self.master)
@@ -189,7 +185,7 @@ class MainWindow(Frame):
         self.menu.add_cascade(label="File", menu=self.file_menu)
         self.file_menu.add_command(label="Select and execute script", command=self.sel_and_exe_scr)
         self.file_menu.add_command(label="Exit", command=self.master.quit)
-        
+
         self.proj_menu = Menu(self.menu, tearoff=False)
         self.menu.add_cascade(label="Projector", menu=self.proj_menu)
         self.proj_menu.add_command(label="Load Image", command=self.load_image)
@@ -207,7 +203,7 @@ class MainWindow(Frame):
 
     def update_labels(self):
         # TODO: need to split some logic into  main loop kind of method because some of these are not just for labels but they execute internal
-        # TODO: functionality of the modules/connectors 
+        # TODO: functionality of the modules/connectors
         self.rigol_panel.update()
         self.polar1_panel.update()
         self.polar2_panel.update()

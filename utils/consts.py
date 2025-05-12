@@ -5,11 +5,7 @@ laser_on_color = "#772eff"
 laser_off_color = "#5d615c"
 info_label_color = "#5d615c"
 main_loop_time = 175
-con_colors = {
-    "CONNECTED": "lime",
-    "CONNECTING": "yellow",
-    "NOT CONNECTED": "gray"
-    }
+con_colors = {"CONNECTED": "lime", "CONNECTING": "yellow", "NOT CONNECTED": "gray"}
 
 
 class ErrorMsg:
@@ -17,12 +13,16 @@ class ErrorMsg:
 
 
 class CamConsts:
-    CAM_IMG_SHAPE = (1280, 960, 3)
+    SHAPE = (1280, 960, 3)
+    ASPECT_RATIO = SHAPE[0] / SHAPE[1]
+    DISPLAY_WIDTH = 800
+    DISPLAY_HEIGHT = int(DISPLAY_WIDTH / ASPECT_RATIO)
+    DISPLAY_SHAPE = (DISPLAY_WIDTH, DISPLAY_HEIGHT)
 
 
 class ProjConsts:
     PROJ_IMG_SHAPE = (1024, 768, 3)
-    SMALLER_SHAPE = (int(PROJ_IMG_SHAPE[0]/4), int(PROJ_IMG_SHAPE[1]/4), 3)
+    SMALLER_SHAPE = (int(PROJ_IMG_SHAPE[0] / 4), int(PROJ_IMG_SHAPE[1] / 4), 3)
 
 
 class LabJackConsts:

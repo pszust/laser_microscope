@@ -42,12 +42,11 @@ class HeatController:
             "set_temp": self.set_temp,
             "rate": self.rate,
         }
-    
+
     @thread_execute
     def set_temperature(self, value):
         self.set_temp = float(value)
-    
+
     @thread_execute
     def set_rate(self, value):
         self.rate = float(value)
-

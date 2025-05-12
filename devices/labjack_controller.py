@@ -19,8 +19,12 @@ logger = logging.getLogger(__name__)
 clr.AddReference("C:\\Program Files\\Thorlabs\\Kinesis\\Thorlabs.MotionControl.DeviceManagerCLI.dll")
 clr.AddReference("C:\\Program Files\\Thorlabs\\Kinesis\\Thorlabs.MotionControl.GenericMotorCLI.dll")
 clr.AddReference("C:\\Program Files\\Thorlabs\\Kinesis\\Thorlabs.MotionControl.Benchtop.DCServoCLI.dll.")
-clr.AddReference("C:\\Program Files\\Thorlabs\\Kinesis\\Thorlabs.MotionControl.IntegratedStepperMotorsCLI.dll.")
-clr.AddReference("C:\\Program Files\\Thorlabs\\Kinesis\\Thorlabs.MotionControl.IntegratedStepperMotorsUI.dll")
+clr.AddReference(
+    "C:\\Program Files\\Thorlabs\\Kinesis\\Thorlabs.MotionControl.IntegratedStepperMotorsCLI.dll."
+)
+clr.AddReference(
+    "C:\\Program Files\\Thorlabs\\Kinesis\\Thorlabs.MotionControl.IntegratedStepperMotorsUI.dll"
+)
 
 # I dont know how it works, ask thorlabs
 from Thorlabs.MotionControl.DeviceManagerCLI import *  # type: ignore
@@ -41,7 +45,7 @@ class LabjackController:
     @thread_execute
     def connect(self):
         self.con_stat = "CONNECTING"
-        
+
         # connecting (weird thorlabs stuff)
         DeviceManagerCLI.BuildDeviceList()  # type: ignore
         self.labjack = LabJack.CreateLabJack(LabJackConsts.SERIAL_NO)  # type: ignore
@@ -49,10 +53,10 @@ class LabjackController:
         # Connect, begin polling, and enable
         self.labjack.Connect(LabJackConsts.SERIAL_NO)
         time.sleep(0.25)  # wait statements are important to allow settings to be sent to the device
-        
+
         device_info = self.labjack.GetDeviceInfo()
         print(f"DEVICE_INFO: {device_info}")
-        
+
         self.labjack.StartPolling(250)
         self.labjack.EnableDevice()
         motor_configuration = self.labjack.LoadMotorConfiguration(LabJackConsts.SERIAL_NO)
@@ -71,7 +75,7 @@ class LabjackController:
     @thread_execute
     def update_height(self):
         if self.labjack and self.con_stat == "CONNECTED":
-            self.height = round(float(self.labjack.Position.ToString().replace(',', '.')), 3)
+            self.height = round(float(self.labjack.Position.ToString().replace(",", ".")), 3)
 
     @thread_execute
     def set_height(self, value):
@@ -87,7 +91,7 @@ class LabjackController:
                 self.labjack.MoveTo(Decimal(value), work_done)
             except AssertionError as error:
                 print(error)
-                print('LabJack: error, disconecting!')
+                print("LabJack: error, disconecting!")
                 self.disconnect()
 
     @thread_execute

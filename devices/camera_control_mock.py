@@ -5,6 +5,7 @@ from tkinter import messagebox
 import cv2
 import numpy as np
 from PIL import Image, ImageTk
+from utils.consts import CamConsts
 import logging
 
 logger = logging.getLogger(__name__)
@@ -40,7 +41,9 @@ class CameraController:
 
     def _generate_placeholder_image(self):
         # this is not for joke, it has a real purpose!
-        img = np.zeros((600, 800, 3), dtype=np.uint8)  # cv2 image with 800 x 600 dims, black
+        img = np.zeros(
+            (CamConsts.SHAPE[1], CamConsts.SHAPE[0], 3), dtype=np.uint8
+        )  # cv2 image with 800 x 600 dims, black
         self.placeholder_image_words += 5 - np.random.randint(10)
         if self.placeholder_image_words < 50:
             self.placeholder_image_words = 50
@@ -58,7 +61,7 @@ class CameraController:
             img = cv2.putText(
                 img,
                 txt,
-                (np.random.randint(0, 800), np.random.randint(0, 600)),
+                (np.random.randint(0, CamConsts.SHAPE[0]), np.random.randint(0, CamConsts.SHAPE[1])),
                 cv2.FONT_HERSHEY_SIMPLEX,
                 size,
                 (clr_r, clr_g, clr_b),  # clr

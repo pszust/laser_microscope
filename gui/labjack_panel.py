@@ -41,9 +41,11 @@ class LabjackPanel:
         Label(cur_frame, text="Move absolute: ").pack(side=tk.LEFT)
         self.var_height = StringVar(value="0.0")
         Entry(cur_frame, width=7, textvariable=self.var_height).pack(side=tk.LEFT, fill=tk.X)
-        btn = Button(cur_frame, text="Move", command=lambda: self.control.set_height(float(self.var_height.get())))
+        btn = Button(
+            cur_frame, text="Move", command=lambda: self.control.set_height(float(self.var_height.get()))
+        )
         btn.pack(side=tk.LEFT)
-        
+
         btn = Button(cur_frame, text="Home", command=lambda: self.control.home())
         btn.pack(side=tk.LEFT)
 
@@ -80,9 +82,7 @@ class LabjackPanel:
 
         # connection label
         con_state = status.get("connection", "UNKNOWN")
-        con_color = consts.con_colors.get(
-            con_state, "gray"
-        )
+        con_color = consts.con_colors.get(con_state, "gray")
         self.lbl_status.config(text=f"LABJACK status: {con_state}", bg=con_color)
 
         # height label

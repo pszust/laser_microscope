@@ -39,14 +39,18 @@ class ProjectorPanel:
         )
         self.act_proj_win_btn.pack(side=tk.LEFT)
 
-        self.act_proj_win_btn = Button(cur_frame, text="Close window", command=self.controller.close_projector_window)
+        self.act_proj_win_btn = Button(
+            cur_frame, text="Close window", command=self.controller.close_projector_window
+        )
         self.act_proj_win_btn.pack(side=tk.LEFT)
 
         cur_frame = Frame(self.frame)
         # canvas_frame.grid(row=2, column=0, padx = padd)
         cur_frame.pack(fill=tk.Y)
 
-        self.proj_mirror_canvas = Canvas(cur_frame, width=ProjConsts.SMALLER_SHAPE[0], height=ProjConsts.SMALLER_SHAPE[1], bg="black")
+        self.proj_mirror_canvas = Canvas(
+            cur_frame, width=ProjConsts.SMALLER_SHAPE[0], height=ProjConsts.SMALLER_SHAPE[1], bg="black"
+        )
         self.proj_mirror_canvas.pack(side=tk.LEFT)
 
     def update(self):
@@ -54,7 +58,7 @@ class ProjectorPanel:
             # refresh the actual image
             final_proj_img = self.controller.refresh_projector_image()
 
-            # refresh the mirror image (copy of actual image with 1/4 res)            
+            # refresh the mirror image (copy of actual image with 1/4 res)
             if final_proj_img is not None:
                 img = cv2.resize(final_proj_img, ProjConsts.SMALLER_SHAPE[:2], interpolation=cv2.INTER_AREA)
                 img = Image.fromarray(img)

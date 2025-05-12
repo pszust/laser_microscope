@@ -6,6 +6,7 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+
 class FlipperController:
     def __init__(self, id):
         self.con_stat = "UNKNOWN"
@@ -37,8 +38,4 @@ class FlipperController:
             self.state = "OUT"
 
     def get_status(self):
-        return {
-            "connection": self.con_stat,
-            "state": self.state,
-            "id": self.id
-        }
+        return {"connection": self.con_stat, "state": self.state, "id": self.id}

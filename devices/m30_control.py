@@ -19,8 +19,12 @@ logger = logging.getLogger(__name__)
 clr.AddReference("C:\\Program Files\\Thorlabs\\Kinesis\\Thorlabs.MotionControl.DeviceManagerCLI.dll")
 clr.AddReference("C:\\Program Files\\Thorlabs\\Kinesis\\Thorlabs.MotionControl.GenericMotorCLI.dll")
 clr.AddReference("C:\\Program Files\\Thorlabs\\Kinesis\\Thorlabs.MotionControl.Benchtop.DCServoCLI.dll.")
-clr.AddReference("C:\\Program Files\\Thorlabs\\Kinesis\\Thorlabs.MotionControl.IntegratedStepperMotorsCLI.dll.")
-clr.AddReference("C:\\Program Files\\Thorlabs\\Kinesis\\Thorlabs.MotionControl.IntegratedStepperMotorsUI.dll")
+clr.AddReference(
+    "C:\\Program Files\\Thorlabs\\Kinesis\\Thorlabs.MotionControl.IntegratedStepperMotorsCLI.dll."
+)
+clr.AddReference(
+    "C:\\Program Files\\Thorlabs\\Kinesis\\Thorlabs.MotionControl.IntegratedStepperMotorsUI.dll"
+)
 
 from Thorlabs.MotionControl.DeviceManagerCLI import *  # type: ignore
 from Thorlabs.MotionControl.GenericMotorCLI import *  # type: ignore
@@ -44,7 +48,7 @@ class M30Control:
     @thread_execute
     def connect(self):
         self.con_stat = "CONNECTING"
-        
+
         # connecting (weird thorlabs stuff)
         DeviceManagerCLI.BuildDeviceList()  # type: ignore
         serial_no = "101507134"  # Replace this line with your device's serial number
@@ -52,10 +56,10 @@ class M30Control:
         print(self.m30_device)
 
         time.sleep(2.5)  # wait statements are important to allow settings to be sent to the device
-        
+
         device_info = self.m30_device.GetDeviceInfo()
         print(f"DEVICE_INFO: {device_info}")
-        
+
         self.x_channel = self.m30_device.GetChannel(1)  # Returns a benchtop channel object
         self.y_channel = self.m30_device.GetChannel(2)
 
@@ -103,8 +107,10 @@ class M30Control:
     @thread_execute
     def update_position(self):
         if self.m30_device and self.con_stat == "CONNECTED":
-            self.x_pos = round(float(self.x_channel.DevicePosition.ToString().replace(',', '.')), 3)  # warning: this uses , as decimal separator
-            self.y_pos = round(float(self.y_channel.DevicePosition.ToString().replace(',', '.')), 3)
+            self.x_pos = round(
+                float(self.x_channel.DevicePosition.ToString().replace(",", ".")), 3
+            )  # warning: this uses , as decimal separator
+            self.y_pos = round(float(self.y_channel.DevicePosition.ToString().replace(",", ".")), 3)
 
     @thread_execute
     def set_postion(self, new_x, new_y):
@@ -114,7 +120,7 @@ class M30Control:
                 self.y_channel.MoveTo(Decimal(new_y), 60000)
             except AssertionError as error:
                 print(error)
-                print('LabJack: error, disconecting!')
+                print("LabJack: error, disconecting!")
                 self.disconnect()
 
     @thread_execute

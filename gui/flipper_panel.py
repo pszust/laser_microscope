@@ -20,7 +20,7 @@ class FlipperPanel:
         cur_frame = Frame(self.frame)
         cur_frame.pack(fill=tk.Y)
         Label(cur_frame, text="FLIPPERS CONTROL", font=consts.subsystem_name_font).pack(side=tk.LEFT)
-        
+
         # Connection controls
         cur_frame = Frame(self.frame)
         cur_frame.pack(fill=tk.Y)
@@ -71,15 +71,11 @@ class FlipperPanel:
 
         # connection label
         con_state1 = status1.get("connection", "UNKNOWN")
-        con_color1 = consts.con_colors.get(
-            con_state1, "gray"
-        )
+        con_color1 = consts.con_colors.get(con_state1, "gray")
         self.lbl_status1.config(text=f"STAGE status: {con_state1}", bg=con_color1)
 
         con_state2 = status2.get("connection", "UNKNOWN")
-        con_color2 = consts.con_colors.get(
-            con_state2, "gray"
-        )
+        con_color2 = consts.con_colors.get(con_state2, "gray")
         self.lbl_status2.config(text=f"STAGE status: {con_state2}", bg=con_color2)
 
         # position label

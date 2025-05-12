@@ -23,10 +23,8 @@ class AnimationTab:
         # Select animation
         cur_frame = Frame(self.frame)
         cur_frame.pack(fill=tk.Y)
-        Label(cur_frame, text = 'Select animation: ').pack(side =  tk.LEFT)
+        Label(cur_frame, text="Select animation: ").pack(side=tk.LEFT)
 
-        self.var_anim_file = StringVar(value = "simple-burn1")
+        self.var_anim_file = StringVar(value="simple-burn1")
         self.mnSDfreq = OptionMenu(cur_frame, self.var_anim_file, *control.get_anim_files())
-        self.mnSDfreq.pack(side = tk.LEFT)
-
-    
+        self.mnSDfreq.pack(side=tk.LEFT)

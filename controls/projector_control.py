@@ -9,6 +9,7 @@ from utils.consts import ProjConsts
 if TYPE_CHECKING:
     from gui.main_window import MainWindow  # only used for type hints
 
+
 class ProjectorControl:
     def __init__(self, master: "MainWindow"):
         self.master = master
@@ -92,7 +93,9 @@ class ProjectorControl:
 
     def compose_projector_image(self):
         # first add together all the images that need to be composed (in cam shape)
-        if images_to_merge := [img for img in (self.raw_animation_img, self.raw_loaded_img) if img is not None]:
+        if images_to_merge := [
+            img for img in (self.raw_animation_img, self.raw_loaded_img) if img is not None
+        ]:
             merged = self.merge_images(images_to_merge)
 
             # transpose using the thing

@@ -45,7 +45,7 @@ class ConsolePanel:
         self.log(f"Command entered: {command}")
         self.controller.pass_command(command)
         self.console_input.delete(0, tk.END)
-    
+
     def setup_logger(self, frame):
         self.log_level_var = tk.StringVar(value="INFO")
         self.level_map = {
@@ -53,19 +53,15 @@ class ConsolePanel:
             "INFO": logging.INFO,
             "WARNING": logging.WARNING,
             "ERROR": logging.ERROR,
-            "CRITICAL": logging.CRITICAL
+            "CRITICAL": logging.CRITICAL,
         }
         Label(frame, text="Log Level:").pack(side=tk.LEFT)
         for level in self.level_map:
             tk.Radiobutton(
-                frame,
-                text=level,
-                variable=self.log_level_var,
-                value=level,
-                command=self.update_log_level
+                frame, text=level, variable=self.log_level_var, value=level, command=self.update_log_level
             ).pack(side=tk.LEFT)
         self.attach_logger()
-    
+
     def attach_logger(self):
         self.text_handler = TextWidgetHandler(self.console)
         self.text_handler.setFormatter(logging.Formatter("%(asctime)s [%(levelname)s] %(message)s"))

@@ -171,6 +171,6 @@ class Automation:
             "angle": angle,
             "size": size,
             "duration": duration,
-            "anim_path": anim_name
+            "anim_path": anim_name,
         }
         self.master.animation_control.start_animation(target)

@@ -7,10 +7,12 @@ from utils.consts import CamConsts
 from typing import TYPE_CHECKING
 import time
 import logging
+
 if TYPE_CHECKING:
     from gui.main_window import MainWindow
 
 logger = logging.getLogger(__name__)
+
 
 class AnimationControl:
     CUSTOM_ANIMS_DIR = "animations/custom/"
@@ -25,7 +27,7 @@ class AnimationControl:
     def get_anim_files(self):
         self.retrieve_anim_files()
         return self.anim_files
-    
+
     def retrieve_anim_files(self):
         self.anim_files = []
         for directory in (self.CUSTOM_ANIMS_DIR, self.BASE_ANIMS_DIR):
@@ -34,7 +36,7 @@ class AnimationControl:
 
     def start_animation(self, target):
         self.interpreter = AnimationInterpreter(target)
-        
+
     def loop_event(self):
         if self.interpreter:
             drawn_anim = self.interpreter.draw_parametric_animation()
@@ -55,7 +57,7 @@ class AnimationInterpreter:
         self.duration = target["duration"]
         self.start_time = time.time()
         logger.debug(f"Started.")
-        
+
         # TODO: apply variables in the future
         # self.variables = []
         # self.anim_str = self.replace_variables(self.anim_str, self.variables)
@@ -63,7 +65,7 @@ class AnimationInterpreter:
     def load_anim_str(self, path: str) -> str:
         path2 = os.path.join(self.CUSTOM_ANIMS_DIR, os.path.basename(path))
         path3 = os.path.join(self.BASE_ANIMS_DIR, os.path.basename(path))
-        if os.path.isfile(path): 
+        if os.path.isfile(path):
             with open(path, "r") as f:
                 return f.read()
         elif os.path.isfile(path2):
@@ -77,8 +79,8 @@ class AnimationInterpreter:
 
     def replace_variables(anim_str, variables):
         for n in range(0, len(variables)):
-            var_name = "var%d"%n
-            anim_str = anim_str.replace(var_name, "%2.2f"%variables[n])
+            var_name = "var%d" % n
+            anim_str = anim_str.replace(var_name, "%2.2f" % variables[n])
         return anim_str
 
     def draw_parametric_animation(self) -> np.ndarray | None:
@@ -89,8 +91,8 @@ class AnimationInterpreter:
             return None
 
         canvas = np.zeros((canv_y, canv_x, 3), np.uint8)
-        
-        # scale parameter is from text anim file, size is from brush size 
+
+        # scale parameter is from text anim file, size is from brush size
         for obj in self.anim_str.split("OBJECT")[1:]:
             splitted = obj.splitlines()
 
@@ -102,30 +104,39 @@ class AnimationInterpreter:
             scale = 1
             for line in splitted[1:]:
                 line_splt = line.split(" ")
-    #             line_splt = replace_variables(line_splt, variables)
+                #             line_splt = replace_variables(line_splt, variables)
                 if eval(line_splt[0]) <= ctime:
                     if eval(line_splt[2]) >= ctime:
-                        total_time = eval(line_splt[2])-eval(line_splt[0])
-                        completness = (ctime-eval(line_splt[0]))/total_time
+                        total_time = eval(line_splt[2]) - eval(line_splt[0])
+                        completness = (ctime - eval(line_splt[0])) / total_time
                         if line_splt[3] == "MOVE":
-                            change_x = eval(line_splt[7])-eval(line_splt[4])
-                            change_y = eval(line_splt[8])-eval(line_splt[5])
-                            cx = int(eval(line_splt[4]) + change_x*completness)
-                            cy = int(eval(line_splt[5]) + change_y*completness)
-                            cx = int(cx*self.size/100 + canv_x/2)
-                            cy = int(cy*self.size/100 + canv_y/2)
+                            change_x = eval(line_splt[7]) - eval(line_splt[4])
+                            change_y = eval(line_splt[8]) - eval(line_splt[5])
+                            cx = int(eval(line_splt[4]) + change_x * completness)
+                            cy = int(eval(line_splt[5]) + change_y * completness)
+                            cx = int(cx * self.size / 100 + canv_x / 2)
+                            cy = int(cy * self.size / 100 + canv_y / 2)
                         if line_splt[3] == "SCALE":
-                            change_s = eval(line_splt[6])-eval(line_splt[4])
-                            scale = eval(line_splt[4]) + change_s*completness
+                            change_s = eval(line_splt[6]) - eval(line_splt[4])
+                            scale = eval(line_splt[4]) + change_s * completness
 
             if line1[1] == "rectangle":
-                stp = (int(cx-0.5*eval(line1[2])*scale*self.size/100), int(cy-0.5*eval(line1[3])*scale*self.size/100))
-                enp = (int(cx+0.5*eval(line1[2])*scale*self.size/100), int(cy+0.5*eval(line1[3])*scale*self.size/100))
+                stp = (
+                    int(cx - 0.5 * eval(line1[2]) * scale * self.size / 100),
+                    int(cy - 0.5 * eval(line1[3]) * scale * self.size / 100),
+                )
+                enp = (
+                    int(cx + 0.5 * eval(line1[2]) * scale * self.size / 100),
+                    int(cy + 0.5 * eval(line1[3]) * scale * self.size / 100),
+                )
                 clr = (eval(line1[4]), eval(line1[4]), eval(line1[4]))
                 canvas = cv2.rectangle(canvas, stp, enp, clr, -1)
-                
+
             if line1[1] == "ellipse":
-                axes = (int(eval(line1[2])*scale*self.size/100), int(eval(line1[3])*scale*self.size/100))
+                axes = (
+                    int(eval(line1[2]) * scale * self.size / 100),
+                    int(eval(line1[3]) * scale * self.size / 100),
+                )
                 clr = (int(line1[5]), int(eval(line1[5])), int(eval(line1[5])))
                 canvas = cv2.ellipse(canvas, (cx, cy), axes, 0, 0, 360, clr, -1)
 
@@ -134,7 +145,7 @@ class AnimationInterpreter:
 
             # now offset
             pil_img = Image.fromarray(canvas_rot)
-            pil_img2 = ImageChops.offset(pil_img, int(self.posy-canv_x/2), int(self.posx-canv_y/2))
+            pil_img2 = ImageChops.offset(pil_img, int(self.posy - canv_x / 2), int(self.posx - canv_y / 2))
             canvas_done = np.array(pil_img2)
 
         return canvas_done
