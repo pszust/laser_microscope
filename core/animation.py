@@ -13,10 +13,11 @@ if TYPE_CHECKING:
 
 logger = logging.getLogger(__name__)
 
+CUSTOM_ANIMS_DIR = "animations/custom/"
+BASE_ANIMS_DIR = "animations/base/"
+
 
 class AnimationControl:
-    CUSTOM_ANIMS_DIR = "animations/custom/"
-    BASE_ANIMS_DIR = "animations/base/"
 
     def __init__(self, master: "MainWindow"):
         self.master = master
@@ -30,12 +31,26 @@ class AnimationControl:
 
     def retrieve_anim_files(self):
         self.anim_files = []
-        for directory in (self.CUSTOM_ANIMS_DIR, self.BASE_ANIMS_DIR):
+        for directory in (CUSTOM_ANIMS_DIR, BASE_ANIMS_DIR):
             anims = os.listdir(directory)
             self.anim_files.extend([os.path.join(directory, anim) for anim in anims])
 
+    def start_animation_gui_params(self, x, y, angle, size):
+        anim_tab = self.master.anim_tab
+        target = {
+            "posx": x,
+            "posy": y,
+            "angle": angle,
+            "size": size,
+            "duration": int(anim_tab.var_duration.get()),
+            "anim_path": anim_tab.var_anim_path.get(),
+        }
+        self.start_animation(target)
+
     def start_animation(self, target):
         self.interpreter = AnimationInterpreter(target)
+        msg = ", ".join((f"{key}: {val}" for key, val in target.items()))
+        logger.info(f"Started {msg}")
 
     def loop_event(self):
         if self.interpreter:
@@ -45,6 +60,7 @@ class AnimationControl:
             else:
                 self.master.projector_control.update_animation_image(None)
                 self.interpreter = None
+                logger.info(f"Done.")
 
 
 class AnimationInterpreter:
@@ -56,15 +72,14 @@ class AnimationInterpreter:
         self.size = target["size"]
         self.duration = target["duration"]
         self.start_time = time.time()
-        logger.debug(f"Started.")
 
         # TODO: apply variables in the future
         # self.variables = []
         # self.anim_str = self.replace_variables(self.anim_str, self.variables)
 
     def load_anim_str(self, path: str) -> str:
-        path2 = os.path.join(self.CUSTOM_ANIMS_DIR, os.path.basename(path))
-        path3 = os.path.join(self.BASE_ANIMS_DIR, os.path.basename(path))
+        path2 = os.path.join(CUSTOM_ANIMS_DIR, os.path.basename(path))
+        path3 = os.path.join(BASE_ANIMS_DIR, os.path.basename(path))
         if os.path.isfile(path):
             with open(path, "r") as f:
                 return f.read()

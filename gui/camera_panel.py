@@ -29,9 +29,9 @@ logger = logging.getLogger(__name__)
 
 
 def costly_overlay(img: Image, overlay: np.array, R: int, G: int, B: int, s=128):
-    overlay_gray = Image.fromarray(overlay).convert("L")  # ensure it's in grayscale mode
+    overlay_gray = Image.fromarray(overlay).convert("L")  # ensure its in grayscale mode
 
-    # Convert grayscale to blue-tinted image: (R=0, G=0, B=value, A=alpha)
+    # Convert grayscale to color-tinted image
     blue_overlay = Image.new("RGBA", overlay_gray.size)
     blue_overlay_data = [(R, G, B, s) for value in overlay_gray.getdata()]  # semi-transparent
     blue_overlay.putdata(blue_overlay_data)
@@ -39,6 +39,18 @@ def costly_overlay(img: Image, overlay: np.array, R: int, G: int, B: int, s=128)
     base_rgba = img.convert("RGBA")
     combined = Image.alpha_composite(base_rgba, blue_overlay)
     return combined.convert("RGB")
+
+
+def display2real(display_cords: tuple[int, int]) -> tuple[int, int]:
+    real_x = display_cords[0] * CamConsts.REAL_WIDTH / CamConsts.DISPLAY_WIDTH
+    real_y = display_cords[1] * CamConsts.REAL_HEIGHT / CamConsts.DISPLAY_HEIGHT
+    return (int(real_x), int(real_y))
+
+
+def real2display(real_cords: tuple[int, int]) -> tuple[int, int]:
+    disp_x = real_cords[0] * CamConsts.DISPLAY_WIDTH / CamConsts.REAL_WIDTH
+    disp_y = real_cords[1] * CamConsts.DISPLAY_HEIGHT / CamConsts.REAL_HEIGHT
+    return (int(disp_x), int(disp_y))
 
 
 class CameraPanel:
@@ -49,7 +61,9 @@ class CameraPanel:
         self.camera_image = Image.new(
             "RGB", (CamConsts.DISPLAY_WIDTH, CamConsts.DISPLAY_HEIGHT), color="grey"
         )
-        self.interaction_mode = None
+        self.last_b1_press_pos = (0, 0)  # this is in display coordinates
+        self.brush_index = 4
+        self.brush_size = CamConsts.BRUSH_SIZR_ARR[self.brush_index]  # this will be in real coords
 
         self.canvas = Canvas(
             parent, width=CamConsts.DISPLAY_WIDTH, height=CamConsts.DISPLAY_HEIGHT, bg="black"
@@ -60,8 +74,25 @@ class CameraPanel:
         cur_frame.grid(row=1, column=0, sticky=tk.W + tk.E)
         self.lbl_test = Label(cur_frame, text="Init")
         self.lbl_test.pack(fill=tk.Y)
-        self.last_b1_press_pos = (0, 0)
+
+        cur_frame = Frame(parent)
+        cur_frame.grid(row=1, column=0, sticky=tk.W + tk.E)
+        self.setup_interaction_mode_selector(cur_frame)
+
         logger.debug(f"Initialization done.")
+
+    def setup_interaction_mode_selector(self, frame):        
+        self.interaction_var = tk.StringVar(value="NONE")
+        modes = ["NONE", "ANMT", "DRAW"]
+        Label(frame, text="Interaction mode:").pack(side=tk.LEFT)
+        for mode in modes:
+            tk.Radiobutton(
+                frame, text=mode, variable=self.interaction_var, value=mode
+            ).pack(side=tk.LEFT)
+
+    # def set_mode(self, mode):
+    #     self.interaction_mode = mode
+    #     logger.debug(f"Interaction mode {self.interaction_mode}")
 
     def display_image(self):
         # Display the selected image in the canvas
@@ -82,18 +113,22 @@ class CameraPanel:
         self.camera_image = self.controller.get_image()
         self.display_image()
 
+    def change_brush_size(self, direction):
+        self.brush_index += direction
+        if self.brush_index > len(CamConsts.BRUSH_SIZR_ARR): self.brush_index = len(CamConsts.BRUSH_SIZR_ARR)
+        if self.brush_index < 0: self.brush_index = 0
+        self.brush_size = CamConsts.BRUSH_SIZR_ARR[self.brush_index]
+
     def canvas_button1_press(self, event):
         x = event.x
         y = event.y
         self.last_b1_press_pos = (x, y)
-        logger.info(f"X: {x}; Y:{y}")
+        logger.info(f"Button press at X: {x}; Y:{y}")
 
     def canvas_button1_motion(self, event):
         """This activates during B1 press-move"""
         x = event.x
         y = event.y
-        logger.info(f"B1-Motion X: {x}; Y:{y}")
-        # y = event.y - 76 + 50  # to account for bigger canvas than camera image
 
     def canvas_motion(self, event):
         """
@@ -104,7 +139,18 @@ class CameraPanel:
         self.lbl_test.config(text=f"X={self.mouse_x}, Y={self.mouse_y}")
 
     def canvas_button1_release(self, event):
-        if self.interaction_mode == "ANIMATION":
+        logger.info(f"Button release at X: {event.x}; Y:{event.y}")
+        interaction_mode = self.interaction_var.get()
+        if interaction_mode == "ANMT":
             # get target
-            # call animation control with given target
-            pass
+            dx = event.x - self.last_b1_press_pos[0]
+            dy = -(event.y - self.last_b1_press_pos[1])
+            dx = 0.00001 if dx == 0 else dx
+            angle = int(np.arctan(dy/dx)*180/np.pi)  # is this correct?
+            if angle < 0: angle += 180
+            if dy < 0: angle += 180
+
+            # call animation tab with given values
+            anim_start_real = display2real(self.last_b1_press_pos)
+            self.master.animation_control.start_animation_gui_params(anim_start_real[0], anim_start_real[1], angle, self.brush_size)
+            

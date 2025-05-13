@@ -31,6 +31,7 @@ class Automation:
             "set_laser_duty": self.master.rigol_controller.set_laserduty,
             "sleep": time.sleep,
             "start_animation": self.start_animation,
+            "start_anim_gui_params": self.master.animation_control.start_animation_gui_params,
         }
 
         self.internal_commands_map = {

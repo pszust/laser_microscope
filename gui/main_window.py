@@ -68,27 +68,26 @@ class MainWindow(Frame):
         self.flipper2_control = FlipperController(2)
         self.heat_stage_control = HeatController()
 
-        self.automation_controller = Automation(self)
         self.projector_control = ProjectorControl(self)
-
         self.animation_control = AnimationControl(self)
+        self.automation_controller = Automation(self)  # this has to be after all the controllers
 
         self.elliptec_angle_var = StringVar()
         self.projector_window = None
 
-        self.create_widgets()
-        self.main_loop()
-        self.automation_controller.start()  # start main loop of the automation thingy
-
-    def create_widgets(self):
+        # layout setup
         self.master.grid_columnconfigure(0, weight=2)
         self.master.grid_columnconfigure(1, weight=1)
         self.master.grid_columnconfigure(2, weight=1)
         self.master.grid_columnconfigure(3, weight=2)
 
-        # Create the menu bar
+        self.create_widgets()
         self.create_menu()
+        self.bind_keys()
+        self.main_loop()
+        self.automation_controller.start()  # start main loop of the automation thingy
 
+    def create_widgets(self):
         # -- COLUMN 0 --
         column_frame = Frame(self.master)
         column_frame.grid(row=0, column=0, padx=padd, sticky=N + S + E + W)
@@ -189,6 +188,10 @@ class MainWindow(Frame):
         self.proj_menu = Menu(self.menu, tearoff=False)
         self.menu.add_cascade(label="Projector", menu=self.proj_menu)
         self.proj_menu.add_command(label="Load Image", command=self.load_image)
+
+    def bind_keys(self):
+        self.camera_panel.canvas.bind("[", lambda: self.change_brush_size(-1))
+        self.camera_panel.canvas.bind("]", lambda: self.change_brush_size(1))
 
     def main_loop(self):
         self.update_labels()
