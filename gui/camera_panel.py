@@ -15,7 +15,7 @@ from tkinter import (
 from PIL import Image, ImageTk
 
 import utils.consts as consts
-from devices.camera_control_mock import CameraController
+from devices.camera_control import CameraController
 from utils.utils import thread_execute
 import numpy as np
 from utils.consts import CamConsts
@@ -69,14 +69,26 @@ class CameraPanel:
             parent, width=CamConsts.DISPLAY_WIDTH, height=CamConsts.DISPLAY_HEIGHT, bg="black"
         )
         self.canvas.grid(row=0, column=0, sticky=tk.W + tk.E)
+        
+        # Title
+        cur_frame = Frame(self.frame)
+        cur_frame.grid(row=1, column=0, sticky=tk.W + tk.E)
+        Label(cur_frame, text="CAMERA CONTROL", font=consts.subsystem_name_font).pack(side=tk.LEFT)
+
+        # Connection controls
+        cur_frame = Frame(parent)
+        cur_frame.grid(row=2, column=0, sticky=tk.W + tk.E)
+        Button(cur_frame, text="Connect to camera", command=self.controller.connect).pack(side=tk.LEFT)
+        self.lbl_status = Label(cur_frame, text="CAMERA status: unknown", bg="gray")
+        self.lbl_status.pack(side=tk.LEFT)
 
         cur_frame = Frame(parent)
-        cur_frame.grid(row=1, column=0, sticky=tk.W + tk.E)
+        cur_frame.grid(row=3, column=0, sticky=tk.W + tk.E)
         self.lbl_test = Label(cur_frame, text="Init")
         self.lbl_test.pack(fill=tk.Y)
 
         cur_frame = Frame(parent)
-        cur_frame.grid(row=1, column=0, sticky=tk.W + tk.E)
+        cur_frame.grid(row=4, column=0, sticky=tk.W + tk.E)
         self.setup_interaction_mode_selector(cur_frame)
 
         logger.debug(f"Initialization done.")
@@ -108,10 +120,20 @@ class CameraPanel:
         # self.mouseWinX, self.mouseWinY = 0, 0
         # self.bind("<Motion>", self.press_in_window)
 
-    @thread_execute
+    # @thread_execute
     def update_image(self):
         self.camera_image = self.controller.get_image()
         self.display_image()
+        
+    def update(self):
+        # todo: check out if there is no async (get_status uses method with thread_execute)
+        status = self.controller.get_status()
+
+        # connection label
+        con_state = status.get("connection", "UNKNOWN")
+        con_color = consts.con_colors.get(con_state, "gray")
+        self.lbl_status.config(text=f"CAMERA status: {con_state}", bg=con_color)
+
 
     def change_brush_size(self, direction):
         self.brush_index += direction
