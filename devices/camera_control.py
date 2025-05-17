@@ -43,17 +43,6 @@ class CameraController:
         frame = np.frombuffer(self.sharr, dtype=np.uint8).reshape(CamConsts.SHAPE[1], CamConsts.SHAPE[0], 3)
         return Image.fromarray(frame)
     
-    def save_image(self, path: str):
-        frame = np.frombuffer(self.sharr, dtype=np.uint8).reshape(CamConsts.SHAPE[1], CamConsts.SHAPE[0], 3)
-        image = Image.fromarray(frame)
-        image.save(path)
-        logger.info(f"Saving image as {path}")
-
-    def save_as_array(self, path: str):
-        frame = np.frombuffer(self.sharr, dtype=np.uint8).reshape(CamConsts.SHAPE[1], CamConsts.SHAPE[0], 3)              
-        np.save(path, frame)
-        logger.info(f"Saving raw array as {path}")
-    
     def exit_camera(self):
         logger.info("Initiated camera exit")
         self.event.set()  # to close CamReader

@@ -36,7 +36,7 @@ from gui.flipper_panel import FlipperPanel
 from gui.projector_panel import ProjectorPanel
 import utils.consts as consts
 from core.automation import Automation
-from devices.camera_control_mock import CameraController
+from devices.camera_control import CameraController
 from devices.polar_control_mock import PolarController
 from devices.rigol_control_mock import RigolController
 from devices.xy_stage_control_mock import StageController

@@ -15,7 +15,7 @@ from tkinter import (
 from PIL import Image, ImageTk
 
 import utils.consts as consts
-from devices.camera_control_mock import CameraController
+from devices.camera_control import CameraController
 from utils.utils import thread_execute
 import numpy as np
 import cv2
