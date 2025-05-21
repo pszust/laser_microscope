@@ -18,6 +18,7 @@ import utils.consts as consts
 from devices.camera_control_mock import CameraController
 from utils.utils import thread_execute
 import numpy as np
+import cv2
 from utils.consts import CamConsts
 from typing import TYPE_CHECKING
 import logging
@@ -58,7 +59,10 @@ class CameraPanel:
         self.master = master
         self.controller = controller
         self.frame = Frame(parent)
-        self.camera_image = Image.new(
+        self.full_cam_img = Image.new(
+            "RGB", (CamConsts.REAL_WIDTH, CamConsts.REAL_HEIGHT), color="grey"
+        )
+        self.disp_cam_img = Image.new(
             "RGB", (CamConsts.DISPLAY_WIDTH, CamConsts.DISPLAY_HEIGHT), color="grey"
         )
         self.last_b1_press_pos = (0, 0)  # this is in display coordinates
@@ -69,17 +73,37 @@ class CameraPanel:
             parent, width=CamConsts.DISPLAY_WIDTH, height=CamConsts.DISPLAY_HEIGHT, bg="black"
         )
         self.canvas.grid(row=0, column=0, sticky=tk.W + tk.E)
+        
+        # Title
+        cur_frame = Frame(self.frame)
+        cur_frame.grid(row=1, column=0, sticky=tk.W + tk.E)
+        Label(cur_frame, text="CAMERA CONTROL", font=consts.subsystem_name_font).pack(side=tk.LEFT)
+
+        # Connection controls
+        cur_frame = Frame(parent)
+        cur_frame.grid(row=2, column=0, sticky=tk.W + tk.E)
+        Button(cur_frame, text="Connect to camera", command=self.controller.connect).pack(side=tk.LEFT)
+        self.lbl_status = Label(cur_frame, text="CAMERA status: unknown", bg="gray")
+        self.lbl_status.pack(side=tk.LEFT)
 
         cur_frame = Frame(parent)
-        cur_frame.grid(row=1, column=0, sticky=tk.W + tk.E)
+        cur_frame.grid(row=3, column=0, sticky=tk.W + tk.E)
         self.lbl_test = Label(cur_frame, text="Init")
         self.lbl_test.pack(fill=tk.Y)
 
         cur_frame = Frame(parent)
-        cur_frame.grid(row=1, column=0, sticky=tk.W + tk.E)
+        cur_frame.grid(row=4, column=0, sticky=tk.W + tk.E)
         self.setup_interaction_mode_selector(cur_frame)
+        self.setup_bindings()
 
         logger.debug(f"Initialization done.")
+
+    def setup_bindings(self):        
+        self.canvas.bind("<ButtonPress-1>", self.canvas_button1_press)
+        self.canvas.bind("<ButtonRelease-1>", self.canvas_button1_release)
+        # self.canvas.bind("<ButtonRelease-1>", self.cam_btn_release)
+        self.canvas.bind("<B1-Motion>", self.canvas_button1_motion)
+        self.canvas.bind("<Motion>", self.canvas_motion)
 
     def setup_interaction_mode_selector(self, frame):        
         self.interaction_var = tk.StringVar(value="NONE")
@@ -97,27 +121,34 @@ class CameraPanel:
     def display_image(self):
         # Display the selected image in the canvas
         self.canvas.delete("all")
-        self.photo = ImageTk.PhotoImage(self.camera_image)
+        self.photo = ImageTk.PhotoImage(self.disp_cam_img)
         self.canvas.create_image(0, 0, image=self.photo, anchor=tk.NW)
-        self.canvas.bind("<ButtonPress-1>", self.canvas_button1_press)
-        self.canvas.bind("<ButtonRelease-1>", self.canvas_button1_release)
-        # self.canvas.bind("<ButtonRelease-1>", self.cam_btn_release)
-        self.canvas.bind("<B1-Motion>", self.canvas_button1_motion)
-        self.canvas.bind("<Motion>", self.canvas_motion)
 
         # self.mouseWinX, self.mouseWinY = 0, 0
         # self.bind("<Motion>", self.press_in_window)
 
-    @thread_execute
+    # @thread_execute
     def update_image(self):
-        self.camera_image = self.controller.get_image()
+        self.full_cam_img = self.controller.get_image()
+        self.disp_cam_img = self.full_cam_img.resize(CamConsts.DISPLAY_SHAPE)
         self.display_image()
+        
+    def update(self):
+        # todo: check out if there is no async (get_status uses method with thread_execute)
+        status = self.controller.get_status()
+
+        # connection label
+        con_state = status.get("connection", "UNKNOWN")
+        con_color = consts.con_colors.get(con_state, "gray")
+        self.lbl_status.config(text=f"CAMERA status: {con_state}", bg=con_color)
+
 
     def change_brush_size(self, direction):
         self.brush_index += direction
         if self.brush_index > len(CamConsts.BRUSH_SIZR_ARR): self.brush_index = len(CamConsts.BRUSH_SIZR_ARR)
         if self.brush_index < 0: self.brush_index = 0
         self.brush_size = CamConsts.BRUSH_SIZR_ARR[self.brush_index]
+        logger.info(f"Brush sie is now {self.brush_size}")
 
     def canvas_button1_press(self, event):
         x = event.x
@@ -152,5 +183,5 @@ class CameraPanel:
 
             # call animation tab with given values
             anim_start_real = display2real(self.last_b1_press_pos)
-            self.master.animation_control.start_animation_gui_params(anim_start_real[0], anim_start_real[1], angle, self.brush_size)
+            self.master.animation_control.start_animation_gui_params(anim_start_real[1], anim_start_real[0], angle, self.brush_size)
             

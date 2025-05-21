@@ -2,30 +2,33 @@ import time
 from tkinter import messagebox
 
 import pyvisa
-import logging
+# import logging
 
-logger = logging.getLogger(__name__)
+# logger = logging.getLogger(__name__)
 
 
 class RigolController:
     def __init__(self):
         self.rigol = None
-        self.laserduty = 0.0
+        self.con_stat = "UNKNOWN"
         self.laserstate = "OFF"
-        logger.debug(f"Initialization done.")
+        self.laserduty = 0.0
+        # logger.debug(f"Initialization done.")
 
     def connect(self):
+        self.con_stat = "CONNECTING"
         if self.rigol is not None:
             messagebox.showinfo(title="Rigol", message="Rigol is already connected.")
             return True
 
         rm = pyvisa.ResourceManager()
         try:
-            inst = rm.open_resource("USB0::0x1AB1::0x0643::DG8A224704187::INSTR")
-            if inst.query("*IDN?").startswith("Rigol Technologies"):
+            inst = rm.open_resource('USB0::0x1AB1::0x0643::DG8A220800267::INSTR')
+            if inst.query("*IDN?")[:18] == 'Rigol Technologies':
                 self.rigol = inst
-                self.rigol.write(":SOUR1:APPL:SQU 1000,5,2.5,0")
-                return True
+                inst.write(':SOUR1:APPL:SQU 2000,5,2.5,0')
+            self.con_stat = "CONNECTED"
+            return True
         except Exception as e:
             messagebox.showerror(title="Rigol", message=f"Connection to Rigol failed! {e}")
             self.rigol = None
@@ -35,6 +38,7 @@ class RigolController:
         if self.rigol:
             self.rigol.close()
             self.rigol = None
+        self.con_stat = "NOT CONNECTED"
 
     def set_laserduty(self, value):
         """Sets the laser duty cycle and updates the device."""
@@ -61,3 +65,34 @@ class RigolController:
             self.rigol.write(":OUTP1 OFF")
             self.laserstate = "OFF"
             return "Laser turned OFF."
+
+    def laser_on(self):
+        if self.con_stat != "CONNECTED":
+            return "Not connected."
+        self.rigol.write(":OUTP1 ON")
+        self.laserstate = "ON"
+
+    def laser_off(self):
+        if self.con_stat != "CONNECTED":
+            return "Not connected."
+        self.rigol.write(":OUTP1 OFF")
+        self.laserstate = "OFF"
+
+    def get_status(self):
+        """Possible values are
+        'connection':
+            'CONNECTED',
+            'CONNECTING',
+            'UNKNOWN',
+            'NOT CONNECTED'
+        'laserstate':
+            'ON',
+            'OFF'
+        'laserduty':
+            float value between 0.0 and 1.0
+        """
+        return {
+            "connection": self.con_stat,
+            "laserstate": self.laserstate,
+            "laserduty": self.laserduty,
+        }

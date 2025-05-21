@@ -11,6 +11,9 @@ from multiprocessing import RawArray
 from multiprocessing import Event
 from pyueye import ueye
 from utils.consts import CamConsts
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 class CameraController:
@@ -24,10 +27,12 @@ class CameraController:
             "i", (0, 0, 0)
         )  # hold the camera configuration (gain, expo, invert_colors)
         # self.rawFrame = np.zeros((960, 1280, 3), np.uint8)
+        # self.connect()
 
     def connect(self):
         self.con_stat = "CONNECTING"
         self.cam_reader = CamReader(self.event, self.sharr, self.config_arr, self.camparam_arr)
+        self.cam_reader.start()
         self.con_stat = "CONNECTED"
 
     def disconnect(self):
@@ -36,8 +41,22 @@ class CameraController:
 
     def get_image(self) -> Image:
         frame = np.frombuffer(self.sharr, dtype=np.uint8).reshape(CamConsts.SHAPE[1], CamConsts.SHAPE[0], 3)
-        # time.sleep(0.75)
         return Image.fromarray(frame)
+    
+    def save_image(self, path: str):
+        frame = np.frombuffer(self.sharr, dtype=np.uint8).reshape(CamConsts.SHAPE[1], CamConsts.SHAPE[0], 3)
+        image = Image.fromarray(frame)
+        image.save(path)
+        logger.info(f"Saving image as {path}")
+
+    def save_as_array(self, path: str):
+        frame = np.frombuffer(self.sharr, dtype=np.uint8).reshape(CamConsts.SHAPE[1], CamConsts.SHAPE[0], 3)              
+        np.save(path, frame)
+        logger.info(f"Saving raw array as {path}")
+    
+    def exit_camera(self):
+        logger.info("Initiated camera exit")
+        self.event.set()  # to close CamReader
 
     def get_status(self) -> dict:
         """Possible values are
@@ -87,26 +106,26 @@ class CamReader(Process):
         self.bytes_per_pixel = int(self.nBitsPerPixel / 8)
         self.width = ueye.INT()
         self.height = ueye.INT()
-        print("cam reader initialized")
+        logger.info("Camera reader initialized.")
 
     def init_ui_camera(self):
         nRet = ueye.is_InitCamera(self.hCam, None)
         if nRet != ueye.IS_SUCCESS:
-            print("is_InitCamera ERROR")
+            logger.error("is_InitCamera ERROR")
 
         # Reads out the data hard-coded in the non-volatile camera memory and writes it to the data structure that cInfo points to
         nRet = ueye.is_GetCameraInfo(self.hCam, self.cInfo)
         if nRet != ueye.IS_SUCCESS:
-            print("is_GetCameraInfo ERROR")
+            logger.error("is_GetCameraInfo ERROR")
 
         # You can query additional information about the sensor type used in the camera
         nRet = ueye.is_GetSensorInfo(self.hCam, self.sInfo)
         if nRet != ueye.IS_SUCCESS:
-            print("is_GetSensorInfo ERROR")
+            logger.error("is_GetSensorInfo ERROR")
 
         nRet = ueye.is_ResetToDefault(self.hCam)
         if nRet != ueye.IS_SUCCESS:
-            print("is_ResetToDefault ERROR")
+            logger.error("is_ResetToDefault ERROR")
 
         # Set display mode to DIB
         nRet = ueye.is_SetDisplayMode(self.hCam, ueye.IS_SET_DM_DIB)
@@ -116,39 +135,36 @@ class CamReader(Process):
             # setup the color depth to the current windows setting
             ueye.is_GetColorDepth(self.hCam, self.nBitsPerPixel, self.m_nColorMode)
             self.bytes_per_pixel = int(self.nBitsPerPixel / 8)
-            print(
+            logger.debug(
                 "IS_COLORMODE_BAYER: ",
             )
-            print("\tm_nColorMode: \t\t", self.m_nColorMode)
-            print("\tnBitsPerPixel: \t\t", self.nBitsPerPixel)
-            print("\tbytes_per_pixel: \t\t", self.bytes_per_pixel)
-            print()
+            logger.debug("\tm_nColorMode: \t\t", self.m_nColorMode)
+            logger.debug("\tnBitsPerPixel: \t\t", self.nBitsPerPixel)
+            logger.debug("\tbytes_per_pixel: \t\t", self.bytes_per_pixel)
 
         elif int.from_bytes(self.sInfo.nColorMode.value, byteorder="big") == ueye.IS_COLORMODE_CBYCRY:
             # for color camera models use RGB32 mode
             self.m_nColorMode = ueye.IS_CM_BGRA8_PACKED
             self.nBitsPerPixel = ueye.INT(32)
             self.bytes_per_pixel = int(self.nBitsPerPixel / 8)
-            print(
+            logger.debug(
                 "IS_COLORMODE_CBYCRY: ",
             )
-            print("\tm_nColorMode: \t\t", self.m_nColorMode)
-            print("\tnBitsPerPixel: \t\t", self.nBitsPerPixel)
-            print("\tbytes_per_pixel: \t\t", self.bytes_per_pixel)
-            print()
+            logger.debug("\tm_nColorMode: \t\t", self.m_nColorMode)
+            logger.debug("\tnBitsPerPixel: \t\t", self.nBitsPerPixel)
+            logger.debug("\tbytes_per_pixel: \t\t", self.bytes_per_pixel)
 
         elif int.from_bytes(self.sInfo.nColorMode.value, byteorder="big") == ueye.IS_COLORMODE_MONOCHROME:
             # for color camera models use RGB32 mode
             self.m_nColorMode = self.ueye.IS_CM_MONO8
             self.nBitsPerPixel = self.ueye.INT(8)
             self.bytes_per_pixel = int(self.nBitsPerPixel / 8)
-            print(
+            logger.debug(
                 "IS_COLORMODE_MONOCHROME: ",
             )
-            print("\tm_nColorMode: \t\t", self.m_nColorMode)
-            print("\tnBitsPerPixel: \t\t", self.nBitsPerPixel)
-            print("\tbytes_per_pixel: \t\t", self.bytes_per_pixel)
-            print()
+            logger.debug("\tm_nColorMode: \t\t", self.m_nColorMode)
+            logger.debug("\tnBitsPerPixel: \t\t", self.nBitsPerPixel)
+            logger.debug("\tbytes_per_pixel: \t\t", self.bytes_per_pixel)
 
         else:
             # for monochrome camera models use Y8 mode
@@ -226,26 +242,33 @@ class CamReader(Process):
         fps = ueye.double()
         ret = ueye.is_GetFramesPerSecond(self.hCam, fps)
         print("Current FPS", ret, fps)
+        if fps < 1:
+            print(f"The camera is reading FPS parameter at {fps}, recommending software/PC/camera restart!")
         time.sleep(0.5)
 
     # override the run function
     def run(self):
         self.init_ui_camera()
+        final_img = np.zeros((960, 1280, 4), dtype = np.ubyte)
         while True:
             try:
                 # read frame from new camera
                 array = ueye.get_data(
                     self.pcImageMemory, self.width, self.height, self.nBitsPerPixel, self.pitch, copy=False
                 )
+                # print("SUM ARRAY: ", array.sum())
                 # bytes_per_pixel = int(nBitsPerPixel / 8)
                 # ...reshape it in an numpy array...
                 frame = np.reshape(array, (self.height.value, self.width.value, self.bytes_per_pixel))
-                # ...resize the image by a half (frame should be 1280x960 now)
+                # ...resize the image by a half (frame should be 1280x960 now) (it is still better than 800x448)
                 frame = cv2.resize(frame, (0, 0), fx=0.5, fy=0.5)
+                # print("SUM FRAME: ", frame.sum())
 
                 # correctly resize frame
                 final_img = np.zeros((960, 1280, 4), dtype=np.ubyte)
                 final_img[:, :, :] = frame
+                # print("SUM FINAL_IMG: ", final_img.sum())
+                # print(100*"-")
 
                 # correctly resize frame
                 # w, h = frame.shape[1], frame.shape[0]
@@ -253,8 +276,9 @@ class CamReader(Process):
                 # final_img = np.zeros((448, 800, 4), dtype = np.ubyte)
                 # pos_x = int((800-frame.shape[1])/2)
                 # final_img[:, pos_x:pos_x + frame.shape[1], :] = frame
-                if self.camparam_arr[2] == 1:
-                    final_img[:, :, 2] = final_img[:, :, 0]
+                # if self.camparam_arr[2] == 1:
+                #     final_img[:, :, 2] = final_img[:, :, 0]
+                final_img = cv2.flip(final_img, 1)
             except:
                 # final_img = generate_random_image()
                 # final_img = generate_random_image(shape = (1280, 960))
@@ -275,17 +299,17 @@ class CamReader(Process):
             # time.sleep(0.010)
             # self.pGamma = ueye.double()
             # self.pGamma.value = 128
-            # # print(sys.getsizeof(self.pGamma))
+            # # logger.debug(sys.getsizeof(self.pGamma))
             # # ret = ueye.is_Gamma(self.hCam, ueye.IS_GAMMA_CMD_GET, self.pGamma, 8)
             # ret = ueye.is_SetAutoParameter(self.hCam, ueye.IS_SET_AUTO_REFERENCE, self.pGamma.value, 0)
-            # print(f'ret: {ret}')
+            # logger.debug(f'ret: {ret}')
             # d = {
             #     ueye.IS_INVALID_PARAMETER: 'IS_INVALID_PARAMETER',
             #     ueye.IS_NO_SUCCESS: 'IS_NO_SUCCESS',
             #     ueye.IS_NOT_SUPPORTED: 'IS_NOT_SUPPORTED',
             #     ueye.IS_SUCCESS: 'IS_SUCCESS',
             # }
-            # print(f'pGama is {self.pGamma.value}, ret: {ret}, means: {d[ret]}')
+            # logger.debug(f'pGama is {self.pGamma.value}, ret: {ret}, means: {d[ret]}')
 
             # change expo
             if self.config_arr[1] != 0:
@@ -330,6 +354,7 @@ class CamReader(Process):
                 # Disables the hCam camera handle and releases the data structures and memory areas taken up by the uEye camera
                 ueye.is_ExitCamera(self.hCam)
                 break
+        print("Main camera controller loop exited!")
 
     def change_gain(self, gain):
         parameter = cv2.CAP_PROP_GAIN

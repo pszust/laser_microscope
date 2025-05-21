@@ -32,6 +32,9 @@ class Automation:
             "sleep": time.sleep,
             "start_animation": self.start_animation,
             "start_anim_gui_params": self.master.animation_control.start_animation_gui_params,
+            "display_calibration_dot": self.master.projector_control.set_calibration_img,
+            "save_calibration_img": self.save_calibration_img,
+            "get_calibration": self.master.projector_control.get_calibration_matrix,
         }
 
         self.internal_commands_map = {
@@ -92,8 +95,13 @@ class Automation:
 
             # execute script according to map
             if current.command in self.command_map:
+                arguments = []
+                for arg in current.args:
+                    if type(arg) is str:
+                        arg = self.variables.get(arg, arg)
+                    arguments.append(arg)
                 func = self.command_map[current.command]
-                func(*current.args)
+                func(*arguments)
 
             # go to next position
             self.execution_position[-1] += 1
@@ -175,3 +183,11 @@ class Automation:
             "anim_path": anim_name,
         }
         self.master.animation_control.start_animation(target)
+
+    def save_calibration_img(self, num: int):
+        if num == 999:
+            path = f"calibration/calibration_array_baseline.npy"
+        else:
+            path = f"calibration/calibration_array_{str(num).zfill(2)}.npy"
+            
+        self.master.camera_controller.save_as_array(path)

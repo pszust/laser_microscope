@@ -88,7 +88,9 @@ class Command:
     def handle_arg(arg: str):
         if arg.isdigit():
             parsed_arg = int(arg)
-        elif "." in arg and arg.replace(".", "").isdigit():
+        elif arg[0] == "-" and arg[1:].isdigit():
+            parsed_arg = -int(arg[1:])
+        elif "." in arg:
             parsed_arg = float(arg)
         else:
             parsed_arg = arg

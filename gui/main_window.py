@@ -190,8 +190,9 @@ class MainWindow(Frame):
         self.proj_menu.add_command(label="Load Image", command=self.load_image)
 
     def bind_keys(self):
-        self.camera_panel.canvas.bind("[", lambda: self.change_brush_size(-1))
-        self.camera_panel.canvas.bind("]", lambda: self.change_brush_size(1))
+        self.master.bind("[", lambda _: self.camera_panel.change_brush_size(-1))
+        self.master.bind("]", lambda _: self.camera_panel.change_brush_size(1))
+        self.master.protocol("WM_DELETE_WINDOW", self.exit)
 
     def main_loop(self):
         self.update_labels()
@@ -214,6 +215,7 @@ class MainWindow(Frame):
         self.projector_panel.update()  # this is more than labels
         self.labjack_panel.update()
         self.flipper_panel.update()
+        self.camera_panel.update()
 
     def load_image(self):
         # Placeholder function to load image
@@ -242,3 +244,8 @@ class MainWindow(Frame):
         )
         if filename:
             self.automation_controller.execute_script_file(filename)
+
+    def exit(self):
+        logger.info("Exiting the software!")
+        self.camera_controller.exit_camera()  # to close CamReader
+        self.master.quit()

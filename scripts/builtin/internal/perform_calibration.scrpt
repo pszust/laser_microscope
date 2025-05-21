@@ -1,0 +1,13 @@
+pos = 0
+save_calibration_img(999)
+laser_on()
+loop(16){
+    display_calibration_dot(pos)
+    sleep(0.5)
+    save_calibration_img(pos)
+    sleep(0.25)
+    pos += 1
+}
+display_calibration_dot(-1)
+laser_off()
+get_calibration()

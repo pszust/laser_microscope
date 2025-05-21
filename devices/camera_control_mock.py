@@ -77,6 +77,21 @@ class CameraController:
         image = self._generate_placeholder_image()
         time.sleep(0.75)
         return Image.fromarray(image)
+    
+    def save_image(self, path: str):
+        frame = self._generate_placeholder_image()
+        image = Image.fromarray(frame)
+        image.save(path)
+        logger.info(f"Saving image as {path}")
+
+    def save_as_array(self, path: str):
+        frame = self._generate_placeholder_image()
+        np.save(path, frame)
+        logger.info(f"Saving raw array as {path}")
+    
+    def exit_camera(self):
+        logger.info("Initiated camera exit")
+        # self.event.set()  # to close CamReader
 
     def get_status(self) -> dict:
         """Possible values are

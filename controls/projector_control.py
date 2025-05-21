@@ -5,11 +5,14 @@ import numpy as np
 import cv2
 from PIL import Image, ImageTk
 from utils.consts import ProjConsts
+from utils.utils import get_homography_matrix, num_to_coords
+import logging
 
 if TYPE_CHECKING:
     from gui.main_window import MainWindow  # only used for type hints
+logger = logging.getLogger(__name__)
 
-
+calib_dots_dim = 4
 class ProjectorControl:
     def __init__(self, master: "MainWindow"):
         self.master = master
@@ -21,6 +24,9 @@ class ProjectorControl:
         # raw_ images are before transposing to proj_shape and have cam_shape dimensions
         self.raw_animation_img = None
         self.raw_loaded_img = None
+
+        # direct_ images that are in project dimensions and are not being transposed (they are displayed as-is)
+        self.direct_calib_img = None
 
     def initiate_projector_window(self):
         if self.projector_window == None:
@@ -72,34 +78,63 @@ class ProjectorControl:
     def update_animation_image(self, img: np.ndarray | None) -> None:
         self.raw_animation_img = img
 
+    def set_calibration_img(self, num: int):
+        logger.info(f"Calib num {num} and it is {type(num)}")
+        if num == -1:
+            self.direct_calib_img = None
+        else:
+            # draw dot on black canvas at specified postion
+            proj_x, proj_y = num_to_coords(num, size = calib_dots_dim)    
+            self.direct_calib_img = np.zeros((ProjConsts.PROJ_IMG_SHAPE[1], ProjConsts.PROJ_IMG_SHAPE[0], 3), np.uint8)
+            self.direct_calib_img = cv2.circle(self.direct_calib_img, (proj_x, proj_y), 18, (255, 255, 255), -1)
+
     def refresh_projector_image(self) -> np.ndarray | None:
         # refresh the actual screen
-        transposed_image = self.compose_projector_image()
-        if transposed_image is None:
-            transposed_image = np.zeros(ProjConsts.PROJ_IMG_SHAPE, dtype=np.uint8)
+        final_image = self.compose_projector_image()
+        if final_image is None:
+            final_image = np.zeros(ProjConsts.PROJ_IMG_SHAPE, dtype=np.uint8)
 
-        img = Image.fromarray(transposed_image)
+        img = Image.fromarray(final_image)
         self.proj_imgtk = ImageTk.PhotoImage(image=img)
         # self.canvas_proj.create_image(512, 384, image=self.proj_imgtk, anchor=tk.CENTER)
         self.canvas_proj.create_image(0, 0, image=self.proj_imgtk, anchor=tk.NW)
-        return transposed_image  # this is to display the image in GUI
+        return final_image  # this is to display the image in GUI
 
     @staticmethod
-    def merge_images(images):
+    def merge_images(images: list[np.ndarray]) -> np.ndarray | None:
+        if not images:
+            return None
+        
         result = images[0].copy()
-        for img in images[1:]:
-            result = cv2.add(result, img)
+        if len(images) > 1:
+            for img in images[1:]:
+                result = cv2.add(result, img)
         return result
+    
+    def get_calibration_matrix(self):
+        self.homomatrix = get_homography_matrix()
 
-    def compose_projector_image(self):
-        # first add together all the images that need to be composed (in cam shape)
+    def compose_projector_image(self) -> np.ndarray | None:
+        transposed_image = None
+        direct_image = None
+
+        # first add together all the images that need to be composed nad transposed by homomatrix (in cam shape)
         if images_to_merge := [
             img for img in (self.raw_animation_img, self.raw_loaded_img) if img is not None
         ]:
             merged = self.merge_images(images_to_merge)
 
             # transpose using the thing
-            # transposed_image = cv2.warpPerspective(merged, self.homomatrix, ProjConsts.PROJ_IMG_SHAPE[:2])
-            transposed_image = cv2.resize(merged, ProjConsts.PROJ_IMG_SHAPE[:2])
-            return transposed_image
-        return None
+            if self.homomatrix is not None:
+                transposed_image = cv2.warpPerspective(merged, self.homomatrix, ProjConsts.PROJ_IMG_SHAPE[:2])
+            else:
+                transposed_image = cv2.resize(merged, ProjConsts.PROJ_IMG_SHAPE[:2])
+
+        # then add together all the images that are to be displayed as-is (without transposing)
+        if direct_images_to_merge := [
+            img for img in (self.direct_calib_img,) if img is not None
+        ]:
+            direct_image = self.merge_images(direct_images_to_merge)
+
+        final_img = self.merge_images([img for img in (transposed_image, direct_image) if img is not None])
+        return final_img
