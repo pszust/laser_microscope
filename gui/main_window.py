@@ -34,9 +34,10 @@ from gui.heat_stage_panel import HeatPanel
 from gui.labjack_panel import LabjackPanel
 from gui.flipper_panel import FlipperPanel
 from gui.projector_panel import ProjectorPanel
+from gui.stability_panel import StabilityPanel
 import utils.consts as consts
 from core.automation import Automation
-from devices.camera_control import CameraController
+from devices.camera_control_mock import CameraController
 from devices.polar_control_mock import PolarController
 from devices.rigol_control_mock import RigolController
 from devices.xy_stage_control_mock import StageController
@@ -48,6 +49,8 @@ from gui.xy_stage_panel import M30Panel
 from devices.heat_stage_control import HeatController
 import logging
 
+from utils.timer import LoopTimer
+
 logger = logging.getLogger(__name__)
 
 padd = 2
@@ -56,6 +59,7 @@ padd = 2
 class MainWindow(Frame):
     def __init__(self, master=None):
         super().__init__(master)
+        self.loop_timer = LoopTimer()
         self.master = master
 
         self.camera_controller = CameraController()
@@ -103,6 +107,12 @@ class MainWindow(Frame):
         frame.grid(row=1, column=0, padx=padd, sticky=N + S + E + W)
         frame.grid_columnconfigure(0, weight=1)  # Make the frame expand horizontally
         self.console_panel = ConsolePanel(frame, self.automation_controller)
+
+        # stability panel
+        frame = Frame(column_frame)
+        frame.grid(row=2, column=0, padx=padd, sticky=N + S + E + W)
+        frame.grid_columnconfigure(0, weight=1)  # Make the frame expand horizontally
+        self.stability_panel = StabilityPanel(frame, self.loop_timer)
 
         # -- COLUMN 1 --
         column_frame = Frame(self.master)
@@ -195,15 +205,19 @@ class MainWindow(Frame):
         self.master.protocol("WM_DELETE_WINDOW", self.exit)
 
     def main_loop(self):
+        self.loop_timer.start_loop()
         self.update_labels()
+        self.loop_timer.event("LABELS_UPDATED")
 
         self.animation_control.loop_event()
+        self.loop_timer.event("ANIMATIONS")
 
         self.camera_panel.update_image()
+        self.loop_timer.event("CAMERA_PANEL")
 
         # self.automation_controller.execute()
-
         self.master.after(consts.main_loop_time, self.main_loop)
+        self.loop_timer.end_loop()
 
     def update_labels(self):
         # TODO: need to split some logic into  main loop kind of method because some of these are not just for labels but they execute internal
@@ -216,6 +230,7 @@ class MainWindow(Frame):
         self.labjack_panel.update()
         self.flipper_panel.update()
         self.camera_panel.update()
+        self.stability_panel.update()
 
     def load_image(self):
         # Placeholder function to load image

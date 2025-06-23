@@ -15,7 +15,7 @@ from tkinter import (
 from PIL import Image, ImageTk
 
 import utils.consts as consts
-from devices.camera_control import CameraController
+from devices.camera_control_mock import CameraController
 from utils.utils import thread_execute
 import numpy as np
 import cv2
@@ -127,7 +127,7 @@ class CameraPanel:
         # self.mouseWinX, self.mouseWinY = 0, 0
         # self.bind("<Motion>", self.press_in_window)
 
-    # @thread_execute
+    @thread_execute
     def update_image(self):
         self.full_cam_img = self.controller.get_image()
         self.disp_cam_img = self.full_cam_img.resize(CamConsts.DISPLAY_SHAPE)
