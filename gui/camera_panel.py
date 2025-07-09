@@ -58,8 +58,9 @@ class CameraPanel:
     def __init__(self, parent: Frame, controller: CameraController, master: "MainWindow"):
         self.master = master
         self.controller = controller
+        self.alt_image = None  # if present it is displayed as image instead of camera image
         self.frame = Frame(parent)
-        self.full_cam_img = Image.new(
+        self.full_size_img = Image.new(
             "RGB", (CamConsts.REAL_WIDTH, CamConsts.REAL_HEIGHT), color="grey"
         )
         self.disp_cam_img = Image.new(
@@ -129,8 +130,11 @@ class CameraPanel:
 
     @thread_execute
     def update_image(self):
-        self.full_cam_img = self.controller.get_image()
-        self.disp_cam_img = self.full_cam_img.resize(CamConsts.DISPLAY_SHAPE)
+        if self.alt_image:
+            self.full_size_img = self.alt_image
+        else:
+            self.full_size_img = self.controller.get_image()
+        self.disp_cam_img = self.full_size_img.resize(CamConsts.DISPLAY_SHAPE)
         self.display_image()
         
     def update(self):
@@ -185,3 +189,10 @@ class CameraPanel:
             anim_start_real = display2real(self.last_b1_press_pos)
             self.master.animation_control.start_animation_gui_params(anim_start_real[1], anim_start_real[0], angle, self.brush_size)
             
+    def display_alt_image(self, image, timeout=0):
+        if type(image) is np.ndarray:
+            image = Image.fromarray(image)
+        self.alt_image = image
+
+    def reset_alt_image(self):
+        self.alt_image = None

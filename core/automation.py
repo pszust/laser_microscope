@@ -8,6 +8,7 @@ import cv2
 import numpy as np
 from PIL import Image, ImageTk
 
+from core.external_executor import ExternalExecutor
 from utils.command_handler import Command, ScriptParser, parse_command
 from utils.consts import ErrorMsg
 from utils.utils import thread_execute
@@ -25,6 +26,7 @@ class Automation:
         self.command_list = []
         self.variables = {}
         self.execution_position = [0]
+        self.ext_executor = ExternalExecutor()
         self.command_map = {
             "laser_on": self.master.rigol_controller.laser_on,
             "laser_off": self.master.rigol_controller.laser_off,
@@ -35,7 +37,16 @@ class Automation:
             "display_calibration_dot": self.master.projector_control.set_calibration_img,
             "save_calibration_img": self.save_calibration_img,
             "get_calibration": self.master.projector_control.get_calibration_matrix,
+            "get_camera_image": self.get_camera_image,
+            "exec_custom": self.execute_custom_func,
+            "log_value": self.log_value,
+            "display_alt_image": self.display_alt_image,
+            "reset_alt_image": self.reset_alt_image,
         }
+
+        self.unknown_no_of_args = (
+            "exec_custom"
+        )
 
         self.internal_commands_map = {
             "operator": self.use_operator,
@@ -101,7 +112,7 @@ class Automation:
                         arg = self.variables.get(arg, arg)
                     arguments.append(arg)
                 func = self.command_map[current.command]
-                func(*arguments)
+                func(arguments) if current.command in self.unknown_no_of_args else func(*arguments)
 
             # go to next position
             self.execution_position[-1] += 1
@@ -110,6 +121,19 @@ class Automation:
         l_value = cmd.args[0]
         operator = cmd.args[1]
         r_value = cmd.args[2]
+
+        # check if r_value is not a command itself and execute it if true
+        if r_value in self.command_map:
+            nested_cmd = Command(r_value, [str(arg) for arg in cmd.args[3:]])
+            arguments = []
+            for arg in nested_cmd.args:
+                if type(arg) is str:
+                    arg = self.variables.get(arg, arg)
+                arguments.append(arg)
+            func = self.command_map[nested_cmd.command]
+            r_value = func(arguments) if nested_cmd.command in self.unknown_no_of_args else func(*arguments)
+            if not r_value:
+                logger.warning(f"Command {nested_cmd.get_format()} did not return any value!")
 
         if operator == "=":
             self.variables[l_value] = r_value
@@ -191,3 +215,21 @@ class Automation:
             path = f"calibration/calibration_array_{str(num).zfill(2)}.npy"
             
         self.master.camera_controller.save_as_array(path)
+
+    def log_value(self, value):
+        logger.info(f"{value} logged")
+
+    def get_camera_image(self) -> Image:
+        return self.master.camera_controller.get_image()
+    
+    def execute_custom_func(self, args):
+        result = self.ext_executor.execute_custom_func(args)
+        return result
+    
+    def display_alt_image(self, image):
+        self.master.camera_panel.display_alt_image(image)
+    
+    def reset_alt_image(self):
+        self.master.camera_panel.reset_alt_image()
+
+
