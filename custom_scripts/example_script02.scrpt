@@ -1,8 +1,12 @@
 var_a = 1
 if(var_a == 1){
-    image = get_camera_image()
-    sleep(2)
-    display_alt_image(image)
-    sleep(6)
+    image1 = get_camera_image()
+    sleep(1)
+    image2 = get_camera_image()
+    sleep(1)
+    mapka = exec_custom(standard_map, image1, image2)
+    mapka_rgb = exec_custom(map_to_image, mapka, 1)
+    display_alt_image(mapka_rgb)
+    sleep(8)
     reset_alt_image()
 }

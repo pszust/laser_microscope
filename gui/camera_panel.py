@@ -128,7 +128,7 @@ class CameraPanel:
         # self.mouseWinX, self.mouseWinY = 0, 0
         # self.bind("<Motion>", self.press_in_window)
 
-    @thread_execute
+    # @thread_execute
     def update_image(self):
         if self.alt_image:
             self.full_size_img = self.alt_image

@@ -132,7 +132,7 @@ class Automation:
                 arguments.append(arg)
             func = self.command_map[nested_cmd.command]
             r_value = func(arguments) if nested_cmd.command in self.unknown_no_of_args else func(*arguments)
-            if not r_value:
+            if r_value is None:
                 logger.warning(f"Command {nested_cmd.get_format()} did not return any value!")
 
         if operator == "=":
@@ -215,16 +215,16 @@ class Automation:
             path = f"calibration/calibration_array_{str(num).zfill(2)}.npy"
             
         self.master.camera_controller.save_as_array(path)
+    
+    def execute_custom_func(self, args):
+        result = self.ext_executor.execute_custom_func(args)
+        return result
 
     def log_value(self, value):
         logger.info(f"{value} logged")
 
     def get_camera_image(self) -> Image:
         return self.master.camera_controller.get_image()
-    
-    def execute_custom_func(self, args):
-        result = self.ext_executor.execute_custom_func(args)
-        return result
     
     def display_alt_image(self, image):
         self.master.camera_panel.display_alt_image(image)
