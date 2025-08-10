@@ -42,6 +42,8 @@ class Automation:
             "log_value": self.log_value,
             "display_alt_image": self.display_alt_image,
             "reset_alt_image": self.reset_alt_image,
+            "load_image1": self.load_image1,
+            "load_image2": self.load_image2,
         }
 
         self.unknown_no_of_args = (
@@ -223,8 +225,16 @@ class Automation:
     def log_value(self, value):
         logger.info(f"{value} logged")
 
-    def get_camera_image(self) -> Image:
+    def get_camera_image(self) -> Image.Image:
         return self.master.camera_controller.get_image()
+    
+    def load_image1(self) -> Image.Image:
+        p1 = "d:/Katalog 1/Projekty/Mikroskop 3.0/help/map_minus.png"
+        return Image.open(p1)
+    
+    def load_image2(self) -> Image.Image:
+        p1 = "d:/Katalog 1/Projekty/Mikroskop 3.0/help/map_plus.png"
+        return Image.open(p1)
     
     def display_alt_image(self, image):
         self.master.camera_panel.display_alt_image(image)

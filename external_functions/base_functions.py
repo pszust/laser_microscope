@@ -16,14 +16,16 @@ def count_pixel_sum(image: Image):
     print(f"External functione executed - image has {total_sum}!")
     return total_sum
 
+
 def dechannel(im, ch):
     im[:,:,0] = im[:,:,ch]
     im[:,:,1] = im[:,:,ch]
     im[:,:,2] = im[:,:,ch]
     return im
 
+
 def standard_map(imgs_min, imgs_pls, sigma = 2, ch = -1):
-    if type(imgs_min) is Image.Image:
+    if type(imgs_min) is not np.ndarray:
         imgs_min = np.array(imgs_min)
         imgs_pls = np.array(imgs_pls)
 
@@ -45,7 +47,96 @@ def standard_map(imgs_min, imgs_pls, sigma = 2, ch = -1):
         img_pls_g = gaussian_filter(img_pls_g, sigma=sigma)
     return img_pls_g-img_min_g
 
+
 def map_to_image(mapka, rng=0.1):
     cmap = plt.get_cmap('PiYG')
     image_map = cmap((mapka/rng+1)/2)[:,:,:3]
     return (image_map*255).astype(np.uint8)
+
+
+def make_check_mask(shot_point, ang, arr, shot_size=110, check_size=40, span = 25):
+    chm = np.zeros((arr.shape[0], arr.shape[1]))
+    #     chm = cv2.circle(chm, shot_point, shot_size, 1, 2)
+    cang = ang + 180
+    px = int(shot_point[0] + shot_size * np.cos(cang * np.pi / 180))
+    py = int(shot_point[1] + shot_size * np.sin(-cang * np.pi / 180))
+    chm = cv2.circle(chm, (px, py), check_size, 1, -1)
+
+    cang = ang + span + 180
+    px = int(shot_point[0] + shot_size * np.cos(cang * np.pi / 180))
+    py = int(shot_point[1] + shot_size * np.sin(-cang * np.pi / 180))
+    chm = cv2.circle(chm, (px, py), int(check_size * 0.75), 1, -1)
+
+    cang = ang - span + 180
+    px = int(shot_point[0] + shot_size * np.cos(cang * np.pi / 180))
+    py = int(shot_point[1] + shot_size * np.sin(-cang * np.pi / 180))
+    chm = cv2.circle(chm, (px, py), int(check_size * 0.75), 1, -1)
+
+    return chm
+
+
+def new_validity_array(mapka,
+                       direction,
+                       aop = [(400, 224), (450, 450)],  # area of operation = [(x, y), (w, h)]
+                       shot_size=110,
+                       check_size=50,
+                       count=100,
+                       thres=0.03,
+                       angle_count=15):
+    minx = aop[0][0]-int(aop[1][0]/2)+int(shot_size)
+    miny = aop[0][1]-int(aop[1][1]/2)+int(shot_size)
+    maxx = aop[0][0]+int(aop[1][0]/2)-int(shot_size)
+    maxy = aop[0][1]+int(aop[1][1]/2)-int(shot_size)
+        
+    val_array = []
+    for i in range(0, count):
+        shot_point = (minx + int(np.random.random() * (maxx - minx)),
+                      miny + int(np.random.random() * (maxy - miny)))
+        
+        # get shotmask ratios
+        shot_mask = np.zeros((mapka.shape[0], mapka.shape[1]))
+        shot_mask = cv2.circle(shot_mask, shot_point, shot_size, 1, -1)
+        shot_arr = mapka.copy() * shot_mask
+        sh_neg, sh_pos, sh_tot, sh_dead = get_nppixel_count(shot_arr, thres = thres)
+        if direction == 1: gain = sh_neg/sh_tot
+        if direction == -1: gain = sh_pos/sh_tot
+        gain *= (1-(sh_dead/sh_tot))  # leave the dead region alone!
+
+        # get checkmask ratios for each angle
+        angles = np.linspace(int(360 / angle_count), 360, angle_count)
+        for ang in angles:
+            chm = make_check_mask(shot_point, ang, mapka.copy(), check_size=check_size)
+            ch_arr = mapka.copy() * chm
+            ch_neg, ch_pos, ch_tot, ch_dead = get_nppixel_count(ch_arr, thres = thres)
+            if direction == 1: ratio = ch_pos/ch_tot
+            if direction == -1: ratio = ch_neg/ch_tot
+            ratio *= (1-(ch_dead/ch_tot))  # leave the dead alone!
+            val_array.append([shot_point[0], shot_point[1], ang, gain, ratio, gain*ratio**2])
+        
+    val_array = np.array(val_array)
+    val_array = np.flip(val_array[np.argsort(val_array[:, 5])], axis=0)
+    return val_array
+
+
+def get_nppixel_count(masked_map, thres=0.01):
+    neg = np.where(masked_map < -thres, 1, 0)
+    pos = np.where(masked_map > thres, 1, 0)
+    tot = np.where(masked_map != 0, 1, 0)
+    dead = np.where((masked_map > -thres) & (masked_map < thres) & (masked_map != 0), 1, 0)
+    return neg.sum(), pos.sum(), tot.sum(), dead.sum()
+
+
+def decide_smelting(mapka, direction):
+    val_arr = new_validity_array(mapka, direction)
+    kolo_size = 150
+    kolo_dur = 12
+    kolo_path = "shining-moon3.anim"
+    target = {
+            "posx": val_arr[0, 0],
+            "posy": val_arr[0, 1],
+            "angle": val_arr[0, 2],
+            "size": kolo_size,
+            "duration": kolo_dur,
+            "anim_path": kolo_path,
+        }
+    return target

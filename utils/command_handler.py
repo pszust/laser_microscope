@@ -43,6 +43,30 @@ def parse_command(raw_command: str):
     command_parsed = Command(command_list[0], command_list[1:])
     return command_parsed if command_parsed.command else None
 
+class Command:
+    def __init__(self, command: str, args: list):
+        self.command = command
+        self.args = [self.handle_arg(arg) for arg in args if arg]
+
+    @staticmethod
+    def handle_arg(arg: str):
+        if arg.isdigit():
+            parsed_arg = int(arg)
+        elif arg[0] == "-" and arg[1:].isdigit():
+            parsed_arg = -int(arg[1:])
+        elif "." in arg:
+            parsed_arg = float(arg)
+        else:
+            parsed_arg = arg
+        return parsed_arg
+
+    def __call__(self, *args, **kwds):
+        print(f"Cmd: {self.command}")
+        for arg in self.args:
+            print(f"   {arg}: {type(arg)}")
+
+    def get_format(self):
+        return f"{self.command}({", ".join((str(a) for a in self.args))})"
 
 class ScriptParser:
     def __init__(self):
@@ -78,28 +102,12 @@ class ScriptParser:
             if parsed_command:
                 current_command.append(parsed_command)
 
-
-class Command:
-    def __init__(self, command: str, args: list):
-        self.command = command
-        self.args = [self.handle_arg(arg) for arg in args if arg]
-
-    @staticmethod
-    def handle_arg(arg: str):
-        if arg.isdigit():
-            parsed_arg = int(arg)
-        elif arg[0] == "-" and arg[1:].isdigit():
-            parsed_arg = -int(arg[1:])
-        elif "." in arg:
-            parsed_arg = float(arg)
+    def print_commands(self):
+        self._req_print(self.commands)
+    
+    def _req_print(self, cmd: list | Command, block_intend: int=0):
+        if isinstance(cmd, Command):
+            print("  "*block_intend, cmd.get_format())
         else:
-            parsed_arg = arg
-        return parsed_arg
-
-    def __call__(self, *args, **kwds):
-        print(f"Cmd: {self.command}")
-        for arg in self.args:
-            print(f"   {arg}: {type(arg)}")
-
-    def get_format(self):
-        return f"{self.command}({", ".join((str(a) for a in self.args))})"
+            for c in cmd:
+                self._req_print(c, block_intend+1)
