@@ -103,6 +103,8 @@ class Automation:
                 else:
                     # exit loop block
                     self.execution_position = self.execution_position[:-1]
+            elif current.command == "new_block":
+                pass
             elif current.command == "restart_block":
                 self.execution_position[-1] = -1  # this is because at the end there is += 1
 

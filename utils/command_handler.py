@@ -73,10 +73,29 @@ class ScriptParser:
         self.commands = []
         self.example_script_path = "custom_scripts/example_script.scrpt"
 
-    @staticmethod
-    def load_script(path: str) -> list[str]:
+    def load_script(self, path: str) -> list[str]:
+        scr_lines = self.req_construct_script([], path)
+        return scr_lines
+
+    def req_construct_script(self, script_lines: list, path: str, args=[]) -> list[str]:
         with open(path, "r") as f:
-            return f.readlines()
+            cnt = f.read()
+            for n, arg in enumerate(args):
+                argname = f"%arg{str(n+1).zfill(2)}"
+                cnt = cnt.replace(argname, arg)
+            lines = cnt.split("\n")
+        for line in lines:
+            if "SCRPT:" in line:
+                arglist = line.strip(" ").split(" ")
+                fname = arglist[1]
+                args = arglist[2:]
+                script_lines.append("new_block{")
+                self.req_construct_script(script_lines, f"custom_scripts/{fname}", args=args)
+                script_lines.append("}")
+            else:
+                script_lines.append(line)
+        return script_lines
+
 
     def parse(self, script: list[str]) -> list:
         level = 0
@@ -91,7 +110,8 @@ class ScriptParser:
                 level += 1
                 current_command.append([])
                 current_command = current_command[-1]
-                nested.append(parse_command(line).command)
+                if cmd_parsed := parse_command(line):
+                    nested.append(cmd_parsed.command)
             elif "}" in line:
                 if nested[-1] == "loop":
                     current_command.append(Command("restart_block", []))

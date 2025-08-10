@@ -1,11 +1,6 @@
 var_a = 1
 if(var_a == 1){
-    image1 = load_image1()
-    sleep(1)
-    image2 = load_image2()
-    sleep(1)
-    mapka = exec_custom(standard_map, image1, image2)
-    mapka_rgb = exec_custom(map_to_image, mapka, 1)
+    SCRPT: create_map.scrpt mapka mapka_rgb
     display_alt_image(mapka_rgb)
     sleep(8)
     reset_alt_image()
