@@ -1,16 +1,14 @@
+import logging
 import os
 import time
+from multiprocessing import Event, Process, RawArray, Value
 from tkinter import messagebox
 
 import cv2
 import numpy as np
 from PIL import Image, ImageTk
-from multiprocessing import Process
-from multiprocessing import Value
-from multiprocessing import RawArray
-from multiprocessing import Event
+
 from utils.consts import CamConsts
-import logging
 
 logger = logging.getLogger(__name__)
 
@@ -41,7 +39,7 @@ class CameraController:
     def get_image(self) -> Image:
         frame = np.frombuffer(self.sharr, dtype=np.uint8).reshape(CamConsts.SHAPE[1], CamConsts.SHAPE[0], 3)
         return Image.fromarray(frame)
-    
+
     def save_image(self, path: str):
         frame = self._generate_placeholder_image()
         image = Image.fromarray(frame)
@@ -52,7 +50,7 @@ class CameraController:
         frame = self._generate_placeholder_image()
         np.save(path, frame)
         logger.info(f"Saving raw array as {path}")
-    
+
     def exit_camera(self):
         self.event.set()  # to close CamReader
         logger.info("Initiated camera exit")
@@ -69,6 +67,7 @@ class CameraController:
             "connection": self.con_stat,
         }
 
+
 class CamReader(Process):
     #     override the constructor
     def __init__(self, event, sharr, config_arr, camparam_arr):
@@ -83,7 +82,7 @@ class CamReader(Process):
         self.expoAbs = self.config_arr[2]
         self.sharr = sharr
         self.data = Value("i", 0)
-        
+
         self.placeholder_image_words = 150
         self.wordlist = self._get_wordlist()
 
@@ -100,7 +99,7 @@ class CamReader(Process):
 
     # override the run function
     def run(self):
-        final_img = np.zeros((960, 1280, 4), dtype = np.ubyte)
+        final_img = np.zeros((960, 1280, 4), dtype=np.ubyte)
         while True:
             try:
                 final_img = self._generate_placeholder_image()

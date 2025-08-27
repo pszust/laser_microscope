@@ -1,6 +1,0 @@
-D_RECVID testing_dotseq
-LOAD_IMG pattern_unilogo.png
-ILL_IMG 4 12.5
-LOAD_IMG siatka.png
-ILL_IMG 4 12.5
-D_RECVID

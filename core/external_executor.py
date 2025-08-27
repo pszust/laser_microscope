@@ -1,10 +1,13 @@
-import sys
 import pathlib
+import sys
+
 sys.path.append(str(pathlib.Path(__file__).resolve().parents[1]))
 
 import importlib
 import pkgutil
+
 import external_functions
+
 
 class ExternalExecutor:
     def __init__(self):

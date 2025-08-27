@@ -1,17 +1,19 @@
 # controls/chiral_control.py
 
-import cv2
-import numpy as np
-import imutils
-import os
-from PIL import Image, ImageChops
-from utils.consts import CamConsts
-from typing import TYPE_CHECKING, Optional
-import time
 import logging
+import os
+import time
 
 # Only the file dialog lives here from tkinter; we do not show message boxes in control
 from tkinter import filedialog
+from typing import TYPE_CHECKING, Optional
+
+import cv2
+import imutils
+import numpy as np
+from PIL import Image, ImageChops
+
+from utils.consts import CamConsts
 
 if TYPE_CHECKING:
     from gui.main_window import MainWindow
@@ -100,10 +102,14 @@ class ChiralControl:
             # but log a heads-up for unexpected sizes.
             logger.warning(
                 "Pattern size is unusual for pixel-accurate display: %dx%d. "
-                "Expected roughly 2..80 px per side.", w, h
+                "Expected roughly 2..80 px per side.",
+                w,
+                h,
             )
 
-        logger.info("Pattern loaded: %s (%dx%d, mode=%s)", os.path.basename(path), w, h, self.pattern_image.mode)
+        logger.info(
+            "Pattern loaded: %s (%dx%d, mode=%s)", os.path.basename(path), w, h, self.pattern_image.mode
+        )
 
     # Optional convenience getters (handy if used elsewhere)
     def has_pattern(self) -> bool:
@@ -111,9 +117,8 @@ class ChiralControl:
 
     def get_pattern_size(self) -> Optional[tuple[int, int]]:
         return self.pattern_image.size if self.pattern_image else None
-    
+
     def start_melting(self, x, y, pa, pb, pc):
         loop_x, loop_y = self.pattern_image.size
-        args=[str(loop_x), str(loop_y)]
+        args = [str(loop_x), str(loop_y)]
         self.master.automation_controller.execute_script_file(self.melting_script_path, args)
-

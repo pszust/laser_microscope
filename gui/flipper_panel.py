@@ -2,9 +2,9 @@ import threading
 import tkinter as tk
 from tkinter import Button, Entry, Frame, Label, Scrollbar, StringVar, Text
 
-from devices.flipper_controller import FlipperController
 import utils.consts as consts
 from core.automation import Automation
+from devices.flipper_controller import FlipperController
 from utils.command_handler import Command, parse_command
 from utils.utils import thread_execute
 

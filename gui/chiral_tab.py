@@ -1,15 +1,26 @@
+import logging
+import os
 import threading
 import tkinter as tk
-from tkinter import Button, Entry, Frame, Label, Scrollbar, StringVar, OptionMenu, messagebox, Canvas, filedialog
+from tkinter import (
+    Button,
+    Canvas,
+    Entry,
+    Frame,
+    Label,
+    OptionMenu,
+    Scrollbar,
+    StringVar,
+    filedialog,
+    messagebox,
+)
 
-from PIL import Image, ImageTk
 import numpy as np  # only used to coerce numpy arrays to PIL for display
-import os
+from PIL import Image, ImageTk
 
 import utils.consts as consts
 from controls.chiral_control import ChiralControl
 from utils.utils import thread_execute
-import logging
 
 logger = logging.getLogger(__name__)
 
@@ -181,7 +192,7 @@ class ChiralTab:
 
         # Kick off control logic in a thread (non-blocking UI)
         self.control.start_melting(x, y, pA, pB, pC)
-        
+
     # -------------------------
     # Rendering
     # -------------------------
@@ -238,13 +249,15 @@ class ChiralTab:
         self.canvas.create_image(0, 0, anchor="nw", image=self._canvas_image_tk)
 
         # Save render context for overlays
-        self._render_ctx.update({
-            "scale": scale_used,
-            "off_x": off_x,
-            "off_y": off_y,
-            "img_w": w,
-            "img_h": h,
-        })
+        self._render_ctx.update(
+            {
+                "scale": scale_used,
+                "off_x": off_x,
+                "off_y": off_y,
+                "img_w": w,
+                "img_h": h,
+            }
+        )
 
         # Overlay the selected pixel (big X)
         self._draw_selected_pixel_overlay()
@@ -280,8 +293,22 @@ class ChiralTab:
         # Draw an "X" across that pixel block
         # Slight padding to keep the X inside the block
         pad = max(1, scale // 10)
-        self.canvas.create_line(left + pad, top + pad, right - pad, bottom - pad, fill=self.OVERLAY_COLOR, width=max(2, scale // 6))
-        self.canvas.create_line(left + pad, bottom - pad, right - pad, top + pad, fill=self.OVERLAY_COLOR, width=max(2, scale // 6))
+        self.canvas.create_line(
+            left + pad,
+            top + pad,
+            right - pad,
+            bottom - pad,
+            fill=self.OVERLAY_COLOR,
+            width=max(2, scale // 6),
+        )
+        self.canvas.create_line(
+            left + pad,
+            bottom - pad,
+            right - pad,
+            top + pad,
+            fill=self.OVERLAY_COLOR,
+            width=max(2, scale // 6),
+        )
 
     def _draw_placeholder(self, msg: str | None = None):
         """Draw a simple 'no image' placeholder."""
@@ -303,7 +330,7 @@ class ChiralTab:
     @staticmethod
     def _hex_to_rgb(hx: str) -> tuple[int, int, int]:
         hx = hx.lstrip("#")
-        return tuple(int(hx[i:i+2], 16) for i in (0, 2, 4))
+        return tuple(int(hx[i : i + 2], 16) for i in (0, 2, 4))
 
     @staticmethod
     def _coerce_to_pil(obj) -> Image.Image | None:
@@ -315,6 +342,7 @@ class ChiralTab:
 
         try:
             import numpy as _np  # local import in case numpy is optional elsewhere
+
             if isinstance(obj, _np.ndarray):
                 arr = obj
                 if arr.ndim == 2:

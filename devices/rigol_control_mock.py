@@ -1,7 +1,7 @@
 # rigol_control.py
+import logging
 import time
 from tkinter import messagebox
-import logging
 
 logger = logging.getLogger(__name__)
 

@@ -1,8 +1,0 @@
-OBJECT rectangle 100 100 255
-0.00 -> 1.00 MOVE 0 0 -> 0 0
-var0 -> var4 SCALE 2*var3+var1 -> 2*var3+var2
-var4 -> 1.00 SCALE 2*var3+var2 -> var5
-OBJECT rectangle 100 100 0
-0.00 -> 1.00 MOVE 0 0 -> 0 0
-var0 -> var4 SCALE var1 -> var2
-var4 -> 1.00 SCALE var2 -> var5

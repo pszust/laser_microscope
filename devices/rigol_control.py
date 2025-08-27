@@ -2,6 +2,7 @@ import time
 from tkinter import messagebox
 
 import pyvisa
+
 # import logging
 
 # logger = logging.getLogger(__name__)
@@ -23,10 +24,10 @@ class RigolController:
 
         rm = pyvisa.ResourceManager()
         try:
-            inst = rm.open_resource('USB0::0x1AB1::0x0643::DG8A220800267::INSTR')
-            if inst.query("*IDN?")[:18] == 'Rigol Technologies':
+            inst = rm.open_resource("USB0::0x1AB1::0x0643::DG8A220800267::INSTR")
+            if inst.query("*IDN?")[:18] == "Rigol Technologies":
                 self.rigol = inst
-                inst.write(':SOUR1:APPL:SQU 2000,5,2.5,0')
+                inst.write(":SOUR1:APPL:SQU 2000,5,2.5,0")
             self.con_stat = "CONNECTED"
             return True
         except Exception as e:

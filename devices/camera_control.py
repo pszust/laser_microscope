@@ -1,17 +1,15 @@
+import logging
 import os
 import time
+from multiprocessing import Event, Process, RawArray, Value
 from tkinter import messagebox
 
 import cv2
 import numpy as np
 from PIL import Image, ImageTk
-from multiprocessing import Process
-from multiprocessing import Value
-from multiprocessing import RawArray
-from multiprocessing import Event
 from pyueye import ueye
+
 from utils.consts import CamConsts
-import logging
 
 logger = logging.getLogger(__name__)
 
@@ -42,7 +40,7 @@ class CameraController:
     def get_image(self) -> Image:
         frame = np.frombuffer(self.sharr, dtype=np.uint8).reshape(CamConsts.SHAPE[1], CamConsts.SHAPE[0], 3)
         return Image.fromarray(frame)
-    
+
     def exit_camera(self):
         logger.info("Initiated camera exit")
         self.event.set()  # to close CamReader
@@ -238,7 +236,7 @@ class CamReader(Process):
     # override the run function
     def run(self):
         self.init_ui_camera()
-        final_img = np.zeros((960, 1280, 4), dtype = np.ubyte)
+        final_img = np.zeros((960, 1280, 4), dtype=np.ubyte)
         while True:
             try:
                 # read frame from new camera

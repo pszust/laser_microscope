@@ -1,9 +1,9 @@
 import threading
 import tkinter as tk
-from tkinter import Button, Entry, Frame, Label, Scrollbar, StringVar, OptionMenu
+from tkinter import Button, Entry, Frame, Label, OptionMenu, Scrollbar, StringVar
 
-from core.animation import AnimationControl, AnimationInterpreter
 import utils.consts as consts
+from core.animation import AnimationControl, AnimationInterpreter
 from core.automation import Automation
 from utils.command_handler import Command, parse_command
 from utils.utils import thread_execute

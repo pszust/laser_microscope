@@ -1,10 +1,10 @@
+import logging
 import time
 from tkinter import messagebox
 
 import pyvisa
 
 from utils.utils import thread_execute
-import logging
 
 logger = logging.getLogger(__name__)
 

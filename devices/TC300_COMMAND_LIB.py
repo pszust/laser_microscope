@@ -1,7 +1,6 @@
 import os
 from ctypes import *
 
-
 # region import dll functions
 cwd = os.getcwd()
 print(cwd)

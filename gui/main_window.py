@@ -1,3 +1,4 @@
+import logging
 import sys
 import threading
 import time
@@ -25,32 +26,30 @@ from tkinter import (
 import cv2
 import serial
 
+import utils.consts as consts
+from controls.chiral_control import ChiralControl
 from controls.projector_control import ProjectorControl
 from core.animation import AnimationControl
-from devices.flipper_controller import FlipperController
-from devices.labjack_controller_mock import LabjackController
-from gui.animation_tab import AnimationTab
-from gui.chiral_tab import ChiralTab
-from controls.chiral_control import ChiralControl
-from gui.heat_stage_panel import HeatPanel
-from gui.labjack_panel import LabjackPanel
-from gui.flipper_panel import FlipperPanel
-from gui.projector_panel import ProjectorPanel
-from gui.stability_panel import StabilityPanel
-import utils.consts as consts
 from core.automation import Automation
 from devices.camera_control_mock import CameraController
+from devices.flipper_controller import FlipperController
+from devices.heat_stage_control import HeatController
+from devices.labjack_controller_mock import LabjackController
 from devices.polar_control_mock import PolarController
 from devices.rigol_control_mock import RigolController
 from devices.xy_stage_control_mock import StageController
+from gui.animation_tab import AnimationTab
 from gui.camera_panel import CameraPanel
+from gui.chiral_tab import ChiralTab
 from gui.console_panel import ConsolePanel
+from gui.flipper_panel import FlipperPanel
+from gui.heat_stage_panel import HeatPanel
+from gui.labjack_panel import LabjackPanel
 from gui.polar_panel import PolarPanel
+from gui.projector_panel import ProjectorPanel
 from gui.rigol_panel import RigolPanel
+from gui.stability_panel import StabilityPanel
 from gui.xy_stage_panel import M30Panel
-from devices.heat_stage_control import HeatController
-import logging
-
 from utils.timer import LoopTimer
 
 logger = logging.getLogger(__name__)

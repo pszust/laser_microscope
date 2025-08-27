@@ -1,2 +1,0 @@
-d_move_absz(arg00)
-d_wait_move_z()

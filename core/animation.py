@@ -1,12 +1,14 @@
-import cv2
-import numpy as np
-import imutils
-import os
-from PIL import Image, ImageChops
-from utils.consts import CamConsts
-from typing import TYPE_CHECKING
-import time
 import logging
+import os
+import time
+from typing import TYPE_CHECKING
+
+import cv2
+import imutils
+import numpy as np
+from PIL import Image, ImageChops
+
+from utils.consts import CamConsts
 
 if TYPE_CHECKING:
     from gui.main_window import MainWindow

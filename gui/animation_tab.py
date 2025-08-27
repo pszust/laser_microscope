@@ -1,13 +1,13 @@
+import logging
 import threading
 import tkinter as tk
-from tkinter import Button, Entry, Frame, Label, Scrollbar, StringVar, OptionMenu
+from tkinter import Button, Entry, Frame, Label, OptionMenu, Scrollbar, StringVar
 
-from core.animation import AnimationControl, AnimationInterpreter
 import utils.consts as consts
+from core.animation import AnimationControl, AnimationInterpreter
 from core.automation import Automation
 from utils.command_handler import Command, parse_command
 from utils.utils import thread_execute
-import logging
 
 logger = logging.getLogger(__name__)
 
@@ -37,5 +37,3 @@ class AnimationTab:
         Label(cur_frame, text="Animation duration [s]: ").pack(side=tk.LEFT)
         self.var_duration = StringVar(value="0.0")
         Entry(cur_frame, width=7, textvariable=self.var_duration).pack(side=tk.LEFT, fill=tk.X)
-
-

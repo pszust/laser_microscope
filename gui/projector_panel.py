@@ -2,8 +2,10 @@ import threading
 import tkinter as tk
 from tkinter import LEFT, Button, Canvas, Frame, Label, StringVar, X, Y
 from typing import TYPE_CHECKING
+
 import cv2
 from PIL import Image, ImageTk
+
 from utils.consts import ProjConsts
 
 if TYPE_CHECKING:

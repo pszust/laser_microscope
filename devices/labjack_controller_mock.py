@@ -1,17 +1,17 @@
+import logging
 import os
 import time
+from ctypes import *
 from tkinter import messagebox
 
+import clr
 import cv2
 import numpy as np
-from utils.consts import LabJackConsts
-from utils.utils import thread_execute
 from PIL import Image, ImageTk
 
-import clr
-from ctypes import *
 from devices.TC300_COMMAND_LIB import *
-import logging
+from utils.consts import LabJackConsts
+from utils.utils import thread_execute
 
 logger = logging.getLogger(__name__)
 

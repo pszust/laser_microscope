@@ -1,3 +1,0 @@
-d_move_rel(2,2)
-d_wait_move()
-d_wait(0.5)

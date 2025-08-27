@@ -1,4 +1,5 @@
 import time
+
 import numpy as np
 
 
@@ -15,7 +16,7 @@ class LoopTimer:
     def event(self, name):
         if name in self.events.items():
             raise ValueError(f"Event {name} already happened")
-        self.events[name] = (ctime:=time.process_time()) - self.prev_event
+        self.events[name] = (ctime := time.process_time()) - self.prev_event
         self.prev_event = ctime
 
     def end_loop(self):
@@ -30,7 +31,5 @@ class LoopTimer:
     def report(self):
         result = {}
         for k, v in self.history.items():
-            result[k] = 1000*np.mean(v)
+            result[k] = 1000 * np.mean(v)
         return result
-        
-        

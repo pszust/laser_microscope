@@ -1,7 +1,8 @@
-import tkinter as tk
 import logging
 import os
+import tkinter as tk
 from datetime import datetime
+
 from gui.main_window import MainWindow
 
 

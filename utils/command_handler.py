@@ -44,6 +44,7 @@ def parse_command(raw_command: str):
     command_parsed = Command(command_list[0], command_list[1:])
     return command_parsed if command_parsed.command else None
 
+
 class Command:
     def __init__(self, command: str, args: list):
         self.command = command
@@ -69,12 +70,13 @@ class Command:
     def get_format(self):
         return f"{self.command}({", ".join((str(a) for a in self.args))})"
 
+
 class ScriptParser:
     def __init__(self):
         self.commands = []
         self.example_script_path = "custom_scripts/example_script.scrpt"
 
-    def load_script(self, path: str, args: list | None=[]) -> list[str]:
+    def load_script(self, path: str, args: list | None = []) -> list[str]:
         args = [] if not args else args
         scr_lines = self.recurse_construct_script([], path, args=args)
         return scr_lines
@@ -97,7 +99,6 @@ class ScriptParser:
             else:
                 script_lines.append(line)
         return script_lines
-
 
     def parse(self, script: list[str]) -> list:
         level = 0
@@ -126,10 +127,10 @@ class ScriptParser:
 
     def print_commands(self):
         self._recurse_print(self.commands)
-    
-    def _recurse_print(self, cmd: list | Command, block_intend: int=0):
+
+    def _recurse_print(self, cmd: list | Command, block_intend: int = 0):
         if isinstance(cmd, Command):
-            print("  "*block_intend, cmd.get_format())
+            print("  " * block_intend, cmd.get_format())
         else:
             for c in cmd:
-                self._recurse_print(c, block_intend+1)
+                self._recurse_print(c, block_intend + 1)

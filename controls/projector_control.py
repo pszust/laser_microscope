@@ -1,18 +1,22 @@
+import logging
 import tkinter as tk
 from tkinter import Canvas
 from typing import TYPE_CHECKING
-import numpy as np
+
 import cv2
+import numpy as np
 from PIL import Image, ImageTk
+
 from utils.consts import ProjConsts
 from utils.utils import get_homography_matrix, num_to_coords
-import logging
 
 if TYPE_CHECKING:
     from gui.main_window import MainWindow  # only used for type hints
 logger = logging.getLogger(__name__)
 
 calib_dots_dim = 4
+
+
 class ProjectorControl:
     def __init__(self, master: "MainWindow"):
         self.master = master
@@ -84,9 +88,13 @@ class ProjectorControl:
             self.direct_calib_img = None
         else:
             # draw dot on black canvas at specified postion
-            proj_x, proj_y = num_to_coords(num, size = calib_dots_dim)    
-            self.direct_calib_img = np.zeros((ProjConsts.PROJ_IMG_SHAPE[1], ProjConsts.PROJ_IMG_SHAPE[0], 3), np.uint8)
-            self.direct_calib_img = cv2.circle(self.direct_calib_img, (proj_x, proj_y), 18, (255, 255, 255), -1)
+            proj_x, proj_y = num_to_coords(num, size=calib_dots_dim)
+            self.direct_calib_img = np.zeros(
+                (ProjConsts.PROJ_IMG_SHAPE[1], ProjConsts.PROJ_IMG_SHAPE[0], 3), np.uint8
+            )
+            self.direct_calib_img = cv2.circle(
+                self.direct_calib_img, (proj_x, proj_y), 18, (255, 255, 255), -1
+            )
 
     def refresh_projector_image(self) -> np.ndarray | None:
         # refresh the actual screen
@@ -104,13 +112,13 @@ class ProjectorControl:
     def merge_images(images: list[np.ndarray]) -> np.ndarray | None:
         if not images:
             return None
-        
+
         result = images[0].copy()
         if len(images) > 1:
             for img in images[1:]:
                 result = cv2.add(result, img)
         return result
-    
+
     def get_calibration_matrix(self):
         self.homomatrix = get_homography_matrix()
 
@@ -126,14 +134,14 @@ class ProjectorControl:
 
             # transpose using the thing
             if self.homomatrix is not None:
-                transposed_image = cv2.warpPerspective(merged, self.homomatrix, ProjConsts.PROJ_IMG_SHAPE[:2])
+                transposed_image = cv2.warpPerspective(
+                    merged, self.homomatrix, ProjConsts.PROJ_IMG_SHAPE[:2]
+                )
             else:
                 transposed_image = cv2.resize(merged, ProjConsts.PROJ_IMG_SHAPE[:2])
 
         # then add together all the images that are to be displayed as-is (without transposing)
-        if direct_images_to_merge := [
-            img for img in (self.direct_calib_img,) if img is not None
-        ]:
+        if direct_images_to_merge := [img for img in (self.direct_calib_img,) if img is not None]:
             direct_image = self.merge_images(direct_images_to_merge)
 
         final_img = self.merge_images([img for img in (transposed_image, direct_image) if img is not None])

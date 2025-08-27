@@ -1,6 +1,0 @@
-d_move(arg02, arg03)
-d_wait_move()
-d_laser_duty(arg00)
-d_laser_switch(1)
-d_wait(arg01)
-d_laser_switch(0)

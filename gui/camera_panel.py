@@ -1,3 +1,4 @@
+import logging
 import threading
 import tkinter as tk
 from tkinter import (
@@ -11,17 +12,16 @@ from tkinter import (
     X,
     Y,
 )
+from typing import TYPE_CHECKING
 
+import cv2
+import numpy as np
 from PIL import Image, ImageTk
 
 import utils.consts as consts
 from devices.camera_control_mock import CameraController
-from utils.utils import thread_execute
-import numpy as np
-import cv2
 from utils.consts import CamConsts
-from typing import TYPE_CHECKING
-import logging
+from utils.utils import thread_execute
 
 if TYPE_CHECKING:
     from gui.main_window import MainWindow
@@ -60,9 +60,7 @@ class CameraPanel:
         self.controller = controller
         self.alt_image = None  # if present it is displayed as image instead of camera image
         self.frame = Frame(parent)
-        self.full_size_img = Image.new(
-            "RGB", (CamConsts.REAL_WIDTH, CamConsts.REAL_HEIGHT), color="grey"
-        )
+        self.full_size_img = Image.new("RGB", (CamConsts.REAL_WIDTH, CamConsts.REAL_HEIGHT), color="grey")
         self.disp_cam_img = Image.new(
             "RGB", (CamConsts.DISPLAY_WIDTH, CamConsts.DISPLAY_HEIGHT), color="grey"
         )
@@ -74,7 +72,7 @@ class CameraPanel:
             parent, width=CamConsts.DISPLAY_WIDTH, height=CamConsts.DISPLAY_HEIGHT, bg="black"
         )
         self.canvas.grid(row=0, column=0, sticky=tk.W + tk.E)
-        
+
         # Title
         cur_frame = Frame(self.frame)
         cur_frame.grid(row=1, column=0, sticky=tk.W + tk.E)
@@ -99,21 +97,19 @@ class CameraPanel:
 
         logger.debug(f"Initialization done.")
 
-    def setup_bindings(self):        
+    def setup_bindings(self):
         self.canvas.bind("<ButtonPress-1>", self.canvas_button1_press)
         self.canvas.bind("<ButtonRelease-1>", self.canvas_button1_release)
         # self.canvas.bind("<ButtonRelease-1>", self.cam_btn_release)
         self.canvas.bind("<B1-Motion>", self.canvas_button1_motion)
         self.canvas.bind("<Motion>", self.canvas_motion)
 
-    def setup_interaction_mode_selector(self, frame):        
+    def setup_interaction_mode_selector(self, frame):
         self.interaction_var = tk.StringVar(value="NONE")
         modes = ["NONE", "ANMT", "DRAW"]
         Label(frame, text="Interaction mode:").pack(side=tk.LEFT)
         for mode in modes:
-            tk.Radiobutton(
-                frame, text=mode, variable=self.interaction_var, value=mode
-            ).pack(side=tk.LEFT)
+            tk.Radiobutton(frame, text=mode, variable=self.interaction_var, value=mode).pack(side=tk.LEFT)
 
     # def set_mode(self, mode):
     #     self.interaction_mode = mode
@@ -136,7 +132,7 @@ class CameraPanel:
             self.full_size_img = self.controller.get_image()
         self.disp_cam_img = self.full_size_img.resize(CamConsts.DISPLAY_SHAPE)
         self.display_image()
-        
+
     def update(self):
         # todo: check out if there is no async (get_status uses method with thread_execute)
         status = self.controller.get_status()
@@ -146,11 +142,12 @@ class CameraPanel:
         con_color = consts.con_colors.get(con_state, "gray")
         self.lbl_status.config(text=f"CAMERA status: {con_state}", bg=con_color)
 
-
     def change_brush_size(self, direction):
         self.brush_index += direction
-        if self.brush_index > len(CamConsts.BRUSH_SIZR_ARR): self.brush_index = len(CamConsts.BRUSH_SIZR_ARR)
-        if self.brush_index < 0: self.brush_index = 0
+        if self.brush_index > len(CamConsts.BRUSH_SIZR_ARR):
+            self.brush_index = len(CamConsts.BRUSH_SIZR_ARR)
+        if self.brush_index < 0:
+            self.brush_index = 0
         self.brush_size = CamConsts.BRUSH_SIZR_ARR[self.brush_index]
         logger.info(f"Brush sie is now {self.brush_size}")
 
@@ -181,14 +178,18 @@ class CameraPanel:
             dx = event.x - self.last_b1_press_pos[0]
             dy = -(event.y - self.last_b1_press_pos[1])
             dx = 0.00001 if dx == 0 else dx
-            angle = int(np.arctan(dy/dx)*180/np.pi)  # is this correct?
-            if angle < 0: angle += 180
-            if dy < 0: angle += 180
+            angle = int(np.arctan(dy / dx) * 180 / np.pi)  # is this correct?
+            if angle < 0:
+                angle += 180
+            if dy < 0:
+                angle += 180
 
             # call animation tab with given values
             anim_start_real = display2real(self.last_b1_press_pos)
-            self.master.animation_control.start_animation_gui_params(anim_start_real[1], anim_start_real[0], angle, self.brush_size)
-            
+            self.master.animation_control.start_animation_gui_params(
+                anim_start_real[1], anim_start_real[0], angle, self.brush_size
+            )
+
     def display_alt_image(self, image, timeout=0):
         if type(image) is np.ndarray:
             image = Image.fromarray(image)

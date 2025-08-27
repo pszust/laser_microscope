@@ -2,8 +2,8 @@ import threading
 import tkinter as tk
 from tkinter import Button, Entry, Frame, Label, StringVar
 
-from devices.heat_stage_control import HeatController
 import utils.consts as consts
+from devices.heat_stage_control import HeatController
 from utils.utils import serial_ports, thread_execute
 
 

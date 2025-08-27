@@ -1,3 +1,4 @@
+import logging
 import os
 import threading
 import time
@@ -12,7 +13,6 @@ from core.external_executor import ExternalExecutor
 from utils.command_handler import Command, ScriptParser, parse_command
 from utils.consts import ErrorMsg
 from utils.utils import thread_execute
-import logging
 
 if TYPE_CHECKING:
     from gui.main_window import MainWindow  # only used for type hints
@@ -48,9 +48,7 @@ class Automation:
             "move_xy_absolute": self.move_xy_absolute,
         }
 
-        self.unknown_no_of_args = (
-            "exec_custom"
-        )
+        self.unknown_no_of_args = "exec_custom"
 
         self.internal_commands_map = {
             "operator": self.use_operator,
@@ -224,9 +222,9 @@ class Automation:
             path = f"calibration/calibration_array_baseline.npy"
         else:
             path = f"calibration/calibration_array_{str(num).zfill(2)}.npy"
-            
+
         self.master.camera_controller.save_as_array(path)
-    
+
     def execute_custom_func(self, args):
         result = self.ext_executor.execute_custom_func(args)
         return result
@@ -237,22 +235,21 @@ class Automation:
 
     def get_camera_image(self) -> Image.Image:
         return self.master.camera_controller.get_image()
-    
+
     def load_image1(self) -> Image.Image:
         p1 = "d:/Katalog 1/Projekty/Mikroskop 3.0/help/map_minus.png"
         return Image.open(p1)
-    
+
     def load_image2(self) -> Image.Image:
         p1 = "d:/Katalog 1/Projekty/Mikroskop 3.0/help/map_plus.png"
         return Image.open(p1)
-    
+
     def display_alt_image(self, image):
         self.master.camera_panel.display_alt_image(image)
-    
+
     def reset_alt_image(self):
         self.master.camera_panel.reset_alt_image()
 
     def move_xy_absolute(self, pos):
         x, y = pos
         self.master.stage_controller.set_postion(x, y)
-

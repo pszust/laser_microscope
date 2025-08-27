@@ -1,3 +1,0 @@
-d_move(arg00, arg01)
-d_wait_move()
-d_wait(0.5)

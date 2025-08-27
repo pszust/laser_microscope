@@ -20,7 +20,33 @@ class CamConsts:
     DISPLAY_WIDTH = 800
     DISPLAY_HEIGHT = int(DISPLAY_WIDTH / ASPECT_RATIO)
     DISPLAY_SHAPE = (DISPLAY_WIDTH, DISPLAY_HEIGHT)
-    BRUSH_SIZR_ARR = [1, 2, 3, 4, 5, 6, 7, 8, 10, 12, 14, 16, 18, 20, 24, 28, 32, 38, 44, 50, 60, 70, 80, 90, 100]
+    BRUSH_SIZR_ARR = [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        10,
+        12,
+        14,
+        16,
+        18,
+        20,
+        24,
+        28,
+        32,
+        38,
+        44,
+        50,
+        60,
+        70,
+        80,
+        90,
+        100,
+    ]
 
 
 class ProjConsts:
