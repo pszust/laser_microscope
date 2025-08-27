@@ -32,7 +32,8 @@ class Automation:
             "laser_off": self.master.rigol_controller.laser_off,
             "set_laser_duty": self.master.rigol_controller.set_laserduty,
             "sleep": time.sleep,
-            "start_animation": self.start_animation,
+            "start_animation_target": self.master.animation_control.start_animation,
+            "start_animation_man_params": self.start_animation_man_params,
             "start_anim_gui_params": self.master.animation_control.start_animation_gui_params,
             "display_calibration_dot": self.master.projector_control.set_calibration_img,
             "save_calibration_img": self.save_calibration_img,
@@ -201,7 +202,7 @@ class Automation:
             self.execute()
             time.sleep(0.1)
 
-    def start_animation(self, posx, posy, angle, size, duration, anim_name):
+    def start_animation_man_params(self, posx, posy, angle, size, duration, anim_name):
         target = {
             "posx": posx,
             "posy": posy,
@@ -243,5 +244,4 @@ class Automation:
     
     def reset_alt_image(self):
         self.master.camera_panel.reset_alt_image()
-
 

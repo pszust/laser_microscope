@@ -80,7 +80,7 @@ def new_validity_array(mapka,
                        aop = [(400, 224), (450, 450)],  # area of operation = [(x, y), (w, h)]
                        shot_size=110,
                        check_size=50,
-                       count=100,
+                       count=30,
                        thres=0.03,
                        angle_count=15):
     minx = aop[0][0]-int(aop[1][0]/2)+int(shot_size)
@@ -118,6 +118,17 @@ def new_validity_array(mapka,
     return val_array
 
 
+def show_shot_asrgb(target, mapka_rgb):
+    drawn_shot = mapka_rgb.copy()
+    ang = target["angle"] + 180
+    center = (int(target["posx"]), int(target["posy"]))
+    dir_x = int(target["posx"] - target["size"] * np.cos(ang * np.pi / 180))
+    dir_y = int(target["posy"] - target["size"] * np.sin(-ang * np.pi / 180))
+    drawn_shot = cv2.arrowedLine(drawn_shot, center, (dir_x, dir_y), (255, 24, 24), 3)
+    drawn_shot = cv2.circle(drawn_shot, center, radius=target["size"], color=(0, 0, 0), thickness=2)
+    return drawn_shot
+
+
 def get_nppixel_count(masked_map, thres=0.01):
     neg = np.where(masked_map < -thres, 1, 0)
     pos = np.where(masked_map > thres, 1, 0)
@@ -140,3 +151,22 @@ def decide_smelting(mapka, direction):
             "anim_path": kolo_path,
         }
     return target
+
+
+def check_mapka(mapka, size = 400, thresh = 0.005):
+    width = size
+    height = size
+
+    mask = np.zeros(mapka.shape)
+
+    cx = int(mask.shape[0]/2)
+    cy = int(mask.shape[1]/2)
+    mask = cv2.rectangle(mask, (int(cy-width/2), int(cx-height/2)), (int(cy+width/2), int(cx+height/2)), 1, -1)
+    
+    masked = mapka*mask
+    
+    pos = masked[masked > thresh].shape[0]
+    neg = masked[masked < -thresh].shape[0]
+    dead = (width*height)-masked[(abs(masked) > thresh)].shape[0]
+    
+    return pos/(pos+neg+1), dead/(width*height)

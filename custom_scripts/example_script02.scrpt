@@ -2,6 +2,10 @@ var_a = 1
 if(var_a == 1){
     SCRPT: create_map.scrpt mapka mapka_rgb
     display_alt_image(mapka_rgb)
-    sleep(8)
+    target = exec_custom(decide_smelting, mapka, 1)
+    drawn_shot = exec_custom(show_shot_asrgb, target, mapka_rgb)
+    display_alt_image(drawn_shot)
+    sleep(5)
     reset_alt_image()
+    start_animation_target(target)
 }
