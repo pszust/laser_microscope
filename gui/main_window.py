@@ -30,6 +30,8 @@ from core.animation import AnimationControl
 from devices.flipper_controller import FlipperController
 from devices.labjack_controller_mock import LabjackController
 from gui.animation_tab import AnimationTab
+from gui.chiral_tab import ChiralTab
+from controls.chiral_control import ChiralControl
 from gui.heat_stage_panel import HeatPanel
 from gui.labjack_panel import LabjackPanel
 from gui.flipper_panel import FlipperPanel
@@ -74,6 +76,7 @@ class MainWindow(Frame):
 
         self.projector_control = ProjectorControl(self)
         self.animation_control = AnimationControl(self)
+        self.chiral_control = ChiralControl(self)
         self.automation_controller = Automation(self)  # this has to be after all the controllers
 
         self.elliptec_angle_var = StringVar()
@@ -185,6 +188,7 @@ class MainWindow(Frame):
         # Tab 3 (CHRL)
         tab_gui3 = Frame(notebook)
         notebook.add(tab_gui3, text="CHRL")
+        self.chiral_tab = ChiralTab(tab_gui3, self.chiral_control)
 
     def create_menu(self):
         self.menu = Menu(self.master)

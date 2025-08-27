@@ -45,6 +45,7 @@ class Automation:
             "reset_alt_image": self.reset_alt_image,
             "load_image1": self.load_image1,
             "load_image2": self.load_image2,
+            "move_xy_absolute": self.move_xy_absolute,
         }
 
         self.unknown_no_of_args = (
@@ -89,7 +90,7 @@ class Automation:
             # execute command
             temp_msg = f"Cur cmd: {current.command}, args: {current.args}, pos: {self.execution_position}"
             # self.master.console_panel.log(temp_msg)
-            self.master.after(0, lambda: self.master.console_panel.log(temp_msg))  # safer
+            self.master.after(0, lambda: self.master.console_panel.log(temp_msg))  # TODO: delete this line
 
             if current.command == "operator":
                 self.use_operator(current)
@@ -99,10 +100,15 @@ class Automation:
                     # exit this if block
                     self.execution_position = self.execution_position[:-1]
             elif current.command == "loop":
+                if isinstance(current.args[0], str):
+                    current.args[0] = self.variables[current.args[0]]
                 if current.args[0] > 0:
                     current.args[0] -= 1
                 else:
                     # exit loop block
+                    self.execution_position = self.execution_position[:-1]
+            elif current.command == "break_block":
+                for _ in range(current.args[0]):
                     self.execution_position = self.execution_position[:-1]
             elif current.command == "new_block":
                 pass
@@ -182,9 +188,9 @@ class Automation:
         else:
             raise (ValueError(f"{check} invalid"))
 
-    def execute_script_file(self, path):
+    def execute_script_file(self, path, args=None):
         scr = ScriptParser()
-        script_lines = scr.load_script(path)
+        script_lines = scr.load_script(path, args=args)
         scr.parse(script_lines)
         self.command_list = scr.commands
 
@@ -225,8 +231,9 @@ class Automation:
         result = self.ext_executor.execute_custom_func(args)
         return result
 
-    def log_value(self, value):
-        logger.info(f"{value} logged")
+    def log_value(self, *args):
+        text = ", ".join(str(arg) for arg in args)
+        logger.info(f"{text} logged")
 
     def get_camera_image(self) -> Image.Image:
         return self.master.camera_controller.get_image()
@@ -244,4 +251,8 @@ class Automation:
     
     def reset_alt_image(self):
         self.master.camera_panel.reset_alt_image()
+
+    def move_xy_absolute(self, pos):
+        x, y = pos
+        self.master.stage_controller.set_postion(x, y)
 

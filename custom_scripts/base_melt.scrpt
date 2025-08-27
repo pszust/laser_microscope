@@ -1,0 +1,43 @@
+columns = %arg01
+rows = %arg02
+x_start = %arg03
+y_start = %arg04
+pixel_size = %arg05
+
+cur_row = 0
+cur_col = 0
+
+loop(999){
+    SCRPT: create_map.scrpt mapka mapka_rgb
+    display_alt_image(mapka_rgb)
+    sleep(1)
+
+    target = exec_custom(decide_smelting, mapka, 1)
+    pixel_done = exec_custom(is_dict_empty, target)
+
+    if(pixel_done == 1){
+        cur_col += 1
+        if(cur_col > columns){
+            cur_col = 0
+            cur_row += 1
+            if(cur_row>rows){
+                # end the main loop, melting is done
+                break_loop(4)
+            }
+        }
+        # move XY stage
+        new_position = exec_custom(calculate_pixel_position(x_start, y_start, pixel_size, cur_row, cur_col))
+        move_xy_absolute(new_pos)
+    }
+    if(pixel_done == 0){
+        drawn_shot = exec_custom(show_shot_asrgb, target, mapka_rgb)
+        display_alt_image(drawn_shot)
+        sleep(3)
+        reset_alt_image()
+        start_animation_target(target)
+
+        # wait specific time for anim to end
+        wait_time = exec_custom(get_time_from_target, target)
+        sleep(wait_time)
+    }
+}

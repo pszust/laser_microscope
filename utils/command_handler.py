@@ -13,6 +13,7 @@ def parse_command(raw_command: str):
     command = command.replace(" ", "")
     for c in "(),{}":
         command = command.replace(c, " ")
+    command = command.split("#")[0]
     command = command.split(" ")
     command_list = []
     operators = ["==", ">=", "<=", "+=", "-=", "=", ">", "<"]
@@ -38,7 +39,7 @@ def parse_command(raw_command: str):
                 if op_2c in cmd:
                     split = cmd.split(op_2c)
                     command_list.extend([split[0], op_2c, split[1]])
-        else:
+        elif cmd:
             command_list.append(cmd)
     command_parsed = Command(command_list[0], command_list[1:])
     return command_parsed if command_parsed.command else None
@@ -73,11 +74,12 @@ class ScriptParser:
         self.commands = []
         self.example_script_path = "custom_scripts/example_script.scrpt"
 
-    def load_script(self, path: str) -> list[str]:
-        scr_lines = self.req_construct_script([], path)
+    def load_script(self, path: str, args: list | None=[]) -> list[str]:
+        args = [] if not args else args
+        scr_lines = self.recurse_construct_script([], path, args=args)
         return scr_lines
 
-    def req_construct_script(self, script_lines: list, path: str, args=[]) -> list[str]:
+    def recurse_construct_script(self, script_lines: list, path: str, args=[]) -> list[str]:
         with open(path, "r") as f:
             cnt = f.read()
             for n, arg in enumerate(args):
@@ -90,7 +92,7 @@ class ScriptParser:
                 fname = arglist[1]
                 args = arglist[2:]
                 script_lines.append("new_block{")
-                self.req_construct_script(script_lines, f"custom_scripts/{fname}", args=args)
+                self.recurse_construct_script(script_lines, f"custom_scripts/{fname}", args=args)
                 script_lines.append("}")
             else:
                 script_lines.append(line)
@@ -123,11 +125,11 @@ class ScriptParser:
                 current_command.append(parsed_command)
 
     def print_commands(self):
-        self._req_print(self.commands)
+        self._recurse_print(self.commands)
     
-    def _req_print(self, cmd: list | Command, block_intend: int=0):
+    def _recurse_print(self, cmd: list | Command, block_intend: int=0):
         if isinstance(cmd, Command):
             print("  "*block_intend, cmd.get_format())
         else:
             for c in cmd:
-                self._req_print(c, block_intend+1)
+                self._recurse_print(c, block_intend+1)

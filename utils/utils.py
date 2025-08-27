@@ -9,6 +9,7 @@ import serial
 import cv2
 import numpy as np
 from matplotlib import pyplot as plt
+from utils.command_handler import Command
 from utils.consts import ProjConsts
 
 def thread_execute(func):
@@ -132,3 +133,11 @@ def get_homography_matrix():
     fig.savefig("calibration/calib_result.png", dpi = 400)
     
     return h
+
+
+def print_command(cmd, nest = 0):
+    if type(cmd) == Command:
+        print(f"{"   "*nest}{cmd.get_format()}")
+    elif type(cmd) == list:
+        for c in cmd:
+            print_command(c, nest=nest+1)

@@ -137,7 +137,21 @@ def get_nppixel_count(masked_map, thres=0.01):
     return neg.sum(), pos.sum(), tot.sum(), dead.sum()
 
 
+def is_dict_empty(dictionary: dict):
+    if dictionary:
+        return 0
+    return 1
+
+def get_time_from_target(target):
+    return target["duration"]
+
+
 def decide_smelting(mapka, direction):
+    pos_coverage, dead = check_mapka(mapka)  # TODO: set thersholds and size as variables
+    kolo_thershold = 0.75  # TODO: set as variable
+    if (direction == 1 and pos_coverage >= kolo_thershold) or (direction == 0 and pos_coverage <= 1-kolo_thershold):
+        return {}
+
     val_arr = new_validity_array(mapka, direction)
     kolo_size = 150
     kolo_dur = 12
@@ -151,6 +165,12 @@ def decide_smelting(mapka, direction):
             "anim_path": kolo_path,
         }
     return target
+
+
+def calculate_pixel_position(x_start, y_start, pixel_size, cur_row, cur_col):
+    x_pos = x_start + cur_col * pixel_size
+    y_pos = y_start + cur_row * pixel_size
+    return (x_pos, y_pos)
 
 
 def check_mapka(mapka, size = 400, thresh = 0.005):
