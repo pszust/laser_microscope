@@ -31,13 +31,13 @@ from controls.chiral_control import ChiralControl
 from controls.projector_control import ProjectorControl
 from core.animation import AnimationControl
 from core.automation import Automation
-from devices.camera_control_mock import CameraController
+from devices.camera_control import CameraController
 from devices.flipper_controller import FlipperController
 from devices.heat_stage_control import HeatController
-from devices.labjack_controller_mock import LabjackController
-from devices.polar_control_mock import PolarController
-from devices.rigol_control_mock import RigolController
-from devices.xy_stage_control_mock import StageController
+from devices.labjack_controller import LabjackController
+from devices.polar_control import PolarController
+from devices.rigol_control import RigolController
+from devices.m30_control import StageController
 from gui.animation_tab import AnimationTab
 from gui.camera_panel import CameraPanel
 from gui.chiral_tab import ChiralTab
@@ -163,7 +163,7 @@ class MainWindow(Frame):
         # heat stage panel
         frame = Frame(column_frame)
         frame.pack(fill=tk.Y, padx=padd)
-        self.flipper_panel = HeatPanel(frame, self.heat_stage_control)
+        self.heat_panel = HeatPanel(frame, self.heat_stage_control)
 
         # -- COLUMN 3 --
         column_frame = Frame(self.master)

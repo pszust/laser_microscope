@@ -55,6 +55,6 @@ class ProjConsts:
 
 
 class LabJackConsts:
-    SERIAL_NO = "49499304"
+    SERIAL_NO = "55520124"
     MIN_POS = 0.0
     MAX_POS = 100.0

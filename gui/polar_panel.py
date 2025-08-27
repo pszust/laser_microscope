@@ -3,11 +3,12 @@ import tkinter as tk
 from tkinter import LEFT, Button, Entry, Frame, Label, StringVar, X, Y
 
 import utils.consts as consts
-from utils.utils import serial_ports, thread_execute
+from utils.utils import thread_execute
+from devices.polar_control import PolarController
 
 
 class PolarPanel:
-    def __init__(self, parent, controller, name="TOP POLARIZER CONTROL"):
+    def __init__(self, parent, controller: PolarController, name="TOP POLARIZER CONTROL"):
         self.controller = controller
         self.frame = Frame(parent)
         self.frame.pack(fill=Y)
@@ -27,10 +28,7 @@ class PolarPanel:
         # Connection controls
         cur_frame = Frame(self.frame)
         cur_frame.pack(fill=Y)
-        ell_com_var = StringVar(parent)
-        ell_com_var.set("COM3")  # default value
-        ell_com_menu = tk.OptionMenu(cur_frame, ell_com_var, *serial_ports(), command=self.connect)
-        ell_com_menu.pack(side=LEFT)
+        Button(cur_frame, text="Connect to Rotator", command=self.controller.connect).pack(side=tk.LEFT)
 
         self.lbl_status = Label(cur_frame, text="DEVICE status: unknown", bg="gray")
         self.lbl_status.pack(side=LEFT)
@@ -73,24 +71,21 @@ class PolarPanel:
                 command=lambda val=float(btn_info): self.rotate_relative(rot=val),
             ).pack(side=tk.LEFT)
 
-    @thread_execute
-    def connect(self, port):
-        print(f"Connecting to: {port}")
-        self.controller.connect(port)
+    # @thread_execute
+    # def connect(self, port):
+    #     print(f"Connecting to: {port}")
+    #     self.controller.connect(port)
 
     @thread_execute
     def rotate_relative(self, rot=None):
         if rot is None:
             rot = float(self.var_relative.get())
-        status = self.controller.get_status()
-        current_angle = status["rotation"]
-        new_angle = current_angle + rot
-        self.controller.rotate(new_angle)
+        self.controller.rotate_rel(rot)
 
     @thread_execute
     def rotate_absolute(self):
         value = float(self.var_absolute.get())
-        self.controller.rotate(value)
+        self.controller.rotate_abs(value)
 
     # GUI update hook
     def update(self):

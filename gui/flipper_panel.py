@@ -58,11 +58,11 @@ class FlipperPanel:
         self.lbl_info2.pack(side=tk.LEFT)
 
     def flipper1_in(self):
-        if self.control2.get_status().get("state") == "OUT":
+        if self.control1.get_status().get("state") == "OUT":
             self.control1.flipper_in()
 
     def flipper2_in(self):
-        if self.control1.get_status().get("state") == "OUT":
+        if self.control2.get_status().get("state") == "OUT":
             self.control2.flipper_in()
 
     def update(self):
