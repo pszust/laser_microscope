@@ -3,8 +3,12 @@ import tkinter as tk
 from tkinter import Button, Entry, Frame, Label, StringVar
 
 import utils.consts as consts
-from devices.labjack_controller_mock import LabjackController
 from utils.utils import serial_ports, thread_execute
+
+if consts.Device.USE_REAL_LABJACK:
+    from devices.labjack_controller import LabjackController
+else:
+    from devices.labjack_controller_mock import LabjackController
 
 
 class LabjackPanel:

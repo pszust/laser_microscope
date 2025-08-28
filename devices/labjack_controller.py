@@ -1,19 +1,17 @@
+import logging
 import os
 import time
+from ctypes import *
 from tkinter import messagebox
 
+import clr
 import cv2
 import numpy as np
-from utils.consts import LabJackConsts
-from utils.utils import thread_execute
 from PIL import Image, ImageTk
 
-import clr
-from ctypes import *
 from devices.TC300_COMMAND_LIB import *
-import logging
-
-logger = logging.getLogger(__name__)
+from utils.consts import LabJackConsts
+from utils.utils import thread_execute
 
 # Add References to .NET libraries
 clr.AddReference("C:\\Program Files\\Thorlabs\\Kinesis\\Thorlabs.MotionControl.DeviceManagerCLI.dll")
@@ -26,13 +24,16 @@ clr.AddReference(
     "C:\\Program Files\\Thorlabs\\Kinesis\\Thorlabs.MotionControl.IntegratedStepperMotorsUI.dll"
 )
 
+from System import Decimal  # Required for real units  # type: ignore
+from Thorlabs.MotionControl.Benchtop.DCServoCLI import *  # type: ignore
+
 # I dont know how it works, ask thorlabs
 from Thorlabs.MotionControl.DeviceManagerCLI import *  # type: ignore
 from Thorlabs.MotionControl.GenericMotorCLI import *  # type: ignore
-from Thorlabs.MotionControl.Benchtop.DCServoCLI import *  # type: ignore
-from Thorlabs.MotionControl.IntegratedStepperMotorsUI import *  # type: ignore
 from Thorlabs.MotionControl.IntegratedStepperMotorsCLI import *  # type: ignore
-from System import Decimal  # Required for real units  # type: ignore
+from Thorlabs.MotionControl.IntegratedStepperMotorsUI import *  # type: ignore
+
+logger = logging.getLogger(__name__)
 
 
 class LabjackController:
@@ -83,7 +84,7 @@ class LabjackController:
             # TODO: proper logging needs to implemented
             err_msg = f"Requested z-value = {value:.3f} for labjack is outside the range "
             err_msg += f"({LabJackConsts.MIN_POS} to {LabJackConsts.MAX_POS})"
-            print(err_msg)
+            logger.warning(err_msg)
         elif self.labjack and self.con_stat == "CONNECTED" and self.labjack.Status.IsInMotion == False:
             try:
                 time.sleep(0.1)

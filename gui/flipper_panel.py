@@ -1,13 +1,19 @@
 import threading
+import logging
 import tkinter as tk
 from tkinter import Button, Entry, Frame, Label, Scrollbar, StringVar, Text
 
 import utils.consts as consts
 from core.automation import Automation
-from devices.flipper_controller import FlipperController
 from utils.command_handler import Command, parse_command
 from utils.utils import thread_execute
 
+if consts.Device.USE_REAL_FLIPPERS:
+    from devices.flipper_controller import FlipperController
+else:
+    from devices.flipper_controller_mock import FlipperController
+
+logger = logging.getLogger(__name__)
 
 class FlipperPanel:
     def __init__(self, parent, controllers: list[FlipperController, FlipperController]):
@@ -40,7 +46,7 @@ class FlipperPanel:
         l = Label(cur_frame, text="FLIPPER 1", fg=consts.info_label_color)
         l.config(font=consts.info_label_font)
         l.pack(side=tk.LEFT)
-        Button(cur_frame, text="IN", command=self.flipper1_in).pack(side=tk.LEFT)
+        Button(cur_frame, text="IN", command=self.flipper1_in_safe).pack(side=tk.LEFT)
         Button(cur_frame, text="OUT", command=self.control1.flipper_out).pack(side=tk.LEFT)
         self.lbl_info1 = Label(cur_frame, text="State: UNKNOWN", fg=consts.info_label_color)
         self.lbl_info1.config(font=consts.info_label_font)
@@ -51,19 +57,23 @@ class FlipperPanel:
         l = Label(cur_frame, text="FLIPPER 2", fg=consts.info_label_color)
         l.config(font=consts.info_label_font)
         l.pack(side=tk.LEFT)
-        Button(cur_frame, text="IN", command=self.flipper2_in).pack(side=tk.LEFT)
+        Button(cur_frame, text="IN", command=self.flipper2_in_safe).pack(side=tk.LEFT)
         Button(cur_frame, text="OUT", command=self.control2.flipper_out).pack(side=tk.LEFT)
         self.lbl_info2 = Label(cur_frame, text="State: UNKNOWN", fg=consts.info_label_color)
         self.lbl_info2.config(font=consts.info_label_font)
         self.lbl_info2.pack(side=tk.LEFT)
 
-    def flipper1_in(self):
-        if self.control1.get_status().get("state") == "OUT":
-            self.control1.flipper_in()
-
-    def flipper2_in(self):
+    def flipper1_in_safe(self):
         if self.control2.get_status().get("state") == "OUT":
+            self.control1.flipper_in()
+        else:
+            logger.warning(f"Attempt to insert flipper while other is inserted blocked!")
+
+    def flipper2_in_safe(self):
+        if self.control1.get_status().get("state") == "OUT":
             self.control2.flipper_in()
+        else:
+            logger.warning(f"Attempt to insert flipper while other is inserted blocked!")
 
     def update(self):
         status1 = self.control1.get_status()

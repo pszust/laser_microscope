@@ -26,6 +26,7 @@ class LabjackController:
     @thread_execute
     def connect(self):
         self.con_stat = "CONNECTING"
+        self.labjack = 1
         time.sleep(2.1)
 
         self.con_stat = "CONNECTED"
@@ -45,7 +46,7 @@ class LabjackController:
             # TODO: proper logging needs to implemented
             err_msg = f"Requested z-value = {value:.3f} for labjack is outside the range "
             err_msg += f"({LabJackConsts.MIN_POS} to {LabJackConsts.MAX_POS})"
-            print(err_msg)
+            logger.warning(err_msg)
         elif self.labjack and self.con_stat == "CONNECTED":
             self.height = value
 

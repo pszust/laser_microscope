@@ -19,9 +19,13 @@ import numpy as np
 from PIL import Image, ImageTk
 
 import utils.consts as consts
-from devices.camera_control_mock import CameraController
 from utils.consts import CamConsts
 from utils.utils import thread_execute
+
+if consts.Device.USE_REAL_CAMERA:
+    from devices.camera_control  import CameraController
+else:
+    from devices.camera_control_mock  import CameraController
 
 if TYPE_CHECKING:
     from gui.main_window import MainWindow

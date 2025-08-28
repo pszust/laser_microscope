@@ -4,9 +4,13 @@ from tkinter import LEFT, Button, Entry, Frame, Label, StringVar, X, Y
 
 import utils.consts as consts
 
+if consts.Device.USE_REAL_RIGOL:
+    from devices.rigol_control import RigolController
+else:
+    from devices.rigol_control_mock import RigolController
 
 class RigolPanel:
-    def __init__(self, parent, controller):
+    def __init__(self, parent, controller: RigolController):
         self.controller = controller
         self.frame = Frame(parent)
         self.frame.pack(fill=Y)

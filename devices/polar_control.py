@@ -2,11 +2,12 @@
 import logging
 import time
 from tkinter import messagebox
+
 from pylablib.devices import Thorlabs
 
 logger = logging.getLogger(__name__)
 
-DEG_TO_STEP = 0.732420/100000
+DEG_TO_STEP = 0.732420 / 100000
 DEVICE_ID = "55520124"
 
 
@@ -51,7 +52,7 @@ class PolarController:
             self.rotation = self._step_to_angle(step)
 
     def _angle_to_steps(self, angle: float) -> int:
-        return int(angle/DEG_TO_STEP)
+        return int(angle / DEG_TO_STEP)
 
     def _step_to_angle(self, step: int) -> float:
         return step * DEG_TO_STEP

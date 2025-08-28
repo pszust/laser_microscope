@@ -3,8 +3,12 @@ import tkinter as tk
 from tkinter import Button, Entry, Frame, Label, StringVar
 
 import utils.consts as consts
-from devices.heat_stage_control import HeatController
 from utils.utils import serial_ports, thread_execute
+
+if consts.Device.USE_REAL_HEATSTAGE:
+    from devices.heat_stage_control import HeatController
+else:
+    from devices.heat_stage_control_mock import HeatController
 
 
 class HeatPanel:

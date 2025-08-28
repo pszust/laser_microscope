@@ -25,19 +25,11 @@ from tkinter import (
 
 import cv2
 import serial
-
 import utils.consts as consts
 from controls.chiral_control import ChiralControl
 from controls.projector_control import ProjectorControl
 from core.animation import AnimationControl
 from core.automation import Automation
-from devices.camera_control import CameraController
-from devices.flipper_controller import FlipperController
-from devices.heat_stage_control import HeatController
-from devices.labjack_controller import LabjackController
-from devices.polar_control import PolarController
-from devices.rigol_control import RigolController
-from devices.m30_control import StageController
 from gui.animation_tab import AnimationTab
 from gui.camera_panel import CameraPanel
 from gui.chiral_tab import ChiralTab
@@ -52,8 +44,44 @@ from gui.stability_panel import StabilityPanel
 from gui.xy_stage_panel import M30Panel
 from utils.timer import LoopTimer
 
-logger = logging.getLogger(__name__)
+if consts.Device.USE_REAL_CAMERA:
+    from devices.camera_control  import CameraController
+else:
+    from devices.camera_control_mock  import CameraController
 
+if consts.Device.USE_REAL_FLIPPERS:
+    from devices.flipper_controller import FlipperController
+else:
+    from devices.flipper_controller_mock import FlipperController
+
+if consts.Device.USE_REAL_LABJACK:
+    from devices.labjack_controller import LabjackController
+else:
+    from devices.labjack_controller_mock import LabjackController
+
+if consts.Device.USE_REAL_HEATSTAGE:
+    from devices.heat_stage_control import HeatController
+else:
+    from devices.heat_stage_control_mock import HeatController
+
+if consts.Device.USE_REAL_RIGOL:
+    from devices.rigol_control import RigolController
+else:
+    from devices.rigol_control_mock import RigolController
+
+if consts.Device.USE_REAL_M30:
+    from devices.m30_control import StageController
+else:
+    from devices.m30_control_mock import StageController
+
+if consts.Device.USE_REAL_ROTATOR:
+    from devices.polar_control import PolarController
+else:
+    from devices.polar_control_mock import PolarController
+
+
+
+logger = logging.getLogger(__name__)
 padd = 2
 
 

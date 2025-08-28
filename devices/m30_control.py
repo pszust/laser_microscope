@@ -1,17 +1,17 @@
+import logging
 import os
 import time
+from ctypes import *
 from tkinter import messagebox
 
+import clr
 import cv2
 import numpy as np
-from utils.consts import LabJackConsts
-from utils.utils import thread_execute
 from PIL import Image, ImageTk
 
-import clr
-from ctypes import *
 from devices.TC300_COMMAND_LIB import *
-import logging
+from utils.consts import LabJackConsts
+from utils.utils import thread_execute
 
 logger = logging.getLogger(__name__)
 
@@ -19,15 +19,19 @@ logger = logging.getLogger(__name__)
 clr.AddReference("C:\\Program Files\\Thorlabs\\Kinesis\\Thorlabs.MotionControl.DeviceManagerCLI.dll")
 clr.AddReference("C:\\Program Files\\Thorlabs\\Kinesis\\Thorlabs.MotionControl.GenericMotorCLI.dll")
 clr.AddReference("C:\\Program Files\\Thorlabs\\Kinesis\\Thorlabs.MotionControl.Benchtop.DCServoCLI.dll.")
-clr.AddReference("C:\\Program Files\\Thorlabs\\Kinesis\\Thorlabs.MotionControl.IntegratedStepperMotorsCLI.dll.")
-clr.AddReference("C:\\Program Files\\Thorlabs\\Kinesis\\Thorlabs.MotionControl.IntegratedStepperMotorsUI.dll")
+clr.AddReference(
+    "C:\\Program Files\\Thorlabs\\Kinesis\\Thorlabs.MotionControl.IntegratedStepperMotorsCLI.dll."
+)
+clr.AddReference(
+    "C:\\Program Files\\Thorlabs\\Kinesis\\Thorlabs.MotionControl.IntegratedStepperMotorsUI.dll"
+)
 
+from System import Decimal  # Required for real units  # type: ignore
+from Thorlabs.MotionControl.Benchtop.DCServoCLI import *  # type: ignore
 from Thorlabs.MotionControl.DeviceManagerCLI import *  # type: ignore
 from Thorlabs.MotionControl.GenericMotorCLI import *  # type: ignore
-from Thorlabs.MotionControl.Benchtop.DCServoCLI import *  # type: ignore
-from Thorlabs.MotionControl.IntegratedStepperMotorsUI import *  # type: ignore
 from Thorlabs.MotionControl.IntegratedStepperMotorsCLI import *  # type: ignore
-from System import Decimal  # Required for real units  # type: ignore
+from Thorlabs.MotionControl.IntegratedStepperMotorsUI import *  # type: ignore
 
 
 class StageController:

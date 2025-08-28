@@ -4,7 +4,11 @@ from tkinter import LEFT, Button, Entry, Frame, Label, StringVar, X, Y
 
 import utils.consts as consts
 from utils.utils import thread_execute
-from devices.polar_control import PolarController
+
+if consts.Device.USE_REAL_ROTATOR:
+    from devices.polar_control import PolarController
+else:
+    from devices.polar_control_mock import PolarController
 
 
 class PolarPanel:

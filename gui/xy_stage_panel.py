@@ -3,8 +3,12 @@ import tkinter as tk
 from tkinter import LEFT, Button, Entry, Frame, Label, StringVar, X, Y
 
 import utils.consts as consts
-from devices.xy_stage_control_mock import StageController
 from utils.utils import serial_ports, thread_execute
+
+if consts.Device.USE_REAL_M30:
+    from devices.m30_control import StageController
+else:
+    from devices.m30_control_mock import StageController
 
 
 class M30Panel:

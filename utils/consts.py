@@ -8,6 +8,16 @@ main_loop_time = 175
 con_colors = {"CONNECTED": "lime", "CONNECTING": "yellow", "NOT CONNECTED": "gray"}
 
 
+class Device:
+    USE_REAL_CAMERA = False
+    USE_REAL_M30 = False
+    USE_REAL_FLIPPERS = False
+    USE_REAL_LABJACK = False
+    USE_REAL_ROTATOR = False
+    USE_REAL_RIGOL = False
+    USE_REAL_HEATSTAGE = False
+
+
 class ErrorMsg:
     err_var_missing = "Command: %s with args: %s - no %s in currently declared variables!"
 
