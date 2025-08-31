@@ -44,7 +44,7 @@ class AnimationControl:
             "posy": y,
             "angle": angle,
             "size": size,
-            "duration": int(anim_tab.var_duration.get()),
+            "duration": int(float(anim_tab.var_duration.get())),
             "anim_path": anim_tab.var_anim_path.get(),
         }
         self.start_animation(target)
@@ -80,6 +80,8 @@ class AnimationInterpreter:
         # self.anim_str = self.replace_variables(self.anim_str, self.variables)
 
     def load_anim_str(self, path: str) -> str:
+        if not path.endswith(".anim"):
+            path += ".anim"
         path2 = os.path.join(CUSTOM_ANIMS_DIR, os.path.basename(path))
         path3 = os.path.join(BASE_ANIMS_DIR, os.path.basename(path))
         if os.path.isfile(path):
@@ -92,7 +94,7 @@ class AnimationInterpreter:
             with open(path3, "r") as f:
                 return f.read()
         else:
-            raise FileNotFoundError(f"Animation file {path} not found!")
+            raise FileNotFoundError(f"Animation file {path} nor {path2} nor {path3} not found!")
 
     def replace_variables(anim_str, variables):
         for n in range(0, len(variables)):

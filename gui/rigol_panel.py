@@ -9,6 +9,7 @@ if consts.Device.USE_REAL_RIGOL:
 else:
     from devices.rigol_control_mock import RigolController
 
+
 class RigolPanel:
     def __init__(self, parent, controller: RigolController):
         self.controller = controller

@@ -25,6 +25,7 @@ from tkinter import (
 
 import cv2
 import serial
+
 import utils.consts as consts
 from controls.chiral_control import ChiralControl
 from controls.projector_control import ProjectorControl
@@ -45,9 +46,9 @@ from gui.xy_stage_panel import M30Panel
 from utils.timer import LoopTimer
 
 if consts.Device.USE_REAL_CAMERA:
-    from devices.camera_control  import CameraController
+    from devices.camera_control import CameraController
 else:
-    from devices.camera_control_mock  import CameraController
+    from devices.camera_control_mock import CameraController
 
 if consts.Device.USE_REAL_FLIPPERS:
     from devices.flipper_controller import FlipperController
@@ -78,7 +79,6 @@ if consts.Device.USE_REAL_ROTATOR:
     from devices.polar_control import PolarController
 else:
     from devices.polar_control_mock import PolarController
-
 
 
 logger = logging.getLogger(__name__)

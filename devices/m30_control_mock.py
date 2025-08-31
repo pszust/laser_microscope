@@ -8,6 +8,7 @@ import clr
 import cv2
 import numpy as np
 from PIL import Image, ImageTk
+
 from utils.utils import thread_execute
 
 logger = logging.getLogger(__name__)
@@ -49,7 +50,7 @@ class StageController:
             dst_x = self._x - new_x
             dst_y = self._y - new_y
             dst = np.sqrt(dst_x**2 + dst_y**2)
-            time.sleep(0.25*dst)
+            time.sleep(0.25 * dst)
             self._x = new_x
             self._y = new_y
 

@@ -16,16 +16,16 @@ from typing import TYPE_CHECKING
 
 import cv2
 import numpy as np
-from PIL import Image, ImageTk
+from PIL import Image, ImageDraw, ImageTk
 
 import utils.consts as consts
 from utils.consts import CamConsts
 from utils.utils import thread_execute
 
 if consts.Device.USE_REAL_CAMERA:
-    from devices.camera_control  import CameraController
+    from devices.camera_control import CameraController
 else:
-    from devices.camera_control_mock  import CameraController
+    from devices.camera_control_mock import CameraController
 
 if TYPE_CHECKING:
     from gui.main_window import MainWindow
@@ -33,17 +33,38 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 
-def costly_overlay(img: Image, overlay: np.array, R: int, G: int, B: int, s=128):
-    overlay_gray = Image.fromarray(overlay).convert("L")  # ensure its in grayscale mode
+def costly_overlay(
+    img: Image.Image, overlay: np.ndarray, R: int, G: int, B: int, s: int = 128
+) -> Image.Image:
+    """
+    Draw a colored, semi-transparent overlay on top of `img`, using a grayscale mask `overlay`.
+    White (255) in overlay -> alpha = s; black (0) -> alpha = 0. Values in between scale linearly.
 
-    # Convert grayscale to color-tinted image
-    blue_overlay = Image.new("RGBA", overlay_gray.size)
-    blue_overlay_data = [(R, G, B, s) for value in overlay_gray.getdata()]  # semi-transparent
-    blue_overlay.putdata(blue_overlay_data)
+    Args:
+        img: base PIL image (RGB or RGBA)
+        overlay: numpy array (H, W) with values 0..255 (will be cast to uint8)
+        R,G,B: overlay color
+        s: max opacity (0..255) for mask=255
+    """
+    # Ensure 8-bit grayscale mask
+    if overlay.dtype != np.uint8:
+        overlay = overlay.astype(np.uint8)
+
+    mask_L = Image.fromarray(overlay).convert("L")
 
     base_rgba = img.convert("RGBA")
-    combined = Image.alpha_composite(base_rgba, blue_overlay)
-    return combined.convert("RGB")
+
+    # Solid color layer with zero alpha; we’ll put alpha from the mask
+    color_rgba = Image.new("RGBA", base_rgba.size, (R, G, B, 0))
+
+    # Per-pixel alpha: scale mask [0..255] by s
+    # If you want a binary mask (on/off), use: lambda v: s if v > 0 else 0
+    alpha_L = mask_L.point(lambda v: int(v * s / 255))
+
+    color_rgba.putalpha(alpha_L)
+
+    out = Image.alpha_composite(base_rgba, color_rgba)
+    return out.convert("RGB")
 
 
 def display2real(display_cords: tuple[int, int]) -> tuple[int, int]:
@@ -106,6 +127,7 @@ class CameraPanel:
         self.canvas.bind("<ButtonRelease-1>", self.canvas_button1_release)
         # self.canvas.bind("<ButtonRelease-1>", self.cam_btn_release)
         self.canvas.bind("<B1-Motion>", self.canvas_button1_motion)
+        self.canvas.bind("<B3-Motion>", self.canvas_button3_motion)
         self.canvas.bind("<Motion>", self.canvas_motion)
 
     def setup_interaction_mode_selector(self, frame):
@@ -134,6 +156,18 @@ class CameraPanel:
             self.full_size_img = self.alt_image
         else:
             self.full_size_img = self.controller.get_image()
+
+        inter_mode = self.interaction_var.get()
+        # draw brush pointer etc
+        if inter_mode != "NONE":
+            self.bursh_overlay()
+
+        # add projector image as overlay (TODO: maybe change to always display final image?)
+        if (overlay := self.master.projector_control.raw_animation_img) is not None:
+            self.full_size_img = costly_overlay(self.full_size_img, overlay, 0, 0, 255)
+        if (overlay := self.master.projector_control.raw_drawn_image) is not None:
+            self.full_size_img = costly_overlay(self.full_size_img, overlay, 0, 150, 210)
+
         self.disp_cam_img = self.full_size_img.resize(CamConsts.DISPLAY_SHAPE)
         self.display_image()
 
@@ -156,15 +190,27 @@ class CameraPanel:
         logger.info(f"Brush sie is now {self.brush_size}")
 
     def canvas_button1_press(self, event):
-        x = event.x
-        y = event.y
-        self.last_b1_press_pos = (x, y)
-        logger.info(f"Button press at X: {x}; Y:{y}")
+        self.mouse_x = event.x
+        self.mouse_y = event.y
+        self.last_b1_press_pos = (self.mouse_x, self.mouse_y)
 
     def canvas_button1_motion(self, event):
         """This activates during B1 press-move"""
-        x = event.x
-        y = event.y
+        self.mouse_x = event.x
+        self.mouse_y = event.y
+
+        if self.interaction_var.get() == "DRAW":
+            coords = display2real((self.mouse_x, self.mouse_y))
+            self.master.projector_control.draw_using_brush(coords, self.brush_size, (255, 255, 255))
+
+    def canvas_button3_motion(self, event):
+        """This activates during B1 press-move"""
+        self.mouse_x = event.x
+        self.mouse_y = event.y
+
+        if self.interaction_var.get() == "DRAW":
+            coords = display2real((self.mouse_x, self.mouse_y))
+            self.master.projector_control.draw_using_brush(coords, self.brush_size, (0, 0, 0))
 
     def canvas_motion(self, event):
         """
@@ -201,3 +247,18 @@ class CameraPanel:
 
     def reset_alt_image(self):
         self.alt_image = None
+
+    def bursh_overlay(self):
+        if self.full_size_img is None:
+            raise RuntimeError("disp_cam_img not initialized")
+
+        radius = self.brush_size
+        x, y = display2real((self.mouse_x, self.mouse_y))
+        color = (255, 0, 0)
+
+        draw = ImageDraw.Draw(self.full_size_img)
+        bbox = [
+            (x - radius, y - radius),
+            (x + radius, y + radius),
+        ]
+        draw.ellipse(bbox, outline=color, width=2)  # change width to control line thickness

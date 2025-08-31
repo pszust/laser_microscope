@@ -7,7 +7,7 @@ import cv2
 import numpy as np
 from PIL import Image, ImageTk
 
-from utils.consts import ProjConsts
+from utils.consts import CamConsts, ProjConsts
 from utils.utils import get_homography_matrix, num_to_coords
 
 if TYPE_CHECKING:
@@ -25,9 +25,11 @@ class ProjectorControl:
         self.is_active = False
         self.homomatrix = None  # TODO: this needs to be taken from calibration
 
-        # raw_ images are before transposing to proj_shape and have cam_shape dimensions
+        # raw_ images are before transposing to proj_shape and have cam_shape dimensions (REAL_WIDTH etc)
+        raw_img_shape = (CamConsts.SHAPE[1], CamConsts.SHAPE[0], CamConsts.SHAPE[2])
         self.raw_animation_img = None
         self.raw_loaded_img = None
+        self.raw_drawn_image = np.zeros(raw_img_shape, np.uint8)
 
         # direct_ images that are in project dimensions and are not being transposed (they are displayed as-is)
         self.direct_calib_img = None
@@ -128,8 +130,12 @@ class ProjectorControl:
 
         # first add together all the images that need to be composed nad transposed by homomatrix (in cam shape)
         if images_to_merge := [
-            img for img in (self.raw_animation_img, self.raw_loaded_img) if img is not None
+            img
+            for img in (self.raw_animation_img, self.raw_loaded_img, self.raw_drawn_image)
+            if img is not None
         ]:
+            if self.raw_animation_img is not None:
+                aaa = 1
             merged = self.merge_images(images_to_merge)
 
             # transpose using the thing
@@ -146,3 +152,10 @@ class ProjectorControl:
 
         final_img = self.merge_images([img for img in (transposed_image, direct_image) if img is not None])
         return final_img
+
+    # Helper methods
+    def draw_using_brush(self, coords, radius, color):
+        """
+        called by camera panel when drawing, uses black/white color
+        """
+        self.raw_drawn_image = cv2.circle(self.raw_drawn_image, coords, radius, color, -1)

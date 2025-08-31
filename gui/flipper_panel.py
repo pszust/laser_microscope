@@ -1,5 +1,5 @@
-import threading
 import logging
+import threading
 import tkinter as tk
 from tkinter import Button, Entry, Frame, Label, Scrollbar, StringVar, Text
 
@@ -14,6 +14,7 @@ else:
     from devices.flipper_controller_mock import FlipperController
 
 logger = logging.getLogger(__name__)
+
 
 class FlipperPanel:
     def __init__(self, parent, controllers: list[FlipperController, FlipperController]):
