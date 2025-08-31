@@ -9,96 +9,55 @@ import cv2
 import numpy as np
 from PIL import Image, ImageTk
 
-from devices.TC300_COMMAND_LIB import *
 from utils.consts import LabJackConsts
 from utils.utils import thread_execute
-
-# Add References to .NET libraries
-clr.AddReference("C:\\Program Files\\Thorlabs\\Kinesis\\Thorlabs.MotionControl.DeviceManagerCLI.dll")
-clr.AddReference("C:\\Program Files\\Thorlabs\\Kinesis\\Thorlabs.MotionControl.GenericMotorCLI.dll")
-clr.AddReference("C:\\Program Files\\Thorlabs\\Kinesis\\Thorlabs.MotionControl.Benchtop.DCServoCLI.dll.")
-clr.AddReference(
-    "C:\\Program Files\\Thorlabs\\Kinesis\\Thorlabs.MotionControl.IntegratedStepperMotorsCLI.dll."
-)
-clr.AddReference(
-    "C:\\Program Files\\Thorlabs\\Kinesis\\Thorlabs.MotionControl.IntegratedStepperMotorsUI.dll"
-)
-
-from System import Decimal  # Required for real units  # type: ignore
-from Thorlabs.MotionControl.Benchtop.DCServoCLI import *  # type: ignore
-
-# I dont know how it works, ask thorlabs
-from Thorlabs.MotionControl.DeviceManagerCLI import *  # type: ignore
-from Thorlabs.MotionControl.GenericMotorCLI import *  # type: ignore
-from Thorlabs.MotionControl.IntegratedStepperMotorsCLI import *  # type: ignore
-from Thorlabs.MotionControl.IntegratedStepperMotorsUI import *  # type: ignore
+from pylablib.devices import Thorlabs
 
 logger = logging.getLogger(__name__)
+
+STEPS2MM = 1228800
 
 
 class LabjackController:
     def __init__(self):
         self.con_stat = "UNKNOWN"
         self.height = 0.0
-        self.labjack = None
+        self.device = None
         logger.debug(f"Initialization done.")
 
     @thread_execute
     def connect(self):
         self.con_stat = "CONNECTING"
-
-        # connecting (weird thorlabs stuff)
-        DeviceManagerCLI.BuildDeviceList()  # type: ignore
-        self.labjack = LabJack.CreateLabJack(LabJackConsts.SERIAL_NO)  # type: ignore
-
-        # Connect, begin polling, and enable
-        self.labjack.Connect(LabJackConsts.SERIAL_NO)
+        self.device = Thorlabs.KinesisMotor("49499304")
         time.sleep(0.25)  # wait statements are important to allow settings to be sent to the device
-
-        device_info = self.labjack.GetDeviceInfo()
-        print(f"DEVICE_INFO: {device_info}")
-
-        self.labjack.StartPolling(250)
-        self.labjack.EnableDevice()
-        motor_configuration = self.labjack.LoadMotorConfiguration(LabJackConsts.SERIAL_NO)
-        work_done = self.labjack.InitializeWaitHandler()
-        time.sleep(0.1)
-
+        logger.info(f"Connected to labjack")
         self.con_stat = "CONNECTED"
 
     @thread_execute
     def disconnect(self):
-        self.labjack.StopPolling()
-        self.labjack.Disconnect()
-        self.labjack = None
+        self.device = None
         self.con_stat = "NOT CONNECTED"
 
     @thread_execute
     def update_height(self):
-        if self.labjack and self.con_stat == "CONNECTED":
-            self.height = round(float(self.labjack.Position.ToString().replace(",", ".")), 3)
+        if self.device and self.con_stat == "CONNECTED":
+            self.height = round(self.device.get_position()/STEPS2MM, 5)
 
     @thread_execute
     def set_height(self, value):
-        if value < LabJackConsts.MIN_POS or LabJackConsts.MAX_POS < value:
-            # TODO: proper logging needs to implemented
-            err_msg = f"Requested z-value = {value:.3f} for labjack is outside the range "
-            err_msg += f"({LabJackConsts.MIN_POS} to {LabJackConsts.MAX_POS})"
-            logger.warning(err_msg)
-        elif self.labjack and self.con_stat == "CONNECTED" and self.labjack.Status.IsInMotion == False:
-            try:
-                time.sleep(0.1)
-                work_done = self.labjack.InitializeWaitHandler()
-                self.labjack.MoveTo(Decimal(value), work_done)
-            except AssertionError as error:
-                print(error)
-                print("LabJack: error, disconecting!")
-                self.disconnect()
+        if not self.device.is_moving():
+            if value < LabJackConsts.MIN_POS or LabJackConsts.MAX_POS < value:
+                err_msg = f"Requested z-value = {value:.3f} for labjack is outside the range "
+                err_msg += f"({LabJackConsts.MIN_POS} to {LabJackConsts.MAX_POS})"
+                logger.warning(err_msg)
+            elif self.device and self.con_stat == "CONNECTED":
+                self.device.move_to(int(value*STEPS2MM))
+        else:
+            logger.warning("Labjack device is currently moving, command ignored")
 
     @thread_execute
     def home(self):
-        work_done = self.labjack.InitializeWaitHandler()
-        self.labjack.Home(work_done)
+        self.device.home()
 
     @thread_execute
     def move_relative(self, value):
