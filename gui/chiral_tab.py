@@ -1,6 +1,5 @@
 import logging
 import os
-import threading
 import tkinter as tk
 from tkinter import (
     Button,
@@ -8,7 +7,6 @@ from tkinter import (
     Entry,
     Frame,
     Label,
-    OptionMenu,
     Scrollbar,
     StringVar,
     filedialog,
@@ -20,16 +18,20 @@ from PIL import Image, ImageTk
 
 import utils.consts as consts
 from controls.chiral_control import ChiralControl
-from utils.utils import thread_execute
 
 logger = logging.getLogger(__name__)
+
+INITIAL_VARIABLES = """
+threshold_kolo = 0.7
+threshold_pixel = 0.4
+"""
 
 
 class ChiralTab:
     # Fixed canvas size and per-source-pixel screen size.
     # With PIXEL_SCALE=8 and CANVAS_SIZE=640, an 80x80 image fits exactly;
     # a 2x2 becomes a small 16x16 block centered on gray.
-    CANVAS_SIZE = 640
+    CANVAS_SIZE = 400
     PIXEL_SCALE = 8
     CANVAS_BG = "#4a4a4a"  # mid gray
     OVERLAY_COLOR = "#ff4d4d"  # red X for selected pixel
@@ -126,6 +128,48 @@ class ChiralTab:
         # Initial placeholder
         self._draw_placeholder()
 
+        # Variables for automation
+        vars_frame = Frame(self.frame)
+        vars_frame.pack(fill=tk.BOTH, expand=False, padx=6, pady=(0, 6))
+
+        Label(vars_frame, text="Variables text (free-form):").pack(anchor="w", pady=(0, 4))
+
+        # Use a subframe so we can grid scrollbars around the Text while not mixing pack/grid in same parent
+        text_wrap = Frame(vars_frame)
+        text_wrap.pack(fill=tk.BOTH, expand=True)
+
+        self.vars_text = tk.Text(
+            text_wrap,
+            width=60,  # ~60 characters
+            height=12,  # at least 10 lines
+            wrap="none",  # keep lines unwrapped; allow horizontal scroll
+            undo=True,
+        )
+        self._set_initial_variables()
+
+        yscroll = Scrollbar(text_wrap, orient="vertical", command=self.vars_text.yview)
+        xscroll = Scrollbar(text_wrap, orient="horizontal", command=self.vars_text.xview)
+        self.vars_text.configure(yscrollcommand=yscroll.set, xscrollcommand=xscroll.set)
+
+        # Lay them out with grid inside text_wrap (separate from pack used on outer frames)
+        self.vars_text.grid(row=0, column=0, sticky="nsew")
+        yscroll.grid(row=0, column=1, sticky="ns")
+        xscroll.grid(row=1, column=0, sticky="ew")
+
+        text_wrap.grid_rowconfigure(0, weight=1)
+        text_wrap.grid_columnconfigure(0, weight=1)
+
+        # Update Variables button
+        update_row = Frame(vars_frame)
+        update_row.pack(fill=tk.X, pady=(6, 0))
+        self.btn_update_vars = Button(
+            update_row, text="Update Variables", command=self._on_update_variables
+        )
+        self.btn_update_vars.pack(side=tk.LEFT)
+
+        # Shortcut: Ctrl+Enter to update
+        self.vars_text.bind("<Control-Return>", lambda e: (self._on_update_variables(), "break"))
+
     # -------------------------
     # UI Callbacks
     # -------------------------
@@ -191,6 +235,7 @@ class ChiralTab:
         pC = self.param_c.get()
 
         # Kick off control logic in a thread (non-blocking UI)
+        self._on_update_variables()
         self.control.start_melting(x, y, pA, pB, pC)
 
     # -------------------------
@@ -323,9 +368,18 @@ class ChiralTab:
             font=("Segoe UI", 12),
         )
 
+    def _on_update_variables(self):
+        text = self.vars_text.get("1.0", "end-1c")  # from line 1, char 0 to end minus trailing newline
+        self.control.master.automation_controller.update_variables_from_text(text)
+
     # -------------------------
     # Helpers
     # -------------------------
+
+    def _set_initial_variables(self):
+        var_lines = (line for line in INITIAL_VARIABLES.split("\n") if line)
+        for n, line in enumerate(var_lines):
+            self.vars_text.insert(tk.END, line + "\n")
 
     @staticmethod
     def _hex_to_rgb(hx: str) -> tuple[int, int, int]:

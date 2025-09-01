@@ -39,7 +39,7 @@ def parse_command(raw_command: str):
                 if op_2c in cmd:
                     split = cmd.split(op_2c)
                     command_list.extend([split[0], op_2c, split[1]])
-        elif cmd:
+        else:
             command_list.append(cmd)
     command_parsed = Command(command_list[0], command_list[1:])
     return command_parsed if command_parsed.command else None
@@ -94,7 +94,7 @@ class ScriptParser:
                 fname = arglist[1]
                 args = arglist[2:]
                 script_lines.append("new_block{")
-                self.recurse_construct_script(script_lines, f"custom_scripts/{fname}", args=args)
+                self.recurse_construct_script(script_lines, f"scripts/custom/{fname}", args=args)
                 script_lines.append("}")
             else:
                 script_lines.append(line)

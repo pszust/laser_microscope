@@ -54,7 +54,6 @@ class LabjackPanel:
         # btn = Button(cur_frame, text="Home", command=lambda: self.control.home())
         # btn.pack(side=tk.LEFT)
 
-
         # Move relative
         cur_frame = Frame(self.frame)
         cur_frame.pack(fill=tk.Y)

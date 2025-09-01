@@ -8,10 +8,10 @@ import clr
 import cv2
 import numpy as np
 from PIL import Image, ImageTk
+from pylablib.devices import Thorlabs
 
 from utils.consts import LabJackConsts
 from utils.utils import thread_execute
-from pylablib.devices import Thorlabs
 
 logger = logging.getLogger(__name__)
 
@@ -41,7 +41,7 @@ class LabjackController:
     @thread_execute
     def update_height(self):
         if self.device and self.con_stat == "CONNECTED":
-            self.height = round(self.device.get_position()/STEPS2MM, 5)
+            self.height = round(self.device.get_position() / STEPS2MM, 5)
 
     @thread_execute
     def set_height(self, value):
@@ -51,7 +51,7 @@ class LabjackController:
                 err_msg += f"({LabJackConsts.MIN_POS} to {LabJackConsts.MAX_POS})"
                 logger.warning(err_msg)
             elif self.device and self.con_stat == "CONNECTED":
-                self.device.move_to(int(value*STEPS2MM))
+                self.device.move_to(int(value * STEPS2MM))
         else:
             logger.warning("Labjack device is currently moving, command ignored")
 

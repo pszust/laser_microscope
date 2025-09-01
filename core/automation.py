@@ -1,5 +1,5 @@
 import logging
-import os
+import re
 import threading
 import time
 from tkinter import messagebox
@@ -206,6 +206,21 @@ class Automation:
             self.execute()
             time.sleep(0.1)
 
+    def update_variables(self, new_variables: dict) -> None:
+        """
+        Used to supplement in-script variables from GUI
+        """
+        for name, value in new_variables.items():
+            self.variables[name] = value
+
+    def update_variables_from_text(self, text: str) -> None:
+        """
+        Used to supplement in-script variables from GUI
+        """
+        new_variables = self.parse_variables(text)
+        for name, value in new_variables.items():
+            self.variables[name] = value
+
     def start_animation_man_params(self, posx, posy, angle, size, duration, anim_name):
         target = {
             "posx": posx,
@@ -253,3 +268,53 @@ class Automation:
     def move_xy_absolute(self, pos):
         x, y = pos
         self.master.stage_controller.set_postion(x, y)
+
+    @staticmethod
+    def parse_variables(text: str) -> dict:
+        """
+        Parse assignment-like text into a dictionary of {name: value}.
+
+        Supports:
+        - comments starting with #
+        - ints, floats
+        - quoted strings ("..." or '...')
+        - ignores empty lines
+
+        Example:
+            aaa = 123
+            bebebe=  0.213  # comment
+            c_12AB ="test1"  # string parameter
+            z=-1
+        """
+        variables = {}
+        # Regex: name = value (captures until # or end of line)
+        line_re = re.compile(r"^\s*([A-Za-z_]\w*)\s*=\s*(.+?)(?:\s*#.*)?$")
+
+        for line in text.splitlines():
+            line = line.strip()
+            if not line or line.startswith("#"):
+                continue
+            m = line_re.match(line)
+            if not m:
+                continue
+            name, val_str = m.groups()
+            val_str = val_str.strip()
+
+            # Parse value
+            if (val_str.startswith('"') and val_str.endswith('"')) or (
+                val_str.startswith("'") and val_str.endswith("'")
+            ):
+                value = val_str[1:-1]
+            else:
+                try:
+                    if re.match(r"^-?\d+$", val_str):
+                        value = int(val_str)
+                    elif re.match(r"^-?\d*\.\d+(e[+-]?\d+)?$", val_str, re.I):
+                        value = float(val_str)
+                    else:
+                        value = val_str
+                except Exception:
+                    value = val_str
+            variables[name] = value
+
+        return variables
