@@ -22,7 +22,7 @@ loop(999){
             cur_row += 1
             if(cur_row>rows){
                 # end the main loop, melting is done
-                break_loop(4)
+                break_block(4)
             }
         }
         # move XY stage

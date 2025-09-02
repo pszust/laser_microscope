@@ -1,4 +1,5 @@
 import logging
+import os
 import re
 import threading
 import time
@@ -18,6 +19,8 @@ if TYPE_CHECKING:
     from gui.main_window import MainWindow  # only used for type hints
 
 logger = logging.getLogger(__name__)
+
+ENABLE_DEBUG_LOGGING = True
 
 
 class Automation:
@@ -43,8 +46,8 @@ class Automation:
             "log_value": self.log_value,
             "display_alt_image": self.display_alt_image,
             "reset_alt_image": self.reset_alt_image,
-            "load_image1": self.load_image1,
-            "load_image2": self.load_image2,
+            "load_image_test1": self.load_image_test1,
+            "load_image_test2": self.load_image_test2,
             "move_xy_absolute": self.move_xy_absolute,
         }
 
@@ -56,6 +59,7 @@ class Automation:
 
         self.running = False
         self.thread = None
+        self.test_img_roll = 0  # used to load different test images
         logger.debug(f"Initialization done.")
 
     def pass_command(self, command: str):
@@ -87,8 +91,8 @@ class Automation:
         elif type(current) == Command:
             # execute command
             temp_msg = f"Cur cmd: {current.command}, args: {current.args}, pos: {self.execution_position}"
-            # self.master.console_panel.log(temp_msg)
-            self.master.after(0, lambda: self.master.console_panel.log(temp_msg))  # TODO: delete this line
+            if ENABLE_DEBUG_LOGGING:
+                logger.debug(temp_msg)
 
             if current.command == "operator":
                 self.use_operator(current)
@@ -206,20 +210,26 @@ class Automation:
             self.execute()
             time.sleep(0.1)
 
-    def update_variables(self, new_variables: dict) -> None:
+    def update_variables(self, new_variables: dict, optional_msg="") -> None:
         """
         Used to supplement in-script variables from GUI
         """
+        if optional_msg:
+            logger.info(optional_msg)
+        else:
+            logger.info("New variables loaded:")
         for name, value in new_variables.items():
             self.variables[name] = value
+            if isinstance(value, np.ndarray):
+                value = f"<array with shape {value.shape}>"
+            logger.info(f"  {name} = {value}")
 
-    def update_variables_from_text(self, text: str) -> None:
+    def update_variables_from_text(self, text: str, optional_msg="") -> None:
         """
         Used to supplement in-script variables from GUI
         """
         new_variables = self.parse_variables(text)
-        for name, value in new_variables.items():
-            self.variables[name] = value
+        self.update_variables(new_variables, optional_msg=optional_msg)
 
     def start_animation_man_params(self, posx, posy, angle, size, duration, anim_name):
         target = {
@@ -251,13 +261,18 @@ class Automation:
     def get_camera_image(self) -> Image.Image:
         return self.master.camera_controller.get_image()
 
-    def load_image1(self) -> Image.Image:
-        p1 = "d:/Katalog 1/Projekty/Mikroskop 3.0/help/map_minus.png"
-        return Image.open(p1)
+    def load_image_test1(self) -> Image.Image:
+        path = f"test/utils/map_minus-v{str((self.test_img_roll))}.png"
+        path = os.path.abspath(os.path.join(os.getcwd(), path))
+        return Image.open(path)
 
-    def load_image2(self) -> Image.Image:
-        p1 = "d:/Katalog 1/Projekty/Mikroskop 3.0/help/map_plus.png"
-        return Image.open(p1)
+    def load_image_test2(self) -> Image.Image:
+        path = f"test/utils/map_plus-v{str((self.test_img_roll))}.png"
+        path = os.path.abspath(os.path.join(os.getcwd(), path))
+        self.test_img_roll += 1
+        if self.test_img_roll == 4:
+            self.test_img_roll = 0
+        return Image.open(path)
 
     def display_alt_image(self, image):
         self.master.camera_panel.display_alt_image(image)

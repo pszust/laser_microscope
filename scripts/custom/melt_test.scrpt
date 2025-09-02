@@ -1,0 +1,10 @@
+current_x = x_start
+current_y = y_start
+
+loop(3){
+    SCRPT: create_map.scrpt mapka mapka_rgb
+    display_alt_image(mapka_rgb)
+    sleep(3)
+    reset_alt_image()
+    sleep(1)
+}

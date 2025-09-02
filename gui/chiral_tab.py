@@ -21,6 +21,7 @@ from controls.chiral_control import ChiralControl
 
 logger = logging.getLogger(__name__)
 
+DEFAULT_MELTING_SCRIPT = "scripts/custom/melt_test.scrpt"
 INITIAL_VARIABLES = """
 threshold_kolo = 0.7
 threshold_pixel = 0.4
@@ -87,10 +88,12 @@ class ChiralTab:
         script_row = Frame(self.frame)
         script_row.pack(fill=tk.X, pady=(0, 6))
 
-        self.btn_select_script = Button(script_row, text="Select script…", command=self._on_select_script)
+        self.btn_select_script = Button(
+            script_row, text="Load melting script", command=self._on_select_script
+        )
         self.btn_select_script.pack(side=tk.LEFT, padx=(0, 8))
 
-        self.script_label_var = StringVar(value="(no script)")
+        self.script_label_var = StringVar(value=DEFAULT_MELTING_SCRIPT)
         Label(script_row, textvariable=self.script_label_var).pack(side=tk.LEFT)
 
         # Start melting action
@@ -145,7 +148,6 @@ class ChiralTab:
             wrap="none",  # keep lines unwrapped; allow horizontal scroll
             undo=True,
         )
-        self._set_initial_variables()
 
         yscroll = Scrollbar(text_wrap, orient="vertical", command=self.vars_text.yview)
         xscroll = Scrollbar(text_wrap, orient="horizontal", command=self.vars_text.xview)
@@ -170,22 +172,25 @@ class ChiralTab:
         # Shortcut: Ctrl+Enter to update
         self.vars_text.bind("<Control-Return>", lambda e: (self._on_update_variables(), "break"))
 
+        self._set_initial_variables()
+        self.control.melting_script_path = DEFAULT_MELTING_SCRIPT
+
     # -------------------------
     # UI Callbacks
     # -------------------------
 
     def _on_load_clicked(self):
-        """
-        Ask the control to load the pattern image (control handles all logic/UI for that),
-        then re-render canvas from control.pattern_image.
-        """
-        try:
-            self.control.load_pattern_image()
-            # Refresh preview
+        path = filedialog.askopenfilename(
+            title="Select pattern PNG",
+            filetypes=[("PNG images", "*.png"), ("All files", "*.*")],
+            initialdir=os.getcwd(),
+        )
+
+        if not path:
+            logger.info("Pattern load canceled.")
+        else:
+            self.control.load_pattern_image(path)
             self.render_pattern()
-        except Exception as e:
-            logger.exception("Failed to load pattern image.")
-            messagebox.showerror("Load error", f"Could not load pattern image:\n{e}")
 
     def _on_select_script(self):
         """
@@ -195,7 +200,7 @@ class ChiralTab:
             path = filedialog.askopenfilename(
                 title="Select melting script",
                 filetypes=[("Microscope scripts", "*.scrpt"), ("All files", "*.*")],
-                initialdir=os.getcwd(),
+                initialdir=os.path.join(os.getcwd(), "scripts"),
                 parent=getattr(self.control.master, "root", None),
             )
             if not path:
@@ -220,14 +225,6 @@ class ChiralTab:
         except ValueError:
             messagebox.showerror("Invalid coordinates", "X and Y must be integers.")
             return
-
-        # Optional: warn if no script chosen
-        if not getattr(self.control, "melting_script_path", None):
-            if not messagebox.askyesno(
-                "No script selected",
-                "No melting script selected. Continue anyway?",
-            ):
-                return
 
         # Collect placeholder params (strings for now)
         pA = self.param_a.get()
@@ -376,11 +373,6 @@ class ChiralTab:
     # Helpers
     # -------------------------
 
-    def _set_initial_variables(self):
-        var_lines = (line for line in INITIAL_VARIABLES.split("\n") if line)
-        for n, line in enumerate(var_lines):
-            self.vars_text.insert(tk.END, line + "\n")
-
     @staticmethod
     def _hex_to_rgb(hx: str) -> tuple[int, int, int]:
         hx = hx.lstrip("#")
@@ -413,3 +405,8 @@ class ChiralTab:
 
         # Fallback: give up gracefully
         return None
+
+    def _set_initial_variables(self):
+        var_lines = (line for line in INITIAL_VARIABLES.split("\n") if line)
+        for n, line in enumerate(var_lines):
+            self.vars_text.insert(tk.END, line + "\n")

@@ -9,6 +9,28 @@ from utils.command_handler import Command, parse_command
 from utils.utils import TextWidgetHandler
 
 
+class TkTextHandler(logging.Handler):
+    def __init__(self, text_widget: tk.Text):
+        super().__init__()
+        self.text = text_widget
+
+    def emit(self, record):
+        msg = self.format(record)
+        tag = record.levelname  # DEBUG/INFO/WARNING/ERROR/CRITICAL
+
+        def append():
+            try:
+                self.text.insert(tk.END, msg + "\n", tag)
+                self.text.see(tk.END)
+            except tk.TclError:
+                pass
+
+        try:
+            self.text.after(0, append)
+        except tk.TclError:
+            pass
+
+
 class ConsolePanel:
     def __init__(self, parent: Frame, controller: Automation):
         self.controller = controller
@@ -18,8 +40,23 @@ class ConsolePanel:
         # console view
         frame = Frame(self.frame)
         frame.grid(row=0, column=0, sticky=tk.W + tk.E)
-        self.console = Text(frame, wrap="word", height=15)
+        self.console = Text(frame, wrap="word", height=25, width=120)
         self.console.pack(side=tk.LEFT, fill=tk.X, expand=True)
+        self.console.configure(
+            bg="#0b1e3a",  # dark blue
+            fg="#e6eefc",  # light text
+            insertbackground="#e6eefc",
+            font=("Consolas", 8),
+            padx=6,
+            pady=6,
+        )
+
+        # Define per-level color tags
+        self.console.tag_config("DEBUG", foreground="#7aa2f7")
+        self.console.tag_config("INFO", foreground="#c6d8ff")
+        self.console.tag_config("WARNING", foreground="#f6c177")
+        self.console.tag_config("ERROR", foreground="#ff6b6b")
+        self.console.tag_config("CRITICAL", foreground="#ff4d4d", font=("Consolas", 8, "bold"))
 
         scroll_bar = Scrollbar(frame, command=self.console.yview)
         scroll_bar.pack(side=tk.RIGHT, fill=tk.Y)
@@ -38,6 +75,12 @@ class ConsolePanel:
         self.console_input = Entry(frame, width=50)
         self.console_input.pack(side=tk.LEFT, fill=tk.BOTH)
         self.console_input.bind("<Return>", self.process_console_input)
+        self.console_input.configure(
+            font=("Consolas", 10),
+            bg="#0b1e3a",
+            fg="#e6eefc",
+            insertbackground="#e6eefc",
+        )
 
     def process_console_input(self, event):
         # Process input from the console input field
@@ -63,9 +106,22 @@ class ConsolePanel:
         self.attach_logger()
 
     def attach_logger(self):
-        self.text_handler = TextWidgetHandler(self.console)
+        root = logging.getLogger()
+
+        # remove any previous text handlers to avoid duplicate/plain lines
+        for h in list(root.handlers):
+            if isinstance(h, TkTextHandler):
+                root.removeHandler(h)
+
+        self.text_handler = TkTextHandler(self.console)
         self.text_handler.setFormatter(logging.Formatter("%(asctime)s [%(levelname)s] %(message)s"))
-        logging.getLogger().addHandler(self.text_handler)
+
+        # keep logger open; filter via handler level (your radio buttons)
+        root.setLevel(logging.DEBUG)
+        init_level = self.level_map[self.log_level_var.get()]
+        self.text_handler.setLevel(init_level)
+
+        root.addHandler(self.text_handler)
 
     def log(self, message):
         self.console.insert(tk.END, f"{message}\n")
@@ -73,4 +129,4 @@ class ConsolePanel:
 
     def update_log_level(self):
         level = self.level_map[self.log_level_var.get()]
-        self.text_handler.set_level(level)
+        self.text_handler.setLevel(level)
