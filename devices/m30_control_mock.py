@@ -18,6 +18,7 @@ class StageController:
     def __init__(self):
         self.con_stat = "UNKNOWN"
         self.m30_device = None
+        self.state = "IDLE"
         # self.m30_event = m30_event
         # self.m30_param = m30_param
         self.x_pos, self.y_pos = 0, 0
@@ -47,12 +48,24 @@ class StageController:
     @thread_execute
     def set_postion(self, new_x, new_y):
         if self.m30_device and self.con_stat == "CONNECTED":
+            logger.info(f"Executing move to {new_x:.3f}, {new_y:.3f}")
+            self.state = "MOVING"
             dst_x = self._x - new_x
             dst_y = self._y - new_y
             dst = np.sqrt(dst_x**2 + dst_y**2)
-            time.sleep(0.25 * dst)
+            time.sleep(2.25 * dst)
             self._x = new_x
             self._y = new_y
+            self.state = "IDLE"
+            logger.info(f"Move done, now at {new_x:.3f}, {new_y:.3f}")
+        else:
+            logger.warning(f"Attempting to execute move when device is unavailable")
+
+    def move_rel(self, dx: float, dy: float):
+        if self.m30_device and self.con_stat == "CONNECTED":
+            new_x = self.x_pos + dx
+            new_y = self.y_pos + dy
+            self.set_postion(new_x, new_y)
 
     @thread_execute
     def home(self):
@@ -65,4 +78,5 @@ class StageController:
             "connection": self.con_stat,
             "x_pos": self.x_pos,
             "y_pos": self.y_pos,
+            "state": self.state,
         }

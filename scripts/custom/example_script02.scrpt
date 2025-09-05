@@ -1,5 +1,4 @@
-a = 12
-log_value(a, trererereeee)
-if(threshold_kolo>0.55){
-    log_value(ghjdsalkasjd)
-}
+current_x = x_start
+current_y = y_start
+exec_custom(fefefe, x_start, y_start)
+exec_custom(fefefe, current_x, current_y)

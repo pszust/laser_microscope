@@ -237,7 +237,7 @@ class CameraPanel:
             # call animation tab with given values
             anim_start_real = display2real(self.last_b1_press_pos)
             self.master.animation_control.start_animation_gui_params(
-                anim_start_real[1], anim_start_real[0], angle, self.brush_size
+                anim_start_real[0], anim_start_real[1], angle, self.brush_size
             )
 
     def display_alt_image(self, image, timeout=0):

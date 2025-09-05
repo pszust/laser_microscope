@@ -38,6 +38,7 @@ class StageController:
     def __init__(self):
         self.con_stat = "UNKNOWN"
         self.m30_device = None
+        self.state = "IDLE"
         # self.m30_event = m30_event
         # self.m30_param = m30_param
         self.x_pos, self.y_pos = 0, 0
@@ -117,13 +118,21 @@ class StageController:
     @thread_execute
     def set_postion(self, new_x, new_y):
         if self.m30_device and self.con_stat == "CONNECTED":
+            self.state = "MOVING"
             try:
                 self.x_channel.MoveTo(Decimal(new_x), 60000)
                 self.y_channel.MoveTo(Decimal(new_y), 60000)
+                self.state = "IDLE"
             except AssertionError as error:
                 print(error)
                 print("LabJack: error, disconecting!")
                 self.disconnect()
+
+    def move_rel(self, dx: float, dy: float):
+        if self.m30_device and self.con_stat == "CONNECTED":
+            new_x = self.x_pos + dx
+            new_y = self.y_pos + dy
+            self.set_postion(new_x, new_y)
 
     @thread_execute
     def home(self):
@@ -137,4 +146,5 @@ class StageController:
             "connection": self.con_stat,
             "x_pos": self.x_pos,
             "y_pos": self.y_pos,
+            "state": self.state,
         }

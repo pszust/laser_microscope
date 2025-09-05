@@ -25,6 +25,7 @@ DEFAULT_MELTING_SCRIPT = "scripts/custom/melt_test.scrpt"
 INITIAL_VARIABLES = """
 threshold_kolo = 0.7
 threshold_pixel = 0.4
+pixel_size_mm = 0.5
 """
 
 

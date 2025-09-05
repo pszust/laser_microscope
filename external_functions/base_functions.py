@@ -104,7 +104,7 @@ def new_validity_array(
         sh_neg, sh_pos, sh_tot, sh_dead = get_nppixel_count(shot_arr, thres=thres)
         if direction == 1:
             gain = sh_neg / sh_tot
-        if direction == -1:
+        if direction == 0:
             gain = sh_pos / sh_tot
         gain *= 1 - (sh_dead / sh_tot)  # leave the dead region alone!
 
@@ -116,7 +116,7 @@ def new_validity_array(
             ch_neg, ch_pos, ch_tot, ch_dead = get_nppixel_count(ch_arr, thres=thres)
             if direction == 1:
                 ratio = ch_pos / ch_tot
-            if direction == -1:
+            if direction == 0:
                 ratio = ch_neg / ch_tot
             ratio *= 1 - (ch_dead / ch_tot)  # leave the dead alone!
             val_array.append([shot_point[0], shot_point[1], ang, gain, ratio, gain * ratio**2])
@@ -155,27 +155,47 @@ def get_time_from_target(target):
     return target["duration"]
 
 
-def decide_smelting(mapka, direction):
-    pos_coverage, dead = check_mapka(mapka)  # TODO: set thersholds and size as variables
-    kolo_thershold = 0.75  # TODO: set as variable
-    if (direction == 1 and pos_coverage >= kolo_thershold) or (
-        direction == 0 and pos_coverage <= 1 - kolo_thershold
-    ):
-        return {}
+def _is_melt_condition(direction: int, pos_coverage: float, thr: float) -> bool:
+    return (direction == 1 and pos_coverage >= thr) or (direction == 0 and pos_coverage <= 1 - thr)
 
-    val_arr = new_validity_array(mapka, direction)
-    kolo_size = 150
-    kolo_dur = 12
-    kolo_path = "shining-moon3.anim"
-    target = {
-        "posx": val_arr[0, 0],
-        "posy": val_arr[0, 1],
-        "angle": val_arr[0, 2],
-        "size": kolo_size,
-        "duration": kolo_dur,
-        "anim_path": kolo_path,
-    }
-    return target
+
+def decide_smelting(mapka, direction, work_size=400, det_thr=0.005, thr1=0.5, thr2=0.9):
+    pos_coverage, dead = check_mapka(mapka, size=work_size, thresh=det_thr)
+    if _is_melt_condition(direction, pos_coverage, thr2):
+        return {"anim_path": "IS_DONE"}
+    elif _is_melt_condition(direction, pos_coverage, thr1):
+        # kolowa animacja
+        val_arr = new_validity_array(mapka, direction)
+        kolo_size = 150
+        kolo_dur = 12
+        kolo_path = "shining-moon3.anim"
+        target = {
+            "posx": val_arr[0, 0],
+            "posy": val_arr[0, 1],
+            "angle": val_arr[0, 2],
+            "size": kolo_size,
+            "duration": kolo_dur,
+            "anim_path": kolo_path,
+        }
+        return target
+    else:
+        # kwadratowa animacja
+        kolo_size = 150
+        kolo_dur = 12
+        kolo_path = "shining-moon3.anim"
+        target = {
+            "posx": 100,
+            "posy": 250,
+            "angle": 0,
+            "size": kolo_size,
+            "duration": kolo_dur,
+            "anim_path": kolo_path,
+        }
+        return target
+
+
+def get_value_from_dict(dictionary, value):
+    return dictionary.get(value, "NO_VALUE")
 
 
 def calculate_pixel_position(x_start, y_start, pixel_size, cur_row, cur_col):
@@ -207,3 +227,121 @@ def check_mapka(mapka, size=400, thresh=0.005):
     dead = (width * height) - masked[(abs(masked) > thresh)].shape[0]
 
     return pos / (pos + neg + 1), dead / (width * height)
+
+
+def pack_variables(*args) -> tuple:
+    result = tuple(arg for arg in args)
+    return result
+
+
+def consult_pattern(pattern_array: np.ndarray, x: int, y: int) -> str:
+    y_shape, x_shape = pattern_array.shape
+    if x >= x_shape:
+        result = "NEXT_ROW"
+    elif y >= y_shape:
+        result = "DONE"
+    else:
+        result = "WORK"
+    return result
+
+
+def read_from_array(pattern_array: np.ndarray, x: int, y: int) -> int:
+    return pattern_array[y][x]
+
+
+def get_delta_move_on_array(
+    size_mm: float, c_x: int, c_y: int, old_x: int, old_y: int
+) -> tuple[float, float]:
+    dx_mm = (old_x - c_x) * size_mm
+    dy_mm = (old_y - c_y) * size_mm
+    return dx_mm, dy_mm
+
+    if color == 1:
+        vars_xy = select_side(
+            self.advanced_mapka448,
+            1,
+            check_size=int(self.extvars["pixel_check_size"]),
+            side_thresh=float(self.extvars["side_threshold"]),
+            thresh=float(self.extvars["check_threshold"]),
+        )
+    if color == 0:
+        vars_xy = select_side(
+            self.advanced_mapka448,
+            -1,
+            check_size=int(self.extvars["pixel_check_size"]),
+            side_thresh=float(self.extvars["side_threshold"]),
+            thresh=float(self.extvars["check_threshold"]),
+        )
+
+
+def make_var_list(cords):
+    return [[60 * v / (490 / 2) for v in c] for c in cords]
+
+
+def make_side_mask(c, s=100):
+    width = s
+    height = s
+
+    maska = np.zeros((448, 800))
+    cx = int(maska.shape[1] / 2) + 30 + c[0]
+    cy = int(maska.shape[0] / 2) + c[1]
+    maska = cv2.rectangle(
+        maska,
+        (int(cx - width / 2), int(cy - height / 2)),
+        (int(cx + width / 2), int(cy + height / 2)),
+        1,
+        -1,
+    )
+
+    return maska
+
+
+def make_coord_list(sqr_size=460):
+    cords = []
+    for i in range(0, 5):
+        x = 0.5 * sqr_size
+        y = (-0.5 * sqr_size) * i / 5
+        cords.append([x, y])
+        cords.append([-x, y])
+        cords.append([-y, x])
+        cords.append([y, -x])
+
+        x = 0.5 * sqr_size
+        y = (0.5 * sqr_size) * i / 5
+        cords.append([x, y])
+        cords.append([-x, y])
+        cords.append([-y, x])
+        cords.append([y, -x])
+    return cords
+
+
+def check_mapka_maske(mapka, mask, thresh=0.01):
+    masked = mapka * mask
+
+    pos = masked[masked > thresh].shape[0]
+    neg = masked[masked < -thresh].shape[0]
+
+    return pos / (pos + neg + 0.0001)
+
+
+def select_side(mapka, target, check_size=100, side_thresh=0.8, thresh=0.01):
+    """target = 1 or -1"""
+    cords = make_coord_list()
+    var_list = make_var_list(cords)
+    posnegs = []
+    for i in range(0, len(cords)):
+        maska = make_side_mask(cords[i], s=check_size)
+        posnegs.append(check_mapka_maske(mapka, maska, thresh=thresh))
+
+    if target == 1:
+        if max(posnegs) > side_thresh:
+            ind = posnegs.index(max(posnegs))
+            return var_list[ind]
+        else:
+            return [999, 999]
+    if target == -1:
+        if min(posnegs) < 1 - side_thresh:
+            ind = posnegs.index(min(posnegs))
+            return var_list[ind]
+        else:
+            return [999, 999]

@@ -21,6 +21,7 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 ENABLE_DEBUG_LOGGING = True
+CATCH_EXCEPTION = False
 
 
 class Automation:
@@ -49,6 +50,8 @@ class Automation:
             "load_image_test1": self.load_image_test1,
             "load_image_test2": self.load_image_test2,
             "move_xy_absolute": self.move_xy_absolute,
+            "move_xy_relative": self.move_xy_relative,
+            "get_m30_state": self.get_m30_state,
         }
 
         self.unknown_no_of_args = "exec_custom"
@@ -90,7 +93,7 @@ class Automation:
             self.execution_position.append(0)
         elif type(current) == Command:
             # execute command
-            temp_msg = f"Cur cmd: {current.command}, args: {current.args}, pos: {self.execution_position}"
+            temp_msg = f"Exec cmd: {current.command}, args: {current.args}, pos: {self.execution_position}"
             if ENABLE_DEBUG_LOGGING:
                 logger.debug(temp_msg)
 
@@ -135,6 +138,9 @@ class Automation:
         operator = cmd.args[1]
         r_value = cmd.args[2]
 
+        if type(r_value) == str and r_value in self.variables:
+            r_value = self.variables[r_value]
+
         # check if r_value is not a command itself and execute it if true
         if r_value in self.command_map:
             nested_cmd = Command(r_value, [str(arg) for arg in cmd.args[3:]])
@@ -166,20 +172,17 @@ class Automation:
         check = cmd.args[1]
         r_value = cmd.args[2]
 
+        # for strings check if they are variables otherwise treat them as strings
         if type(l_value) == str:
             if l_value in self.variables:
                 l_value = self.variables[l_value]
-            else:
-                raise (ValueError(ErrorMsg.err_var_missing.format(cmd.command, cmd.args, l_value)))
-
         if type(r_value) == str:
             if r_value in self.variables:
                 r_value = self.variables[r_value]
-            else:
-                raise (ValueError(ErrorMsg.err_var_missing.format(cmd.command, cmd.args, r_value)))
 
         check_map = {
             "==": l_value == r_value,
+            "!=": l_value != r_value,
             ">=": l_value >= r_value,
             "<=": l_value <= r_value,
             ">": l_value > r_value,
@@ -205,9 +208,21 @@ class Automation:
     def stop(self):
         self.running = False
 
+    def cancel_execution(self):
+        self.command_list = []
+        self.execution_position = [0]
+        logger.warning("Execution of script stopped!")
+
     def _run(self):
         while self.running:
-            self.execute()
+            if CATCH_EXCEPTION:
+                try:
+                    self.execute()
+                except Exception as err:
+                    logger.error(err)
+                    self.cancel_execution()
+            else:
+                self.execute()
             time.sleep(0.1)
 
     def update_variables(self, new_variables: dict, optional_msg="") -> None:
@@ -254,26 +269,6 @@ class Automation:
         result = self.ext_executor.execute_custom_func(args)
         return result
 
-    def log_value(self, *args):
-        text = ", ".join(str(arg) for arg in args)
-        logger.info(f"{text} logged")
-
-    def get_camera_image(self) -> Image.Image:
-        return self.master.camera_controller.get_image()
-
-    def load_image_test1(self) -> Image.Image:
-        path = f"test/utils/map_minus-v{str((self.test_img_roll))}.png"
-        path = os.path.abspath(os.path.join(os.getcwd(), path))
-        return Image.open(path)
-
-    def load_image_test2(self) -> Image.Image:
-        path = f"test/utils/map_plus-v{str((self.test_img_roll))}.png"
-        path = os.path.abspath(os.path.join(os.getcwd(), path))
-        self.test_img_roll += 1
-        if self.test_img_roll == 4:
-            self.test_img_roll = 0
-        return Image.open(path)
-
     def display_alt_image(self, image):
         self.master.camera_panel.display_alt_image(image)
 
@@ -283,6 +278,10 @@ class Automation:
     def move_xy_absolute(self, pos):
         x, y = pos
         self.master.stage_controller.set_postion(x, y)
+
+    def move_xy_relative(self, pos):
+        x, y = pos
+        self.master.stage_controller.move_rel(x, y)
 
     @staticmethod
     def parse_variables(text: str) -> dict:
@@ -333,3 +332,31 @@ class Automation:
             variables[name] = value
 
         return variables
+
+    # FUNCTIONS
+
+    def get_m30_state(self):
+        return self.master.stage_controller.get_status().get("state")
+
+    def log_value(self, *args):
+        processed_args = []
+        for arg in args:
+            processed_args.append(self.variables.get(arg, arg))
+        text = ", ".join(str(arg) for arg in processed_args)
+        logger.info(f"Logged: {text}")
+
+    def get_camera_image(self) -> Image.Image:
+        return self.master.camera_controller.get_image()
+
+    def load_image_test1(self) -> Image.Image:
+        path = f"test/utils/mminus-v{str((self.test_img_roll))}.png"
+        path = os.path.abspath(os.path.join(os.getcwd(), path))
+        return Image.open(path)
+
+    def load_image_test2(self) -> Image.Image:
+        path = f"test/utils/mplus-v{str((self.test_img_roll))}.png"
+        path = os.path.abspath(os.path.join(os.getcwd(), path))
+        self.test_img_roll += 1
+        if self.test_img_roll == 6:
+            self.test_img_roll = 0
+        return Image.open(path)

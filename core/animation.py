@@ -68,14 +68,15 @@ class AnimationControl:
 class AnimationInterpreter:
     def __init__(self, target: dict):
         self.anim_str = self.load_anim_str(target["anim_path"])
-        self.posx = target["posx"]
-        self.posy = target["posy"]
+        # coords for animation should be reversed
+        self.posy = target["posx"]
+        self.posx = target["posy"]
         self.angle = target["angle"]
         self.size = target["size"]
         self.duration = target["duration"]
         self.start_time = time.time()
 
-        # TODO: apply variables in the future
+        # TODO: apply variables in the future or not
         # self.variables = []
         # self.anim_str = self.replace_variables(self.anim_str, self.variables)
 

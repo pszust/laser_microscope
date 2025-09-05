@@ -16,9 +16,10 @@ def parse_command(raw_command: str):
     command = command.split("#")[0]
     command = command.split(" ")
     command_list = []
-    operators = ["==", ">=", "<=", "+=", "-=", "=", ">", "<"]
+    # operators = ["==", ">=", "<=", "+=", "-=", "=", ">", "<"]
     operators_assign = ["=", "+=", "-="]
-    operators_check = ["==", ">=", "<=", "<", ">"]
+    operators_check = ["==", "!=", ">=", "<=", "<", ">"]
+    operators = operators_assign + operators_check
     for cmd in command:
         # add operator if the line has any of the assign type operators
         if (

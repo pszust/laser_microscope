@@ -35,7 +35,9 @@ class M30Panel:
         # main info label
         cur_frame = Frame(self.frame)
         cur_frame.pack(fill=Y)
-        self.lbl_info = Label(cur_frame, text="X=%2.2f, Y=%2.2f" % (0, 0), fg=consts.info_label_color)
+        self.lbl_info = Label(
+            cur_frame, text="X=%2.2f, Y=%2.2f, STATE=%s" % (0, 0, "NONE"), fg=consts.info_label_color
+        )
         self.lbl_info.config(font=consts.info_label_font)
         self.lbl_info.pack(side=LEFT)
 
@@ -114,4 +116,12 @@ class M30Panel:
         self.lbl_status.config(text=f"STAGE status: {con_state}", bg=con_color)
 
         # position label
-        self.lbl_info.config(text="X=%2.2f, Y=%2.2f" % (status["x_pos"], status["y_pos"]))
+        state = status.get("state", "err")
+        state_map = {
+            "IDLE": "I",
+            "MOVING": "M",
+        }
+        self.lbl_info.config(
+            text="X=%2.2f, Y=%2.2f, STATE=%s"
+            % (status["x_pos"], status["y_pos"], state_map.get(state, "E"))
+        )
