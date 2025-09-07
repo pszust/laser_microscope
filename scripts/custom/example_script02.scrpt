@@ -1,4 +1,11 @@
-current_x = x_start
-current_y = y_start
-exec_custom(fefefe, x_start, y_start)
-exec_custom(fefefe, current_x, current_y)
+x_pos = 640
+y_pos = 480
+angle = 0
+size = 500
+dur = 8
+name = pixel-burn5
+delay1 = 0.6
+x_open = 50
+y_open = 20
+variables = exec_custom(pack_variables, delay1, x_open, y_open)
+start_animation_man_params(x_pos, y_pos, angle, size, dur, name, variables)

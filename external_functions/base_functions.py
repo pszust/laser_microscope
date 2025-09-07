@@ -1,9 +1,13 @@
+import logging
+
 import cv2
 import matplotlib as mpl
 import numpy as np
 from matplotlib import pyplot as plt
 from PIL import Image, ImageTk
 from scipy.ndimage.filters import gaussian_filter, maximum_filter
+
+logger = logging.getLogger(__name__)
 
 
 def count_pixel_sum(image: Image):
@@ -78,13 +82,18 @@ def make_check_mask(shot_point, ang, arr, shot_size=110, check_size=40, span=25)
 def new_validity_array(
     mapka,
     direction,
-    aop=[(400, 224), (450, 450)],  # area of operation = [(x, y), (w, h)]
+    work_size=400,
     shot_size=110,
     check_size=50,
-    count=30,
+    count=60,
     thres=0.03,
     angle_count=15,
 ):
+    # area of operation = [(x, y), (w, h)]
+    aop = (
+        (int(mapka.shape[1] / 2), int(mapka.shape[0] / 2)),
+        (work_size, work_size),
+    )
     minx = aop[0][0] - int(aop[1][0] / 2) + int(shot_size)
     miny = aop[0][1] - int(aop[1][1] / 2) + int(shot_size)
     maxx = aop[0][0] + int(aop[1][0] / 2) - int(shot_size)
@@ -159,37 +168,57 @@ def _is_melt_condition(direction: int, pos_coverage: float, thr: float) -> bool:
     return (direction == 1 and pos_coverage >= thr) or (direction == 0 and pos_coverage <= 1 - thr)
 
 
-def decide_smelting(mapka, direction, work_size=400, det_thr=0.005, thr1=0.5, thr2=0.9):
+def decide_smelting(
+    mapka,
+    direction,
+    work_size=400,
+    thr1=0.5,
+    thr2=0.9,
+    kolo_dur=4,
+    kwadra_dur=7,
+    kolo_size=150,
+    det_thr=0.005,
+):
     pos_coverage, dead = check_mapka(mapka, size=work_size, thresh=det_thr)
+    logger.info(f"Checking map found {pos_coverage:.2f} pos and {dead:.2f} dead.")
     if _is_melt_condition(direction, pos_coverage, thr2):
+        logger.info("This area is done")
         return {"anim_path": "IS_DONE"}
     elif _is_melt_condition(direction, pos_coverage, thr1):
         # kolowa animacja
-        val_arr = new_validity_array(mapka, direction)
-        kolo_size = 150
-        kolo_dur = 12
-        kolo_path = "shining-moon3.anim"
+        logger.info("Selected animation is kolo, performing calculations...")
+        val_arr = new_validity_array(mapka, direction, work_size=work_size, shot_size=kolo_size)
+        size = kolo_size
+        dur = kolo_dur
+        anim_path = "shining-moon3.anim"
         target = {
             "posx": val_arr[0, 0],
             "posy": val_arr[0, 1],
             "angle": val_arr[0, 2],
-            "size": kolo_size,
-            "duration": kolo_dur,
-            "anim_path": kolo_path,
+            "size": size,
+            "duration": dur,
+            "anim_path": anim_path,
         }
         return target
     else:
         # kwadratowa animacja
-        kolo_size = 150
-        kolo_dur = 12
-        kolo_path = "shining-moon3.anim"
+        logger.info("Selected animation is kwadrat, performing calculations...")
+        posx = int(mapka.shape[1] / 2)  # center
+        posy = int(mapka.shape[0] / 2)
+        size = work_size
+        dur = kwadra_dur
+        anim_path = "pixel-burn5.anim"
+        # caluclate the opening place
+        open_point = find_side_opening(mapka, size=work_size)
+        variables = (0.25, open_point[0] * 50, open_point[1] * 50)  # 50 is like 50% of pixel size here
         target = {
-            "posx": 100,
-            "posy": 250,
+            "posx": posx,
+            "posy": posy,
             "angle": 0,
-            "size": kolo_size,
-            "duration": kolo_dur,
-            "anim_path": kolo_path,
+            "size": size,
+            "duration": dur,
+            "anim_path": anim_path,
+            "variables": variables,
         }
         return target
 
@@ -249,99 +278,65 @@ def read_from_array(pattern_array: np.ndarray, x: int, y: int) -> int:
     return pattern_array[y][x]
 
 
+def is_in_str(name: str, str: str) -> bool:
+    return name in str
+
+
 def get_delta_move_on_array(
     size_mm: float, c_x: int, c_y: int, old_x: int, old_y: int
 ) -> tuple[float, float]:
-    dx_mm = (old_x - c_x) * size_mm
-    dy_mm = (old_y - c_y) * size_mm
+    dx_mm = (c_x - old_x) * size_mm
+    dy_mm = (c_y - old_y) * size_mm
     return dx_mm, dy_mm
 
-    if color == 1:
-        vars_xy = select_side(
-            self.advanced_mapka448,
-            1,
-            check_size=int(self.extvars["pixel_check_size"]),
-            side_thresh=float(self.extvars["side_threshold"]),
-            thresh=float(self.extvars["check_threshold"]),
-        )
-    if color == 0:
-        vars_xy = select_side(
-            self.advanced_mapka448,
-            -1,
-            check_size=int(self.extvars["pixel_check_size"]),
-            side_thresh=float(self.extvars["side_threshold"]),
-            thresh=float(self.extvars["check_threshold"]),
-        )
+
+def center_size2start_end(center: tuple[int, int], size: int) -> tuple[tuple[int, int], tuple[int, int]]:
+    """
+    Converts rectangle coords from center and size to start ane end point
+    """
+    half_size = int(size / 2)
+    start_point = (center[1] - half_size, center[0] - half_size)
+    end_point = (center[1] + half_size, center[0] + half_size)
+    return start_point, end_point
 
 
-def make_var_list(cords):
-    return [[60 * v / (490 / 2) for v in c] for c in cords]
+def check_side_opening(mapka, open_coords, size=400, check_size=200, thresh=0.005):
+    """
+    mapka: -1 to 1 float array
+    open_coords: coords in range 0-1 of the open square, where 1 is on the edge and 0 in the center
+    size: size in pixels of the whole pixel that is located at the center
+    check_size: size of the side opening [px]
+    """
+    open_x, open_y = open_coords
+    mask = np.zeros(mapka.shape)
+    center_point = (int(mask.shape[0] / 2), int(mask.shape[1] / 2))
 
-
-def make_side_mask(c, s=100):
-    width = s
-    height = s
-
-    maska = np.zeros((448, 800))
-    cx = int(maska.shape[1] / 2) + 30 + c[0]
-    cy = int(maska.shape[0] / 2) + c[1]
-    maska = cv2.rectangle(
-        maska,
-        (int(cx - width / 2), int(cy - height / 2)),
-        (int(cx + width / 2), int(cy + height / 2)),
+    check_point = (center_point[0] + int(open_y * size / 2), center_point[1] + int(open_x * size / 2))
+    start_point, end_point = center_size2start_end(check_point, check_size)
+    mask = cv2.rectangle(
+        mask,
+        start_point,
+        end_point,
         1,
         -1,
     )
 
-    return maska
-
-
-def make_coord_list(sqr_size=460):
-    cords = []
-    for i in range(0, 5):
-        x = 0.5 * sqr_size
-        y = (-0.5 * sqr_size) * i / 5
-        cords.append([x, y])
-        cords.append([-x, y])
-        cords.append([-y, x])
-        cords.append([y, -x])
-
-        x = 0.5 * sqr_size
-        y = (0.5 * sqr_size) * i / 5
-        cords.append([x, y])
-        cords.append([-x, y])
-        cords.append([-y, x])
-        cords.append([y, -x])
-    return cords
-
-
-def check_mapka_maske(mapka, mask, thresh=0.01):
     masked = mapka * mask
-
     pos = masked[masked > thresh].shape[0]
     neg = masked[masked < -thresh].shape[0]
+    dead = (check_size * check_size) - masked[(abs(masked) > thresh)].shape[0]
+    return pos / (pos + neg + 1), dead / (check_size * check_size)
 
-    return pos / (pos + neg + 0.0001)
 
-
-def select_side(mapka, target, check_size=100, side_thresh=0.8, thresh=0.01):
-    """target = 1 or -1"""
-    cords = make_coord_list()
-    var_list = make_var_list(cords)
-    posnegs = []
-    for i in range(0, len(cords)):
-        maska = make_side_mask(cords[i], s=check_size)
-        posnegs.append(check_mapka_maske(mapka, maska, thresh=thresh))
-
-    if target == 1:
-        if max(posnegs) > side_thresh:
-            ind = posnegs.index(max(posnegs))
-            return var_list[ind]
-        else:
-            return [999, 999]
-    if target == -1:
-        if min(posnegs) < 1 - side_thresh:
-            ind = posnegs.index(min(posnegs))
-            return var_list[ind]
-        else:
-            return [999, 999]
+def find_side_opening(mapka, size=400, check_size=20):
+    points = [(float(x), float(y)) for x in (-1, 1) for y in np.linspace(-1, 1, 11)]
+    points.extend([(point[1], point[0]) for point in points])
+    sorted_points = sorted(
+        points, key=lambda point: check_side_opening(mapka, point, size=size, check_size=check_size)
+    )
+    best_point = sorted_points[-1]
+    best_res = check_side_opening(mapka, best_point)
+    if best_res[0] > 0.5:
+        return best_point
+    else:
+        return (100, 100)  # return point outside the area

@@ -23,9 +23,15 @@ logger = logging.getLogger(__name__)
 
 DEFAULT_MELTING_SCRIPT = "scripts/custom/melt_test.scrpt"
 INITIAL_VARIABLES = """
-threshold_kolo = 0.7
+threshold_kolo = 0.85
 threshold_pixel = 0.4
+kolo_dur = 4
+kwadra_dur = 7
+kolo_size = 150
 pixel_size_mm = 0.5
+work_size = 700
+kolo_laser = 7
+kwadra_laser = 5
 """
 
 

@@ -52,6 +52,8 @@ class Automation:
             "move_xy_absolute": self.move_xy_absolute,
             "move_xy_relative": self.move_xy_relative,
             "get_m30_state": self.get_m30_state,
+            "flipper1_in": self.master.flipper1_control.flipper_in,
+            "flipper1_out": self.master.flipper1_control.flipper_out,
         }
 
         self.unknown_no_of_args = "exec_custom"
@@ -246,17 +248,6 @@ class Automation:
         new_variables = self.parse_variables(text)
         self.update_variables(new_variables, optional_msg=optional_msg)
 
-    def start_animation_man_params(self, posx, posy, angle, size, duration, anim_name):
-        target = {
-            "posx": posx,
-            "posy": posy,
-            "angle": angle,
-            "size": size,
-            "duration": duration,
-            "anim_path": anim_name,
-        }
-        self.master.animation_control.start_animation(target)
-
     def save_calibration_img(self, num: int):
         if num == 999:
             path = f"calibration/calibration_array_baseline.npy"
@@ -360,3 +351,17 @@ class Automation:
         if self.test_img_roll == 6:
             self.test_img_roll = 0
         return Image.open(path)
+
+    def start_animation_man_params(
+        self, posx, posy, angle, size, duration, anim_name, variables: tuple = ()
+    ):
+        target = {
+            "posx": posx,
+            "posy": posy,
+            "angle": angle,
+            "size": size,
+            "duration": duration,
+            "anim_path": anim_name,
+            "variables": variables,
+        }
+        self.master.animation_control.start_animation(target)

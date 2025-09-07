@@ -63,7 +63,6 @@ class ChiralControl:
             "x_start": x,
             "y_start": y,
             "the_pattern": self.pattern_array,
-            "work_size": 400,
         }
         msg = "Loading on-start variables for melting:"
         self.master.automation_controller.update_variables(on_start_variables, optional_msg=msg)

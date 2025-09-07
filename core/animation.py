@@ -75,10 +75,11 @@ class AnimationInterpreter:
         self.size = target["size"]
         self.duration = target["duration"]
         self.start_time = time.time()
+        variables = target.get("variables", ())
 
         # TODO: apply variables in the future or not
         # self.variables = []
-        # self.anim_str = self.replace_variables(self.anim_str, self.variables)
+        self.anim_str = self.replace_variables(self.anim_str, variables)
 
     def load_anim_str(self, path: str) -> str:
         if not path.endswith(".anim"):
@@ -97,6 +98,7 @@ class AnimationInterpreter:
         else:
             raise FileNotFoundError(f"Animation file {path} nor {path2} nor {path3} not found!")
 
+    @staticmethod
     def replace_variables(anim_str, variables):
         for n in range(0, len(variables)):
             var_name = "var%d" % n
