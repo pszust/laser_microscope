@@ -1,0 +1,80 @@
+# Script assumes these variables are passed:
+# x_start: start position in the pattern coords
+# y_start: start position in the pattern coords
+# the_pattern: actual pattern as numpy ndarray
+# pixel_size_mm: the size of the pixel in mm used for moving the stage
+# work_size: size in pixels of the work area used to calculate animation positions, default 400
+# kolo_dur: duration of kolo animation
+# kwadra_dur: duration of kwadrat animation
+# kolo_size: size of kolo animation
+# kolo_laser: laser power for kolo animation
+# kwadra_laser: laser power for kwadrat animation
+
+current_x = x_start
+current_y = y_start
+
+loop(9999){
+    # analyze what to do based on pattern and position
+    action = exec_custom(consult_pattern, the_pattern, current_x, current_y)
+	log_value(action_is, action)
+	
+	# go to next row
+	if(action==NEXT_ROW){
+		old_x = current_x
+		old_y = current_y
+		current_x = 0
+		current_y += 1
+		# calculate the xy-distance based on prev and current position on pattern
+		delta_move_mm = exec_custom(get_delta_move_on_array, pixel_size_mm, current_x, current_y, old_x, old_y)
+		SCRPT: move_by_delta.scrpt delta_move_mm
+	}
+	if(action==PATTERN_DONE){
+		break_block(3)
+	}
+	if(action==WORK){
+		# first create and analyse the map
+		melt_direction = exec_custom(read_from_array, the_pattern, current_x, current_y)
+		SCRPT: create_map.scrpt mapka mapka_rgb
+		display_alt_image(mapka_rgb)
+		sleep(1)
+		
+		# decide which animation to use for melting
+		target = exec_custom(decide_smelting, mapka, melt_direction, work_size, threshold_pixel, threshold_kolo, kolo_dur, kwadra_dur, kolo_size)
+		anim_name = exec_custom(get_value_from_dict, target, anim_path)
+		log_value(selected_animation_is, anim_name)
+		
+		if(anim_name==IS_DONE){
+			# move to the next position in row
+			old_x = current_x
+			current_x += 1
+			delta_move_mm = exec_custom(get_delta_move_on_array, pixel_size_mm, current_x, current_y, old_x, current_y)
+			log_value(delta_move_mm)
+			SCRPT: move_by_delta.scrpt delta_move_mm
+		}
+		if(anim_name != IS_DONE){
+			drawn_shot = exec_custom(show_shot_asrgb, target, mapka_rgb)
+			display_alt_image(drawn_shot)
+			sleep(3)
+			
+			reset_alt_image()
+			flipper1_in()
+			is_kolo = exec_custom(is_in_str, shining, anim_name)
+			if(is_kolo==1){
+				set_laser_duty(kolo_laser)
+			}
+			is_kwadra = exec_custom(is_in_str, pixel, anim_name)
+			if(is_kwadra==1){
+				set_laser_duty(kwadra_laser)
+			}
+			laser_on()
+			start_animation_target(target)
+
+			# wait specific time for anim to end
+			wait_time = exec_custom(get_value_from_dict, target, duration)
+			sleep(wait_time)
+			laser_off()
+			flipper1_out()
+		}
+	}
+}
+log_value(Script_finished)

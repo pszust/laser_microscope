@@ -1,10 +1,11 @@
+import inspect
 import logging
 import os
 import re
 import threading
 import time
 from tkinter import messagebox
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Iterable, Mapping, Optional, Tuple, Type
 
 import cv2
 import numpy as np
@@ -21,7 +22,18 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 ENABLE_DEBUG_LOGGING = True
-CATCH_EXCEPTION = False
+CATCH_EXCEPTION = False  # for normal operation set to True, for debugging False
+CALLABLE_CONTROLS = [
+    "camera_controller",
+    "rigol_controller",
+    "polar1_controller",
+    "polar2_controller",
+    "stage_controller",
+    "labjack_controller",
+    "flipper1_control",
+    "flipper2_control",
+    "heat_stage_control",
+]
 
 
 class Automation:
@@ -65,7 +77,28 @@ class Automation:
         self.running = False
         self.thread = None
         self.test_img_roll = 0  # used to load different test images
+        self.scan_methods()
         logger.debug(f"Initialization done.")
+
+    def scan_methods(self):
+        out: dict[str, callable] = {}
+        for control_name in CALLABLE_CONTROLS:
+            obj = getattr(self.master, control_name)
+            for name, member in inspect.getmembers(obj):
+                if name.startswith("_"):
+                    continue
+
+                try:
+                    bound = getattr(obj, name)
+                except Exception:
+                    continue
+
+                if inspect.ismethod(bound) or inspect.isfunction(bound) or callable(bound):
+                    key = f"{control_name}.{name}"
+                    out[key] = bound
+
+        for key, value in out.items():
+            self.command_map[key] = value
 
     def pass_command(self, command: str):
         parsed_command = parse_command(command)
@@ -195,11 +228,20 @@ class Automation:
         else:
             raise (ValueError(f"{check} invalid"))
 
-    def execute_script_file(self, path, args=None):
+    def execute_script_file(self, path: str, args: list | None = None):
+        """
+        path: name of the script
+        args: list of values that will be used to replace '%arg01' - this actually work both ways as the
+        replacement is done before any processing - can use floats for example to set specific parameter
+        or use str that can be converted to variable if script has specific logic
+        """
         scr = ScriptParser()
         script_lines = scr.load_script(path, args=args)
-        scr.parse(script_lines)
-        self.command_list = scr.commands
+        if script_lines:
+            scr.parse(script_lines)
+            self.command_list = scr.commands
+        else:
+            logger.error(f"Script at {path} was not executed")
 
     def start(self):
         if not self.running:
@@ -210,10 +252,13 @@ class Automation:
     def stop(self):
         self.running = False
 
-    def cancel_execution(self):
+    def cancel_execution(self, info_only=False):
         self.command_list = []
         self.execution_position = [0]
-        logger.warning("Execution of script stopped!")
+        if info_only:
+            logger.info("Script execution stopped")
+        else:
+            logger.warning("Execution of script stopped!")
 
     def _run(self):
         while self.running:
@@ -348,7 +393,7 @@ class Automation:
         path = f"test/utils/mplus-v{str((self.test_img_roll))}.png"
         path = os.path.abspath(os.path.join(os.getcwd(), path))
         self.test_img_roll += 1
-        if self.test_img_roll == 6:
+        if self.test_img_roll == 8:
             self.test_img_roll = 0
         return Image.open(path)
 

@@ -1,5 +1,5 @@
 import logging
-import threading
+import os
 import tkinter as tk
 from tkinter import (
     LEFT,
@@ -106,7 +106,10 @@ class CameraPanel:
         # Connection controls
         cur_frame = Frame(parent)
         cur_frame.grid(row=2, column=0, sticky=tk.W + tk.E)
-        Button(cur_frame, text="Connect to camera", command=self.controller.connect).pack(side=tk.LEFT)
+        self.connect_to_cam_btn = Button(
+            cur_frame, text="Connect to camera", command=self.controller.connect
+        )
+        self.connect_to_cam_btn.pack(side=tk.LEFT)
         self.lbl_status = Label(cur_frame, text="CAMERA status: unknown", bg="gray")
         self.lbl_status.pack(side=tk.LEFT)
 
@@ -262,3 +265,11 @@ class CameraPanel:
             (x + radius, y + radius),
         ]
         draw.ellipse(bbox, outline=color, width=2)  # change width to control line thickness
+
+    def save_image(self, path: str, add_overlay=False):
+        img = self.controller.get_image()
+        if os.path.isdir(os.path.dirname(path)):
+            img.save(path)
+            logger.info(f"Saved {path}")
+        else:
+            logger.error(f"Image at {path} cannot be saved!")

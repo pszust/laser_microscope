@@ -21,7 +21,7 @@ from controls.chiral_control import ChiralControl
 
 logger = logging.getLogger(__name__)
 
-DEFAULT_MELTING_SCRIPT = "scripts/custom/melt_test.scrpt"
+DEFAULT_MELTING_SCRIPT = "scripts/builtin/melt_ideal.scrpt"
 INITIAL_VARIABLES = """
 threshold_kolo = 0.85
 threshold_pixel = 0.4

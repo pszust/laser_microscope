@@ -268,7 +268,7 @@ def consult_pattern(pattern_array: np.ndarray, x: int, y: int) -> str:
     if x >= x_shape:
         result = "NEXT_ROW"
     elif y >= y_shape:
-        result = "DONE"
+        result = "PATTERN_DONE"
     else:
         result = "WORK"
     return result
@@ -328,7 +328,7 @@ def check_side_opening(mapka, open_coords, size=400, check_size=200, thresh=0.00
     return pos / (pos + neg + 1), dead / (check_size * check_size)
 
 
-def find_side_opening(mapka, size=400, check_size=20):
+def find_side_opening(mapka, size=400, check_size=100):
     points = [(float(x), float(y)) for x in (-1, 1) for y in np.linspace(-1, 1, 11)]
     points.extend([(point[1], point[0]) for point in points])
     sorted_points = sorted(

@@ -1,0 +1,22 @@
+delay_for_rotation = 0.5
+
+img1 = camera_controller.get_image()
+img2 = camera_controller.get_image()
+
+loop(9999){
+    polar1_controller.rotate_abs(%arg01)
+    sleep(delay_for_rotation)
+    img1 = camera_controller.get_image()
+    mapka_raw = exec_custom(standard_map, img1, img2)
+    mapka_rgb = exec_custom(map_to_image, mapka_raw, 1)
+    display_alt_image(mapka_rgb)
+    sleep(%arg03)
+
+    polar1_controller.rotate_abs(%arg02)
+    sleep(delay_for_rotation)
+    img2 = camera_controller.get_image()
+    mapka_raw = exec_custom(standard_map, img2, img1)
+    mapka_rgb = exec_custom(map_to_image, mapka_raw, 1)
+    display_alt_image(mapka_rgb)
+    sleep(%arg03)
+}

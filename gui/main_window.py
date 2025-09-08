@@ -28,6 +28,7 @@ import serial
 
 import utils.consts as consts
 from controls.chiral_control import ChiralControl
+from controls.image_control import ImageControl
 from controls.projector_control import ProjectorControl
 from core.animation import AnimationControl
 from core.automation import Automation
@@ -37,6 +38,7 @@ from gui.chiral_tab import ChiralTab
 from gui.console_panel import ConsolePanel
 from gui.flipper_panel import FlipperPanel
 from gui.heat_stage_panel import HeatPanel
+from gui.image_tab import ImageTab
 from gui.labjack_panel import LabjackPanel
 from gui.polar_panel import PolarPanel
 from gui.projector_panel import ProjectorPanel
@@ -88,7 +90,7 @@ padd = 2
 class MainWindow(Frame):
     def __init__(self, master=None):
         super().__init__(master)
-        self.loop_timer = LoopTimer()
+        # self.loop_timer = LoopTimer()
         self.master = master
 
         self.camera_controller = CameraController()
@@ -103,6 +105,7 @@ class MainWindow(Frame):
 
         self.projector_control = ProjectorControl(self)
         self.animation_control = AnimationControl(self)
+        self.image_control = ImageControl(self)
         self.chiral_control = ChiralControl(self)
         self.automation_controller = Automation(self)  # this has to be after all the controllers
 
@@ -119,6 +122,7 @@ class MainWindow(Frame):
         self.create_menu()
         self.bind_keys()
         self.main_loop()
+        self.camera_image_loop()
         self.automation_controller.start()  # start main loop of the automation thingy
 
     def create_widgets(self):
@@ -139,10 +143,10 @@ class MainWindow(Frame):
         self.console_panel = ConsolePanel(frame, self.automation_controller)
 
         # stability panel
-        frame = Frame(column_frame)
-        frame.grid(row=2, column=0, padx=padd, sticky=N + S + E + W)
-        frame.grid_columnconfigure(0, weight=1)  # Make the frame expand horizontally
-        self.stability_panel = StabilityPanel(frame, self.loop_timer)
+        # frame = Frame(column_frame)
+        # frame.grid(row=2, column=0, padx=padd, sticky=N + S + E + W)
+        # frame.grid_columnconfigure(0, weight=1)  # Make the frame expand horizontally
+        # self.stability_panel = StabilityPanel(frame, self.loop_timer)
 
         # -- COLUMN 1 --
         column_frame = Frame(self.master)
@@ -217,6 +221,11 @@ class MainWindow(Frame):
         notebook.add(tab_gui3, text="CHRL")
         self.chiral_tab = ChiralTab(tab_gui3, self.chiral_control)
 
+        # Tab 4 (IMAG)
+        tab_gui4 = Frame(notebook)
+        notebook.add(tab_gui4, text="IMAG")
+        self.chiral_tab = ImageTab(tab_gui4, self.image_control)
+
     def create_menu(self):
         self.menu = Menu(self.master)
         self.master.config(menu=self.menu)
@@ -234,21 +243,26 @@ class MainWindow(Frame):
         self.master.bind("[", lambda _: self.camera_panel.change_brush_size(-1))
         self.master.bind("]", lambda _: self.camera_panel.change_brush_size(1))
         self.master.protocol("WM_DELETE_WINDOW", self.exit)
+        self.master.bind("<Escape>", self.defocus_view_btn)
 
     def main_loop(self):
-        self.loop_timer.start_loop()
+        # self.loop_timer.start_loop()
         self.update_labels()
-        self.loop_timer.event("LABELS_UPDATED")
+        # self.loop_timer.event("LABELS_UPDATED")
 
         self.animation_control.loop_event()
-        self.loop_timer.event("ANIMATIONS")
+        # self.loop_timer.event("ANIMATIONS")
 
         self.camera_panel.update_image()
-        self.loop_timer.event("CAMERA_PANEL")
+        # self.loop_timer.event("CAMERA_PANEL")
 
         # self.automation_controller.execute()
-        self.master.after(consts.main_loop_time, self.main_loop)
-        self.loop_timer.end_loop()
+        self.master.after(consts.MAIN_LOOP_TIME, self.main_loop)
+        # self.loop_timer.end_loop()
+
+    def camera_image_loop(self):
+        self.camera_panel.update_image()
+        self.master.after(consts.CAM_IMG_LOOP, self.camera_image_loop)
 
     def update_labels(self):
         # TODO: need to split some logic into  main loop kind of method because some of these are not just for labels but they execute internal
@@ -261,7 +275,7 @@ class MainWindow(Frame):
         self.labjack_panel.update()
         self.flipper_panel.update()
         self.camera_panel.update()
-        self.stability_panel.update()
+        # self.stability_panel.update()
 
     def load_image(self):
         # Placeholder function to load image
@@ -295,3 +309,6 @@ class MainWindow(Frame):
         logger.info("Exiting the software!")
         self.camera_controller.exit_camera()  # to close CamReader
         self.master.quit()
+
+    def defocus_view_btn(self, value):
+        self.camera_panel.connect_to_cam_btn.focus_set()

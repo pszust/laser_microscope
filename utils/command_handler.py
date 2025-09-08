@@ -1,6 +1,27 @@
+import logging
 import os
 
 import numpy as np
+
+logger = logging.getLogger(__name__)
+
+BUILTIN_SCRIPTS = "scripts/builtin"
+CUSTOM_SCRIPTS = "scripts/custom"
+
+
+def get_script_by_path(path: str) -> str:
+    # first check custom then builitin - it allows to overwrite scripts
+    result = ""
+    path = path + ".scrpt" if not path.endswith(".scrpt") else path
+    if os.path.isfile(path):
+        result = path
+    elif os.path.isfile(new_path := os.path.join(CUSTOM_SCRIPTS, path)):
+        result = new_path
+    elif os.path.isfile(new_path := os.path.join(BUILTIN_SCRIPTS, path)):
+        result = new_path
+    else:
+        logger.error(f"For name {path} script has not been found!")
+    return result
 
 
 def parse_command(raw_command: str):
@@ -16,7 +37,6 @@ def parse_command(raw_command: str):
     command = command.split("#")[0]
     command = command.split(" ")
     command_list = []
-    # operators = ["==", ">=", "<=", "+=", "-=", "=", ">", "<"]
     operators_assign = ["=", "+=", "-="]
     operators_check = ["==", "!=", ">=", "<=", "<", ">"]
     operators = operators_assign + operators_check
@@ -57,7 +77,7 @@ class Command:
             parsed_arg = int(arg)
         elif arg[0] == "-" and arg[1:].isdigit():
             parsed_arg = -int(arg[1:])
-        elif "." in arg:
+        elif "." in arg and arg.replace(".", "").isdigit():
             parsed_arg = float(arg)
         else:
             parsed_arg = arg
@@ -78,6 +98,7 @@ class ScriptParser:
         self.example_script_path = "custom_scripts/example_script.scrpt"
 
     def load_script(self, path: str, args: list | None = []) -> list[str]:
+        path = get_script_by_path(path)
         args = [] if not args else args
         scr_lines = self.recurse_construct_script([], path, args=args)
         return scr_lines
@@ -87,15 +108,17 @@ class ScriptParser:
             cnt = f.read()
             for n, arg in enumerate(args):
                 argname = f"%arg{str(n+1).zfill(2)}"
-                cnt = cnt.replace(argname, arg)
+                cnt = cnt.replace(argname, str(arg))
             lines = cnt.split("\n")
         for line in lines:
             if "SCRPT:" in line:
                 arglist = line.strip(" ").split(" ")
-                fname = arglist[1]
+                fpath = get_script_by_path(arglist[1])
+                if not fpath:
+                    return []
                 args = arglist[2:]
                 script_lines.append("new_block{")
-                self.recurse_construct_script(script_lines, f"scripts/custom/{fname}", args=args)
+                self.recurse_construct_script(script_lines, fpath, args=args)
                 script_lines.append("}")
             else:
                 script_lines.append(line)

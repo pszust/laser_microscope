@@ -1,0 +1,6 @@
+loop(9999){
+    polar1_controller.rotate_abs(%arg01)
+    sleep(%arg03)
+    polar1_controller.rotate_abs(%arg02)
+    sleep(%arg03)
+}
