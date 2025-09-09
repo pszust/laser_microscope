@@ -26,7 +26,7 @@ class M30Panel:
         # Connection controls
         cur_frame = Frame(self.frame)
         cur_frame.pack(fill=Y)
-        Button(cur_frame, text="Connect to XY-stage", command=self.connect).pack(side=LEFT)
+        Button(cur_frame, text="Connect to XY-stage", command=self.controller.connect).pack(side=LEFT)
         self.lbl_status = Label(cur_frame, text="STAGE status: unknown", bg="gray")
         self.lbl_status.pack(side=LEFT)
         cur_frame = Frame(self.frame)
@@ -78,10 +78,6 @@ class M30Panel:
         cur_frame.pack(fill=Y)
         Label(cur_frame, text="Distance: ").pack(side=LEFT)
         Entry(cur_frame, width=7, textvariable=self.var_move_rel_dist).pack(side=LEFT, fill=X)
-
-    @thread_execute
-    def connect(self):
-        self.controller.connect()
 
     # @thread_execute
     # def move_x_abs(self):

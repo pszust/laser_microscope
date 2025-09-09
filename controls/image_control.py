@@ -45,6 +45,8 @@ class ImageControl:
         self.master.automation_controller.cancel_execution(info_only=True)
         if self.img_mode == "ACTIVE_MAPPING":
             self.img_mode = None
+            time.sleep(0.4)  # there needs to be a delay before we pass next command to automation
+            self.master.automation_controller.pass_command("reset_alt_image()")
         else:
             self.img_mode = "ACTIVE_MAPPING"
             self.master.automation_controller.execute_script_file(

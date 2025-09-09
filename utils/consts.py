@@ -8,6 +8,7 @@ con_colors = {"CONNECTED": "lime", "CONNECTING": "yellow", "NOT CONNECTED": "gra
 
 MAIN_LOOP_TIME = 175
 CAM_IMG_LOOP = 50
+SCALE_PX2MM_AT_1X = 0.2  # how much pixels is in 1 mm at hypothetical 1X objecitve, experimental scaling
 
 
 class Device:

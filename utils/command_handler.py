@@ -100,8 +100,9 @@ class ScriptParser:
     def load_script(self, path: str, args: list | None = []) -> list[str]:
         path = get_script_by_path(path)
         args = [] if not args else args
-        scr_lines = self.recurse_construct_script([], path, args=args)
-        return scr_lines
+        if path:
+            scr_lines = self.recurse_construct_script([], path, args=args)
+            return scr_lines
 
     def recurse_construct_script(self, script_lines: list, path: str, args=[]) -> list[str]:
         with open(path, "r") as f:

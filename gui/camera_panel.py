@@ -32,6 +32,8 @@ if TYPE_CHECKING:
 
 logger = logging.getLogger(__name__)
 
+DEFAULT_OBJECTIVE = "5X"
+
 
 def costly_overlay(
     img: Image.Image, overlay: np.ndarray, R: int, G: int, B: int, s: int = 128
@@ -92,6 +94,7 @@ class CameraPanel:
         self.last_b1_press_pos = (0, 0)  # this is in display coordinates
         self.brush_index = 4
         self.brush_size = CamConsts.BRUSH_SIZR_ARR[self.brush_index]  # this will be in real coords
+        self.current_objective = DEFAULT_OBJECTIVE
 
         self.canvas = Canvas(
             parent, width=CamConsts.DISPLAY_WIDTH, height=CamConsts.DISPLAY_HEIGHT, bg="black"
@@ -273,3 +276,10 @@ class CameraPanel:
             logger.info(f"Saved {path}")
         else:
             logger.error(f"Image at {path} cannot be saved!")
+
+    def set_objective(self, obj: str):
+        logger.info(f"Changing objective: {self.current_objective} -> {obj}")
+        self.current_objective = obj
+
+    def get_objective(self) -> str:
+        return self.current_objective

@@ -101,8 +101,10 @@ class Automation:
             self.command_map[key] = value
 
     def pass_command(self, command: str):
+        logger.info(f"Passed command: {command}")
         parsed_command = parse_command(command)
         self.command_list.append(parsed_command)
+        a = 1
 
     def execute(self):
         if not self.command_list:

@@ -27,12 +27,14 @@ import cv2
 import serial
 
 import utils.consts as consts
+from controls.basepanel_control import BasepanelControl
 from controls.chiral_control import ChiralControl
 from controls.image_control import ImageControl
 from controls.projector_control import ProjectorControl
 from core.animation import AnimationControl
 from core.automation import Automation
 from gui.animation_tab import AnimationTab
+from gui.base_tab import BaseTab
 from gui.camera_panel import CameraPanel
 from gui.chiral_tab import ChiralTab
 from gui.console_panel import ConsolePanel
@@ -107,6 +109,7 @@ class MainWindow(Frame):
         self.animation_control = AnimationControl(self)
         self.image_control = ImageControl(self)
         self.chiral_control = ChiralControl(self)
+        self.basepanel_control = BasepanelControl(self)
         self.automation_controller = Automation(self)  # this has to be after all the controllers
 
         self.elliptec_angle_var = StringVar()
@@ -205,11 +208,14 @@ class MainWindow(Frame):
         notebook = ttk.Notebook(column_frame)
         notebook.pack(fill="both", expand=True)
 
+        # Tab 0 (BASE)
+        tab_anim = Frame(notebook)
+        notebook.add(tab_anim, text="BASE")
+        self.base_tab = BaseTab(tab_anim, self.basepanel_control)
+
         # Tab 1 (ANMT)
         tab_anim = Frame(notebook)
         notebook.add(tab_anim, text="ANMT")
-
-        # Add widgets to tab_gui1
         self.anim_tab = AnimationTab(tab_anim, self.animation_control)
 
         # Tab 2 (AERL)

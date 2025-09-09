@@ -20,3 +20,4 @@ loop(9999){
     display_alt_image(mapka_rgb)
     sleep(%arg03)
 }
+reset_alt_image()
