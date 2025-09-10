@@ -30,7 +30,7 @@ def serial_ports():
     :returns:
         A list of the serial ports available on the system
     """
-    return ["COM3", "COM5", "COM6", "COM9", "COM10"]  # temporary
+    return [str(i) for i in range(1, 13)]  # temporary
 
     if sys.platform.startswith("win"):
         ports = ["COM%s" % (i + 1) for i in range(256)]

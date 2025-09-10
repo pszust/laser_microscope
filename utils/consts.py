@@ -18,7 +18,7 @@ class Device:
     USE_REAL_LABJACK = False
     USE_REAL_ROTATOR = False
     USE_REAL_RIGOL = False
-    USE_REAL_HEATSTAGE = False
+    USE_REAL_HEATSTAGE = True
 
 
 class ErrorMsg:

@@ -1,6 +1,6 @@
 import threading
 import tkinter as tk
-from tkinter import Button, Entry, Frame, Label, StringVar
+from tkinter import Button, Entry, Frame, Label, StringVar, OptionMenu
 
 import utils.consts as consts
 from utils.utils import serial_ports, thread_execute
@@ -25,6 +25,10 @@ class HeatPanel:
         # Connection controls
         cur_frame = Frame(self.frame)
         cur_frame.pack(fill=tk.Y)
+        self.port_var = StringVar(self.frame)
+        self.port_var.set("1") # default value
+        self.port_sel_menu = OptionMenu(cur_frame, self.port_var, *serial_ports(), command = self.update_port)
+        self.port_sel_menu.pack(side = tk.LEFT)
         Button(cur_frame, text="Connect to heat stage", command=self.control.connect).pack(side=tk.LEFT)
         self.lbl_status = Label(cur_frame, text="HEAT STAGE status: unknown", bg="gray")
         self.lbl_status.pack(side=tk.LEFT)
@@ -63,6 +67,9 @@ class HeatPanel:
             command=lambda: self.control.set_rate(float(self.var_set_rate.get())),
         )
         btn.pack(side=tk.LEFT)
+
+    def update_port(self, port):
+        self.control.port = int(port)
 
     def update(self):
         # todo: check out if there is no async (get_status uses method with thread_execute)
