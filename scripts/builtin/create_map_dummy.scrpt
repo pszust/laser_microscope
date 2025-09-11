@@ -1,0 +1,16 @@
+deg_diff = %arg03
+pplus = exec_custom(get_abs_rot_plus, def_diff)
+pminus = exec_custom(get_abs_rot_minus, def_diff)
+
+rigol_controller.rotate_abs(pplus)
+sleep(3)
+image1 = get_camera_image()
+sleep(1)
+
+rigol_controller.rotate_abs(pminus)
+sleep(3)
+image1 = get_camera_image()
+sleep(1)
+
+%arg01 = exec_custom(standard_map, image1, image2)
+%arg02 = exec_custom(map_to_image, mapka, 1)

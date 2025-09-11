@@ -32,6 +32,7 @@ pixel_size_mm = 0.5
 work_size = 700
 kolo_laser = 7
 kwadra_laser = 5
+polar_rotation = 10
 """
 
 

@@ -340,3 +340,11 @@ def find_side_opening(mapka, size=400, check_size=100):
         return best_point
     else:
         return (100, 100)  # return point outside the area
+
+
+def get_abs_rot_minus(deg_diff):
+    return 90 - deg_diff
+
+
+def get_abs_rot_plus(deg_diff):
+    return 90 + deg_diff

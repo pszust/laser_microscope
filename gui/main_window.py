@@ -281,6 +281,7 @@ class MainWindow(Frame):
         self.labjack_panel.update()
         self.flipper_panel.update()
         self.camera_panel.update()
+        self.heat_panel.update()
         # self.stability_panel.update()
 
     def load_image(self):

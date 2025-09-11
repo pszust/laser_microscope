@@ -8,6 +8,8 @@ from core.automation import Automation
 from utils.command_handler import Command, parse_command
 from utils.utils import TextWidgetHandler
 
+CONSOLE_HEIGHT = 20
+
 
 class TkTextHandler(logging.Handler):
     def __init__(self, text_widget: tk.Text):
@@ -40,7 +42,7 @@ class ConsolePanel:
         # console view
         frame = Frame(self.frame)
         frame.grid(row=0, column=0, sticky=tk.W + tk.E)
-        self.console = Text(frame, wrap="word", height=25, width=120)
+        self.console = Text(frame, wrap="word", height=CONSOLE_HEIGHT, width=120)
         self.console.pack(side=tk.LEFT, fill=tk.X, expand=True)
         self.console.configure(
             bg="#0b1e3a",  # dark blue

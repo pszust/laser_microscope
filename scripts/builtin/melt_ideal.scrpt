@@ -9,6 +9,7 @@
 # kolo_size: size of kolo animation
 # kolo_laser: laser power for kolo animation
 # kwadra_laser: laser power for kwadrat animation
+# polar_rotation: -/+ deg of polarizator
 
 current_x = x_start
 current_y = y_start
@@ -34,7 +35,7 @@ loop(9999){
 	if(action==WORK){
 		# first create and analyse the map
 		melt_direction = exec_custom(read_from_array, the_pattern, current_x, current_y)
-		SCRPT: create_map.scrpt mapka mapka_rgb
+		SCRPT: create_map.scrpt mapka mapka_rgb, polar_rotation
 		display_alt_image(mapka_rgb)
 		sleep(1)
 		
