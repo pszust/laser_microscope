@@ -26,7 +26,7 @@ loop(9999){
 		current_x = 0
 		current_y += 1
 		# calculate the xy-distance based on prev and current position on pattern
-		delta_move_mm = exec_custom(get_delta_move_on_array, pixel_size_mm, current_x, current_y, old_x, old_y)
+		delta_move_mm = exec_custom(get_delta_move_on_array, pixel_size_mm, pixel_size_mm, current_x, current_y, old_x, old_y)
 		SCRPT: move_by_delta.scrpt delta_move_mm
 	}
 	if(action==PATTERN_DONE){
@@ -35,7 +35,7 @@ loop(9999){
 	if(action==WORK){
 		# first create and analyse the map
 		melt_direction = exec_custom(read_from_array, the_pattern, current_x, current_y)
-		SCRPT: create_map.scrpt mapka mapka_rgb, polar_rotation
+		SCRPT: create_map.scrpt mapka mapka_rgb polar_rotation
 		display_alt_image(mapka_rgb)
 		sleep(1)
 		
@@ -48,7 +48,7 @@ loop(9999){
 			# move to the next position in row
 			old_x = current_x
 			current_x += 1
-			delta_move_mm = exec_custom(get_delta_move_on_array, pixel_size_mm, current_x, current_y, old_x, current_y)
+			delta_move_mm = exec_custom(get_delta_move_on_array, pixel_size_mm, pixel_size_mm, current_x, current_y, old_x, current_y)
 			log_value(delta_move_mm)
 			SCRPT: move_by_delta.scrpt delta_move_mm
 		}

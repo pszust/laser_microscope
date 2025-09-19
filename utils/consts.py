@@ -8,7 +8,9 @@ con_colors = {"CONNECTED": "lime", "CONNECTING": "yellow", "NOT CONNECTED": "gra
 
 MAIN_LOOP_TIME = 175
 CAM_IMG_LOOP = 50
-SCALE_PX2MM_AT_1X = 0.2  # how much pixels is in 1 mm at hypothetical 1X objecitve, experimental scaling
+SCALE_PX2MM_AT_1X = 50  # how much pixels is in 1 mm at hypothetical 1X objecitve, experimental scaling
+BTN_COLOR_ACTIVE = "#ffeef6"
+BTN_COLOR_NACTIVE = "#d6d6d6"
 
 
 class Device:

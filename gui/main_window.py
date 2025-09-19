@@ -27,6 +27,7 @@ import cv2
 import serial
 
 import utils.consts as consts
+from controls.areal_control import ArealControl
 from controls.basepanel_control import BasepanelControl
 from controls.chiral_control import ChiralControl
 from controls.image_control import ImageControl
@@ -34,6 +35,7 @@ from controls.projector_control import ProjectorControl
 from core.animation import AnimationControl
 from core.automation import Automation
 from gui.animation_tab import AnimationTab
+from gui.areal_tab import ArealTab
 from gui.base_tab import BaseTab
 from gui.camera_panel import CameraPanel
 from gui.chiral_tab import ChiralTab
@@ -109,6 +111,7 @@ class MainWindow(Frame):
         self.animation_control = AnimationControl(self)
         self.image_control = ImageControl(self)
         self.chiral_control = ChiralControl(self)
+        self.areal_control = ArealControl(self)
         self.basepanel_control = BasepanelControl(self)
         self.automation_controller = Automation(self)  # this has to be after all the controllers
 
@@ -221,6 +224,7 @@ class MainWindow(Frame):
         # Tab 2 (AERL)
         tab_gui2 = Frame(notebook)
         notebook.add(tab_gui2, text="AREL")
+        self.areal_tab = ArealTab(tab_gui2, self.areal_control)
 
         # Tab 3 (CHRL)
         tab_gui3 = Frame(notebook)
@@ -282,6 +286,7 @@ class MainWindow(Frame):
         self.flipper_panel.update()
         self.camera_panel.update()
         self.heat_panel.update()
+        self.areal_tab.update()
         # self.stability_panel.update()
 
     def load_image(self):

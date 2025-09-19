@@ -1,0 +1,38 @@
+# Assumes following variables:
+# "amap_step_w_mm": amap_step_w_mm
+# "amap_step_h_mm": amap_step_h_mm
+# "imgs_w_req": imgs_w_req
+# "imgs_h_req": imgs_h_req
+# start_x_mm
+# start_y_mm
+# amap_size_w_px: amap_size_w_px,
+# amap_size_h_px: amap_size_h_px,
+
+pos_x = 0
+pos_y = 0
+old_x = 0
+old_y = 0
+y_loop_count = imgs_h_req
+
+SCRPT: move_absolute.scrpt start_x_mm start_y_mm
+
+loop(imgs_w_req){
+    loop(imgs_h_req){
+        log_value(NEWPOSITION, pos_x, pos_y)
+		delta_move_mm = exec_custom(get_delta_move_on_array, amap_step_w_mm, amap_step_h_mm, pos_x, pos_y, old_x, old_y)
+		SCRPT: move_by_delta.scrpt delta_move_mm
+        image = get_camera_image()
+        areal_control.add_image_to_areal_map(image, pos_x, pos_y)
+        log_value(Image_at, pos_x, pos_y, added)
+        old_y = pos_y
+        old_x = pos_x
+        pos_y += 1
+    }
+    old_x = pos_x
+    pos_x += 1
+    pos_y = 0
+}
+
+log_value(Composing...)
+areal_control.compose_images(amap_size_w_px, amap_size_h_px)
+log_value(Finished_composing_images)

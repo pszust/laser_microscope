@@ -33,3 +33,4 @@ animations/custom/
 logs/
 calibration/
 saved_images/
+.temp/

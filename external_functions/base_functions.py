@@ -283,10 +283,10 @@ def is_in_str(name: str, str: str) -> bool:
 
 
 def get_delta_move_on_array(
-    size_mm: float, c_x: int, c_y: int, old_x: int, old_y: int
+    size_mm_x: float, size_mm_y: float, c_x: int, c_y: int, old_x: int, old_y: int
 ) -> tuple[float, float]:
-    dx_mm = (c_x - old_x) * size_mm
-    dy_mm = (c_y - old_y) * size_mm
+    dx_mm = (c_x - old_x) * size_mm_x
+    dy_mm = (c_y - old_y) * size_mm_y
     return dx_mm, dy_mm
 
 

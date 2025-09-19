@@ -1,7 +1,10 @@
-var_a = 1
-image = get_camera_image()
-var_b = exec_custom(count_pixel_sum, image)
-log_value(var_b)
-laser_on()
-set_laser_duty(12)
-sleep(2)
+a = 2
+b = 3
+b_loop = b
+loop(a){
+    loop(b_loop){
+        log_value(bbbb_loop, b, b_loop)
+    }
+    b_loop = b
+    log_value(aaaa_loop, b, b_loop)
+}

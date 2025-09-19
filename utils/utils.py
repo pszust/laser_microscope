@@ -4,6 +4,8 @@ import logging
 import sys
 import threading
 import tkinter as tk
+from tkinter import filedialog
+from typing import List, Optional, Tuple
 
 import cv2
 import numpy as np
@@ -11,7 +13,7 @@ import serial
 from matplotlib import pyplot as plt
 
 from utils.command_handler import Command
-from utils.consts import ProjConsts
+from utils.consts import BTN_COLOR_ACTIVE, BTN_COLOR_NACTIVE, ProjConsts
 
 
 def thread_execute(func):
@@ -20,6 +22,14 @@ def thread_execute(func):
         threading.Thread(target=func, args=args, kwargs=kwargs, daemon=True).start()
 
     return wrapper
+
+
+def activate_btn(button: tk.Button):
+    button.config(relief=tk.SUNKEN, bg=BTN_COLOR_ACTIVE)
+
+
+def deactivate_btn(button: tk.Button):
+    button.config(relief=tk.RAISED, bg=BTN_COLOR_NACTIVE)
 
 
 def serial_ports():
@@ -144,3 +154,38 @@ def print_command(cmd, nest=0):
     elif type(cmd) == list:
         for c in cmd:
             print_command(c, nest=nest + 1)
+
+
+def get_save_file_dialog(
+    initialdir: Optional[str] = None,
+    filetypes: Optional[List[Tuple[str, str]]] = None,
+    defaultextension: Optional[str] = None,
+    title: str = "Save file as",
+) -> Optional[str]:
+    """
+    Opens a 'Save As' dialog and returns the selected file path,
+    or None if the dialog is cancelled.
+
+    Parameters
+    ----------
+    initialdir : str, optional
+        Directory where the dialog should open.
+    filetypes : list of (label, pattern), optional
+        e.g., [("PNG Image", "*.png"), ("All Files", "*.*")]
+    defaultextension : str, optional
+        Default extension to append if the user omits one.
+    title : str
+        Title of the dialog window.
+
+    Returns
+    -------
+    str or None
+        The chosen file path, or None if cancelled.
+    """
+    root = tk.Tk()
+    root.withdraw()  # hide the root window
+    path = filedialog.asksaveasfilename(
+        initialdir=initialdir, filetypes=filetypes, defaultextension=defaultextension, title=title
+    )
+    root.destroy()
+    return path if path else None

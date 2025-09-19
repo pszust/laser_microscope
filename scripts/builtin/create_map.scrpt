@@ -1,6 +1,16 @@
-image1 = load_image_test1()
+deg_diff = %arg03
+pplus = exec_custom(get_abs_rot_plus, deg_diff)
+pminus = exec_custom(get_abs_rot_minus, deg_diff)
+
+polar1_controller.rotate_abs(pplus)
+sleep(3)
+image1 = get_camera_image()
 sleep(1)
-image2 = load_image_test2()
+
+polar1_controller.rotate_abs(pminus)
+sleep(3)
+image2 = get_camera_image()
 sleep(1)
+
 %arg01 = exec_custom(standard_map, image1, image2)
-%arg02 = exec_custom(map_to_image, mapka, 1)
+%arg02 = exec_custom(map_to_image, %arg01, 1)

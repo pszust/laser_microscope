@@ -1,0 +1,8 @@
+stage_controller.set_postion(%arg01, %arg02)
+loop(99){
+    sleep(0.5)
+    state = get_m30_state()
+    if(state==IDLE){
+        break_block(2)
+    }
+}

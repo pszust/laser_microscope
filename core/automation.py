@@ -33,6 +33,7 @@ CALLABLE_CONTROLS = [
     "flipper1_control",
     "flipper2_control",
     "heat_stage_control",
+    "areal_control",
 ]
 
 
@@ -144,11 +145,16 @@ class Automation:
             elif current.command == "loop":
                 if isinstance(current.args[0], str):
                     current.args[0] = self.variables[current.args[0]]
+                # at the first call of this specific loop, save original count of iterations
+                if len(current.args) == 1:  # means first call
+                    current.args.append(current.args[0])
                 if current.args[0] > 0:
                     current.args[0] -= 1
                 else:
                     # exit loop block
                     self.execution_position = self.execution_position[:-1]
+                    # restore original count of iterations for if this loop is called next time
+                    current.args = [current.args[1]]
             elif current.command == "break_block":
                 for _ in range(current.args[0]):
                     self.execution_position = self.execution_position[:-1]
