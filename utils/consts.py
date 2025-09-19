@@ -82,4 +82,13 @@ class ProjConsts:
 class LabJackConsts:
     SERIAL_NO = "55520124"
     MIN_POS = 0.0
-    MAX_POS = 100.0
+    MAX_POS = 50.0
+
+
+class M30Consts:
+    # distances per axis in mm
+    MIN_POS = 0.0
+    MAX_POS = 20.0
+    MIN_VEL = 0.0
+    MAX_VEL = 10.0
+    SERIAL_NO = "101507134"

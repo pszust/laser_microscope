@@ -1,3 +1,4 @@
+import logging
 import threading
 import tkinter as tk
 from tkinter import LEFT, Button, Entry, Frame, Label, StringVar, X, Y
@@ -9,6 +10,8 @@ if consts.Device.USE_REAL_M30:
     from devices.m30_control import StageController
 else:
     from devices.m30_control_mock import StageController
+
+logger = logging.getLogger(__name__)
 
 
 class M30Panel:
@@ -41,21 +44,31 @@ class M30Panel:
         self.lbl_info.config(font=consts.info_label_font)
         self.lbl_info.pack(side=LEFT)
 
-        # Move controls (X absolute)
+        # secondary info label
         cur_frame = Frame(self.frame)
         cur_frame.pack(fill=Y)
-        Label(cur_frame, text="X-move: ").pack(side=LEFT)
+        self.lbl_info2 = Label(cur_frame, text="---", fg=consts.info_label_color)
+        self.lbl_info2.pack(side=LEFT)
+
+        # set velocity panel
+        cur_frame = Frame(self.frame)
+        cur_frame.pack(fill=Y)
+        Label(cur_frame, text="Vel: ").pack(side=LEFT)
+        self.var_vel = StringVar(value="0.0")
+        Entry(cur_frame, width=7, textvariable=self.var_vel).pack(side=LEFT, fill=X)
+        Button(cur_frame, text="Set vel", command=self.set_vel).pack(side=LEFT)
+
+        # Move controls (XY absolute)
+        cur_frame = Frame(self.frame)
+        cur_frame.pack(fill=Y)
+
+        Label(cur_frame, text="X: ").pack(side=LEFT)
         self.var_x_move = StringVar(value="0.0")
         Entry(cur_frame, width=7, textvariable=self.var_x_move).pack(side=LEFT, fill=X)
-        Button(cur_frame, text="Move X", command=self.move_xy_rel(1, 1)).pack(side=LEFT)
-
-        # Move controls (Y absolute)
-        cur_frame = Frame(self.frame)
-        cur_frame.pack(fill=Y)
-        Label(cur_frame, text="Y-move: ").pack(side=LEFT)
+        Label(cur_frame, text="Y: ").pack(side=LEFT)
         self.var_y_move = StringVar(value="0.0")
         Entry(cur_frame, width=7, textvariable=self.var_y_move).pack(side=LEFT, fill=X)
-        Button(cur_frame, text="Move Y", command=self.move_xy_rel(1, 1)).pack(side=LEFT)  # TODO: fix
+        Button(cur_frame, text="Move Abs", command=self.move_abs).pack(side=LEFT)
 
         # Move controls (XY rel)
         cur_frame = Frame(self.frame)
@@ -79,19 +92,13 @@ class M30Panel:
         Label(cur_frame, text="Distance: ").pack(side=LEFT)
         Entry(cur_frame, width=7, textvariable=self.var_move_rel_dist).pack(side=LEFT, fill=X)
 
-    # @thread_execute
-    # def move_x_abs(self):
-    #     status = self.controller.get_status()
-    #     cur_x, cur_y = status["x_pos"], status["y_pos"]
-    #     x_value = float(self.var_x_move.get())
-    #     self.controller.move_absolute_xy(x_value, cur_y)
-
-    # @thread_execute
-    # def move_y_abs(self):
-    #     status = self.controller.get_status()
-    #     cur_x, cur_y = status["x_pos"], status["y_pos"]
-    #     y_value = float(self.var_y_move.get())
-    #     self.controller.move_absolute_xy(cur_x, y_value)
+    def move_abs(self):
+        try:
+            x = float(self.var_x_move.get())
+            y = float(self.var_y_move.get())
+            self.controller.set_postion(x, y)
+        except:
+            logger.warning("Incorrect format for coords")
 
     @thread_execute
     def move_xy_rel(self, x_multip, y_multip):
@@ -99,6 +106,13 @@ class M30Panel:
         cur_x, cur_y = status["x_pos"], status["y_pos"]
         dst = float(self.var_move_rel_dist.get())
         self.controller.set_postion(cur_x + dst * x_multip, cur_y + dst * y_multip)
+
+    def set_vel(self):
+        try:
+            vel = float(self.var_vel.get())
+            self.controller.set_velocity(vel)
+        except:
+            logger.warning("Incorrect variable format!")
 
     # GUI update hook
     def update(self):
@@ -112,12 +126,10 @@ class M30Panel:
         self.lbl_status.config(text=f"STAGE status: {con_state}", bg=con_color)
 
         # position label
-        state = status.get("state", "err")
-        state_map = {
-            "IDLE": "I",
-            "MOVING": "M",
-        }
-        self.lbl_info.config(
-            text="X=%2.2f, Y=%2.2f, STATE=%s"
-            % (status["x_pos"], status["y_pos"], state_map.get(state, "E"))
+        self.lbl_info.config(text="X=%2.2f, Y=%2.2f" % (status["x_pos"], status["y_pos"]))
+
+        txt = (
+            f"Status: {status.get("state", "err")}",
+            f"Vel: {status.get("vel", "err")}",
         )
+        self.lbl_info2.config(text="\n".join(txt))

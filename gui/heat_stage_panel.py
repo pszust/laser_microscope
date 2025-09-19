@@ -99,9 +99,9 @@ class HeatPanel:
 
     def update_tramp_button(self, is_ramp_active: bool):
         if is_ramp_active:
-            self.ramp_active_btn.config(relief=tk.SUNKEN, fg="#F0C1A2")
+            self.ramp_active_btn.config(relief=tk.SUNKEN, bg="#F0C1A2")
         else:
-            self.ramp_active_btn.config(relief=tk.RAISED, fg="#B3E6FA")
+            self.ramp_active_btn.config(relief=tk.RAISED, bg="#B3E6FA")
 
     def update_port(self, port):
         self.control.port = int(port)

@@ -42,6 +42,7 @@ class ArealTab:
             highlightbackground="#333333",
         )
         self.minimap_canvas.pack(pady=6)
+        self.minimap_canvas.bind("<Double-Button-1>", self._on_minimap_double_click)
 
         # Keep a reference to the PhotoImage so it isn't GC'd
         self._minimap_img = None
@@ -52,7 +53,7 @@ class ArealTab:
         btn_frame = Frame(self.frame)
         btn_frame.pack(fill=tk.X)
         self.btn_active_mapping = Button(
-            btn_frame, text="Active map", command=self.enable_mapping, bg="#f2ffd9"
+            btn_frame, text="Active mapping", command=self.enable_mapping, bg="#f2ffd9"
         )
         self.btn_active_mapping.pack(side=tk.LEFT, padx=3, pady=3)
         Button(btn_frame, text="Reset minimap", command=self.control.reset_minimap, bg="#f2ffd9").pack(
@@ -201,3 +202,10 @@ class ArealTab:
 
         map_name = self.var_map_name.get()
         self.control.make_areal_map(map_name)
+
+    def _on_minimap_double_click(self, event):
+        # this is experimental feature
+        if not self.active_mapping:
+            self.enable_mapping()
+        x, y = int(event.x), int(event.y)
+        self.control.move_on_minimap(x, y)

@@ -99,6 +99,9 @@ class ArealControl:
     def mm2px_minimap(self, mm_dist: float) -> int:
         return int(mm_dist * self.scale_factor)
 
+    def px2mm_minimap(self, px_dist: int) -> float:
+        return px_dist / self.scale_factor
+
     def save_minimap(self):
         if path := get_save_file_dialog(filetypes=[("PNG Image", "*.png")]):
             path += ".png" if not path.endswith(".png") else ""
@@ -165,3 +168,8 @@ class ArealControl:
         except Exception as e:
             logger.error(f"Something went wrong")
             logger.error(e)
+
+    def move_on_minimap(self, x: int, y: int):
+        x_mm = self.px2mm_minimap(x)
+        y_mm = self.px2mm_minimap(y)
+        self.master.stage_controller.set_postion(x_mm, y_mm)

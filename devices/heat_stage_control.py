@@ -89,11 +89,12 @@ class HeatController:
         self.ramp_temp = float(value)
 
     def activate_ramp(self):
-        if self.ramp_active:
-            self.ramp_active = False
-        else:
-            self.ramp_active = True
-            self.set_temp = self.cur_temp
+        if self.device != None:
+            if self.ramp_active:
+                self.ramp_active = False
+            else:
+                self.ramp_active = True
+                self.set_temp = self.cur_temp
 
     def thortemp_switch_enable(self):
         if self.device != None:
@@ -114,20 +115,21 @@ class HeatController:
         return -1
 
     def update_ramp(self):
-        self.ramp_counter += 1
-        if self.ramp_counter > RAMP_UPDATE_COUNTER:
-            self.ramp_counter = 0
-            sec_passed = time.process_time() - self.ramp_timer
-            temp_step = sec_passed * self.ramp_rate / 60
-            self.ramp_timer = time.process_time()
+        if self.device != None:
+            self.ramp_counter += 1
+            if self.ramp_counter > RAMP_UPDATE_COUNTER:
+                self.ramp_counter = 0
+                sec_passed = time.process_time() - self.ramp_timer
+                temp_step = sec_passed * self.ramp_rate / 60
+                self.ramp_timer = time.process_time()
 
-            if self.ramp_active:
-                temp_diff = self.ramp_temp - self.set_temp
-                if abs(temp_diff) < temp_step:
-                    self.set_temp = self.ramp_temp
-                    self.ramp_active = False
-                elif temp_diff > 0:
-                    self.set_temp += temp_step
-                elif temp_diff < 0:
-                    self.set_temp -= temp_step
-                self.set_temperature(self.set_temp)
+                if self.ramp_active:
+                    temp_diff = self.ramp_temp - self.set_temp
+                    if abs(temp_diff) < temp_step:
+                        self.set_temp = self.ramp_temp
+                        self.ramp_active = False
+                    elif temp_diff > 0:
+                        self.set_temp += temp_step
+                    elif temp_diff < 0:
+                        self.set_temp -= temp_step
+                    self.set_temperature(self.set_temp)

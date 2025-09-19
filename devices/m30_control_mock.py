@@ -22,8 +22,7 @@ class StageController:
         # self.m30_event = m30_event
         # self.m30_param = m30_param
         self.x_pos, self.y_pos = 0, 0
-        self.curAcc = 5
-        self.curVel = 2
+        self.velocity = 2
         self._x, self._y = 0, 0
         logger.debug(f"Initialization done.")
 
@@ -53,7 +52,7 @@ class StageController:
             dst_x = self._x - new_x
             dst_y = self._y - new_y
             dst = np.sqrt(dst_x**2 + dst_y**2)
-            time.sleep(2.25 * dst)
+            time.sleep(2 / self.velocity * dst)
             self._x = new_x
             self._y = new_y
             self.state = "IDLE"
@@ -72,6 +71,9 @@ class StageController:
         if self.m30_device and self.con_stat == "CONNECTED":
             self.set_postion(0, 0)
 
+    def set_velocity(self, vel: float):
+        self.velocity = vel
+
     def get_status(self):
         self.update_position()
         return {
@@ -79,4 +81,5 @@ class StageController:
             "x_pos": self.x_pos,
             "y_pos": self.y_pos,
             "state": self.state,
+            "vel": self.velocity,
         }

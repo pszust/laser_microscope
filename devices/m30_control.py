@@ -10,7 +10,7 @@ import numpy as np
 from PIL import Image, ImageTk
 
 from devices.TC300_COMMAND_LIB import *
-from utils.consts import LabJackConsts
+from utils.consts import M30Consts
 from utils.utils import thread_execute
 
 logger = logging.getLogger(__name__)
@@ -42,8 +42,7 @@ class StageController:
         # self.m30_event = m30_event
         # self.m30_param = m30_param
         self.x_pos, self.y_pos = 0, 0
-        self.curAcc = 5
-        self.curVel = 2
+        self.velocity = 2
         logger.debug(f"Initialization done.")
 
     @thread_execute
@@ -52,10 +51,9 @@ class StageController:
 
         # connecting (weird thorlabs stuff)
         DeviceManagerCLI.BuildDeviceList()  # type: ignore
-        serial_no = "101507134"  # Replace this line with your device's serial number
-        self.m30_device = BenchtopDCServo.CreateBenchtopDCServo(serial_no)  # type: ignore
+        self.m30_device = BenchtopDCServo.CreateBenchtopDCServo(M30Consts.SERIAL_NO)  # type: ignore
         time.sleep(1)
-        self.m30_device.Connect(serial_no)
+        self.m30_device.Connect(M30Consts.SERIAL_NO)
         print(self.m30_device)
 
         time.sleep(2.5)  # wait statements are important to allow settings to be sent to the device
@@ -91,8 +89,8 @@ class StageController:
         x_home_params = self.x_channel.GetHomingParams()
         y_home_params = self.y_channel.GetHomingParams()
 
-        x_home_params.Velocity = Decimal(2.0)
-        y_home_params.Velocity = Decimal(2.0)
+        x_home_params.Velocity = Decimal(self.velocity)
+        y_home_params.Velocity = Decimal(self.velocity)
 
         self.x_channel.SetHomingParams(x_home_params)
         self.y_channel.SetHomingParams(y_home_params)
@@ -115,9 +113,27 @@ class StageController:
             )  # warning: this uses , as decimal separator
             self.y_pos = round(float(self.y_channel.DevicePosition.ToString().replace(",", ".")), 3)
 
+    def set_velocity(self, vel: float):
+        if M30Consts.MIN_VEL < vel and vel < M30Consts.MAX_VEL:
+            self.velocity = vel
+            x_home_params = self.x_channel.GetHomingParams()
+            y_home_params = self.y_channel.GetHomingParams()
+            x_home_params.Velocity = Decimal(self.velocity)
+            y_home_params.Velocity = Decimal(self.velocity)
+            self.x_channel.SetHomingParams(x_home_params)
+            self.y_channel.SetHomingParams(y_home_params)
+        else:
+            logger.warning(f"Velocity {vel:.2f} outside range")
+
     @thread_execute
     def set_postion(self, new_x, new_y):
         if self.m30_device and self.con_stat == "CONNECTED":
+            if not (M30Consts.MIN_POS < new_x and new_x < M30Consts.MAX_POS) or not (
+                M30Consts.MIN_POS < new_y and new_y < M30Consts.MAX_POS
+            ):
+                logger.warning(f"Position {new_x:.2f}, {new_y:.2f} outside range")
+                return
+
             self.state = "MOVING"
             try:
                 self.x_channel.MoveTo(Decimal(new_x), 60000)
@@ -147,4 +163,5 @@ class StageController:
             "x_pos": self.x_pos,
             "y_pos": self.y_pos,
             "state": self.state,
+            "vel": self.velocity,
         }
