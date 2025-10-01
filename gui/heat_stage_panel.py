@@ -120,8 +120,8 @@ class HeatPanel:
         # info label 1
         cur_temp = status.get("current_temp")
         set_temp = status.get("set_temp")
-        self.lbl_info.config(text=f"T-ACT={cur_temp} | SET={set_temp}")
+        self.lbl_info.config(text=f"T-ACT={cur_temp:.3f} | SET={set_temp:.3f}")
 
         ramp_rate = status.get("ramp_rate")
         ramp_temp = status.get("ramp_temp")
-        self.lbl_info2.config(text=f"RATE={ramp_rate} | T-RAMP={ramp_temp}")
+        self.lbl_info2.config(text=f"RATE={ramp_rate:.3f} | T-RAMP={ramp_temp:.3f}")

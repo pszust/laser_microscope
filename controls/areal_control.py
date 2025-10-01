@@ -14,7 +14,7 @@ if TYPE_CHECKING:
 
 logger = logging.getLogger(__name__)
 
-MAX_MINIMAP_SIZE_MM = 55
+MAX_MINIMAP_SIZE_MM = 25  # a little bit more than M30 limit size (was it 20?)
 AREAL_MAP_SCRIPT = "areal_map"
 
 

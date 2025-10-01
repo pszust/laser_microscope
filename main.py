@@ -27,6 +27,7 @@ def main():
     # root.attributes('-fullscreen', True)
     root.state("zoomed")
     root.title("Laser Microscope Control")
+    root.iconbitmap("ikonka.ico")
     app = MainWindow(master=root)
     app.mainloop()
 

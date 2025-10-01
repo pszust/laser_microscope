@@ -1,7 +1,6 @@
 import logging
-import threading
 import tkinter as tk
-from tkinter import Button, Canvas, Entry, Frame, Label, OptionMenu, PhotoImage, Scrollbar, StringVar
+from tkinter import Button, Canvas, Entry, Frame, Label, StringVar
 
 from PIL import Image, ImageTk
 
@@ -31,6 +30,13 @@ class ArealTab:
         cur_frame = Frame(self.frame)
         cur_frame.pack(fill=tk.Y)
         Label(cur_frame, text="AREAL TAB", font=consts.subsystem_name_font).pack(side=tk.LEFT)
+
+        # mini-info
+        cur_frame = Frame(self.frame)
+        cur_frame.pack(fill=tk.Y)
+        Label(cur_frame, text="Before using any mapping functions, you need to activate mapping").pack(
+            side=tk.LEFT
+        )
 
         # --- Minimap ---
         self.minimap_canvas = Canvas(

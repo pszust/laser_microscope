@@ -9,6 +9,7 @@ import cv2
 import numpy as np
 from PIL import Image, ImageTk
 
+from utils.consts import M30Consts
 from utils.utils import thread_execute
 
 logger = logging.getLogger(__name__)
@@ -47,6 +48,11 @@ class StageController:
     @thread_execute
     def set_postion(self, new_x, new_y):
         if self.m30_device and self.con_stat == "CONNECTED":
+            if not (M30Consts.MIN_POS < new_x and new_x < M30Consts.MAX_POS) or not (
+                M30Consts.MIN_POS < new_y and new_y < M30Consts.MAX_POS
+            ):
+                logger.warning(f"Position {new_x:.2f}, {new_y:.2f} outside range")
+                return
             logger.info(f"Executing move to {new_x:.3f}, {new_y:.3f}")
             self.state = "MOVING"
             dst_x = self._x - new_x
